@@ -1,9 +1,10 @@
+import { CreateUserDTO } from "../dtos/user.dto";
 import User, { IUser } from "../models/user.model";
 
 
 export interface IUserRepository{
     findByEmail(email: string): Promise<IUser|null>;
-    createUser(user: IUser): Promise<IUser>;
+    createUser(user: CreateUserDTO): Promise<IUser>;
     findById(id: string): Promise<IUser | null>;
     getAll(): Promise<IUser[]>;
     update(id: string, user: Partial<IUser>): Promise<IUser | null>;
@@ -15,7 +16,7 @@ export class UserMongoRepository implements IUserRepository{
         const foundUser = await User.findOne({email});
         return foundUser;
     }
-    async createUser(user: IUser): Promise<IUser> {
+    async createUser(user: CreateUserDTO): Promise<IUser> {
        const createdUser = await User.create(user);
        return createdUser;
     }
