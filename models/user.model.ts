@@ -1,5 +1,4 @@
 import mongoose, {Schema, Document} from "mongoose";
-import { isInternalThread } from "node:worker_threads";
 import { UserType } from "../types/user.type";
 
 //Document comes from Mongoose is adds MongoDB document methods and properties like user.save(), user.deleteOne like this
@@ -14,7 +13,21 @@ const UserMongoSchema: Schema = new Schema<IUser>(
         fullname: { type: String, required: true},
         email: {type: String, required: true, unique: true},
         password: {type: String, required: true},
-       
+        phoneNumber: { type: String, required: false },
+        profileImage: { type: String, required: false },
+        gender: {
+            type: String,
+            enum: ["male", "female", "other", "prefer-not-to-say"],
+            required: false
+        },
+        dateOfBirth: { type: String, required: false },
+        address: { type: String, required: false },
+        role: {
+    type: String,
+    enum: ["admin", "user"],
+    default: "user",
+    required: true
+},
     },
     {
         timestamps: true
