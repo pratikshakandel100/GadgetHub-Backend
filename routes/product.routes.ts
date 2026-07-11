@@ -33,6 +33,11 @@ productRouter.get(
 );
 
 productRouter.get(
+    "/published/:id",
+    productController.getPublishedProductById
+);
+
+productRouter.get(
     "/:id",
     authorizedMiddleware,
     adminMiddleware,

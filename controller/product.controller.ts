@@ -106,6 +106,19 @@ export class ProductController {
         }
     }
 
+    async getPublishedProductById(req: Request<{ id: string }>, res: Response) {
+        try {
+            const product = await productService.getPublishedProductById(req.params.id);
+            return ApiResponseHelper.success(res, product, "Product fetched successfully");
+        } catch (error: Error | any | unknown) {
+            return ApiResponseHelper.error(
+                res,
+                error.message || "Internal Server Error",
+                error.status || 500
+            );
+        }
+    }
+
     async updateProduct(req: Request<{ id: string }>, res: Response) {
         try {
             const body = mergeUploadedImages(req);

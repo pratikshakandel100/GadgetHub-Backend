@@ -62,6 +62,14 @@ export class ProductService {
         return product;
     }
 
+    async getPublishedProductById(id: string): Promise<IProduct> {
+        const product = await productRepository.getById(id);
+        if (!product || product.status !== "Published") {
+            throw new HttpException(404, "Product not found");
+        }
+        return product;
+    }
+
     async updateProduct(id: string, productData: UpdateProductDTO): Promise<IProduct> {
         const existingProduct = await productRepository.getById(id);
         if (!existingProduct) {
