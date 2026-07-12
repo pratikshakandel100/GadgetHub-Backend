@@ -10,6 +10,11 @@ export interface IVariant {
   values: string;
 }
 
+export interface IVariantAttribute {
+  key: string;
+  value: string;
+}
+
 export interface IProduct extends Document {
   _id: mongoose.Types.ObjectId;
   name: string;
@@ -28,6 +33,10 @@ export interface IProduct extends Document {
   availability: string;
   specifications: ISpecification[];
   variants: IVariant[];
+  variantAttributes: IVariantAttribute[];
+  variantKey: string;
+  seller: mongoose.Types.ObjectId;
+  attributes: Map<string, string>;
   weight?: string;
   dimensions?: string;
   shippingCharge?: number;
@@ -80,6 +89,13 @@ const ProductMongoSchema: Schema = new Schema<IProduct>(
       type: { type: String, required: true },
       values: { type: String, required: true }
     }],
+    variantAttributes: [{
+      key: { type: String, required: true },
+      value: { type: String, required: true }
+    }],
+    variantKey: { type: String, required: true },
+    seller: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    attributes: { type: Map, of: String, default: {} },
     weight: { type: String, required: false },
     dimensions: { type: String, required: false },
     shippingCharge: { type: Number, required: false },
@@ -109,6 +125,12 @@ const ProductMongoSchema: Schema = new Schema<IProduct>(
     timestamps: true
   }
 );
+
+// Sparse so legacy documents without a variantKey don't collide on `null`,
+// while enforcing at the database level that no two documents can share the
+// same seller+name+brand+category+attributes identity (prevents duplicate
+// variants even under concurrent create requests).
+ProductMongoSchema.index({ variantKey: 1 }, { unique: true, sparse: true });
 
 export default mongoose.model<IProduct>(
   "Product",
