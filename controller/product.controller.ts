@@ -27,14 +27,25 @@ const mergeUploadedImages = (req: Request) => {
 export class ProductController {
     async createProduct(req: Request, res: Response) {
         try {
+            const sellerId = req.user?._id?.toString();
+            if (!sellerId) {
+                return ApiResponseHelper.error(res, "Unauthorized user not found", 401);
+            }
+
             const body = mergeUploadedImages(req);
             const productData = CreateProductDTO.safeParse(body);
             if (!productData.success) {
                 return ApiResponseHelper.error(res, z.prettifyError(productData.error), 400);
             }
 
-            const product = await productService.createProduct(productData.data);
-            return ApiResponseHelper.success(res, product, "Product created successfully");
+            const { product, created } = await productService.createProduct(productData.data, sellerId);
+            return ApiResponseHelper.success(
+                res,
+                product,
+                created
+                    ? "Product created successfully"
+                    : "A matching variant already exists — stock quantity was updated instead of creating a duplicate"
+            );
         } catch (error: Error | any | unknown) {
             return ApiResponseHelper.error(
                 res,
