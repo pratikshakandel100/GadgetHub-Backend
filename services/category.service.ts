@@ -1,6 +1,6 @@
 import { CategoryMongoRepository, ICategoryWithCount } from "../repositories/category.repository";
 import { CreateCategoryDTO, UpdateCategoryDTO } from "../dtos/category.dto";
-import { ICategory } from "../models/category.model";
+import { ICategory, ICategoryAttribute } from "../models/category.model";
 import { HttpException } from "../exceptions/http-exception";
 
 const categoryRepository = new CategoryMongoRepository();
@@ -59,6 +59,39 @@ export class CategoryService {
         const updated = await categoryRepository.update(id, updatePayload);
         if (!updated) {
             throw new HttpException(500, "Failed to update category");
+        }
+        return updated;
+    }
+
+    async getCategoryAttributes(id: string): Promise<ICategoryAttribute[]> {
+        const category = await categoryRepository.getById(id);
+        if (!category) {
+            throw new HttpException(404, "Category not found");
+        }
+        return category.attributeSchema ?? [];
+    }
+
+    async updateCategoryAttributes(id: string, attributeSchema: ICategoryAttribute[]): Promise<ICategory> {
+        const existingCategory = await categoryRepository.getById(id);
+        if (!existingCategory) {
+            throw new HttpException(404, "Category not found");
+        }
+
+        const keys = attributeSchema.map((attr) => attr.key.trim().toLowerCase());
+        const duplicateKey = keys.find((key, index) => keys.indexOf(key) !== index);
+        if (duplicateKey) {
+            throw new HttpException(400, `Duplicate attribute key: "${duplicateKey}"`);
+        }
+
+        for (const attr of attributeSchema) {
+            if (attr.type === "select" && attr.options.length === 0) {
+                throw new HttpException(400, `Attribute "${attr.label}" is type "select" but has no options`);
+            }
+        }
+
+        const updated = await categoryRepository.updateAttributeSchema(id, attributeSchema);
+        if (!updated) {
+            throw new HttpException(500, "Failed to update category attribute schema");
         }
         return updated;
     }

@@ -1,5 +1,5 @@
 import { CreateCategoryDTO } from "../dtos/category.dto";
-import Category, { ICategory } from "../models/category.model";
+import Category, { ICategory, ICategoryAttribute } from "../models/category.model";
 import Product from "../models/product.model";
 
 export interface ICategoryWithCount extends Omit<ICategory, keyof import("mongoose").Document> {
@@ -14,6 +14,7 @@ export interface ICategoryRepository {
     findByName(name: string): Promise<ICategory | null>;
     findBySlug(slug: string): Promise<ICategory | null>;
     update(id: string, category: Partial<ICategory>): Promise<ICategory | null>;
+    updateAttributeSchema(id: string, attributeSchema: ICategoryAttribute[]): Promise<ICategory | null>;
     delete(id: string): Promise<boolean>;
     countProducts(id: string): Promise<number>;
 }
@@ -62,6 +63,14 @@ export class CategoryMongoRepository implements ICategoryRepository {
         return await Category.findByIdAndUpdate(
             id,
             { $set: filteredCategory },
+            { new: true, runValidators: true }
+        );
+    }
+
+    async updateAttributeSchema(id: string, attributeSchema: ICategoryAttribute[]): Promise<ICategory | null> {
+        return await Category.findByIdAndUpdate(
+            id,
+            { $set: { attributeSchema } },
             { new: true, runValidators: true }
         );
     }

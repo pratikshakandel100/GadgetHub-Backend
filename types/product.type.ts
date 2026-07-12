@@ -42,6 +42,35 @@ const variantsArray = z.preprocess(
     })).optional().default([])
 );
 
+const variantAttributesArray = z.preprocess(
+    (value) => {
+        if (typeof value !== "string") return value;
+        if (value === "") return [];
+        try {
+            return JSON.parse(value);
+        } catch {
+            return value;
+        }
+    },
+    z.array(z.object({
+        key: z.string().min(1),
+        value: z.string().min(1)
+    })).optional().default([])
+);
+
+const attributesRecord = z.preprocess(
+    (value) => {
+        if (typeof value !== "string") return value;
+        if (value === "") return {};
+        try {
+            return JSON.parse(value);
+        } catch {
+            return value;
+        }
+    },
+    z.record(z.string(), z.string()).optional().default({})
+);
+
 export const ProductSchema = z.object({
     name: z.string().min(1, "Product name is required"),
     category: z.string().min(1, "Category is required"),
@@ -61,6 +90,8 @@ export const ProductSchema = z.object({
     availability: z.enum(["In Stock", "Out of Stock", "Pre-order"]).default("In Stock"),
     specifications: specificationsArray,
     variants: variantsArray,
+    variantAttributes: variantAttributesArray,
+    attributes: attributesRecord,
     weight: optionalString,
     dimensions: optionalString,
     shippingCharge: z.preprocess(
