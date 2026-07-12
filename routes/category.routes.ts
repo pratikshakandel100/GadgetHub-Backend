@@ -34,6 +34,20 @@ categoryRouter.put(
     categoryController.updateCategory
 );
 
+categoryRouter.get(
+    "/:id/attributes",
+    authorizedMiddleware,
+    adminMiddleware,
+    categoryController.getCategoryAttributes
+);
+
+categoryRouter.post(
+    "/:id/attributes",
+    authorizedMiddleware,
+    adminMiddleware,
+    categoryController.updateCategoryAttributes
+);
+
 categoryRouter.delete(
     "/:id",
     authorizedMiddleware,
