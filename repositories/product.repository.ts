@@ -9,8 +9,14 @@ export interface IProductListResult {
     totalPages: number;
 }
 
+export interface ICreateProductData extends CreateProductDTO {
+    sku: string;
+    variantKey: string;
+    seller: string;
+}
+
 export interface IProductRepository {
-    create(product: CreateProductDTO & { sku: string }): Promise<IProduct>;
+    create(product: ICreateProductData): Promise<IProduct>;
     getAll(
         page: number,
         limit: number,
@@ -25,8 +31,10 @@ export interface IProductRepository {
         category: string
     ): Promise<IProductListResult>;
     getById(id: string): Promise<IProduct | null>;
+    getByVariantKey(variantKey: string): Promise<IProduct | null>;
     update(id: string, product: Record<string, any>): Promise<IProduct | null>;
     updateStatus(id: string, status: "Draft" | "Published"): Promise<IProduct | null>;
+    incrementStock(id: string, quantity: number): Promise<IProduct | null>;
     delete(id: string): Promise<boolean>;
     existsBySku(sku: string): Promise<boolean>;
 }
@@ -37,7 +45,7 @@ const POPULATE_FIELDS = [
 ];
 
 export class ProductMongoRepository implements IProductRepository {
-    async create(product: CreateProductDTO & { sku: string }): Promise<IProduct> {
+    async create(product: ICreateProductData): Promise<IProduct> {
         const created = await Product.create(product);
         return created.populate(POPULATE_FIELDS);
     }
@@ -116,6 +124,10 @@ export class ProductMongoRepository implements IProductRepository {
         return await Product.findById(id).populate(POPULATE_FIELDS);
     }
 
+    async getByVariantKey(variantKey: string): Promise<IProduct | null> {
+        return await Product.findOne({ variantKey }).populate(POPULATE_FIELDS);
+    }
+
     async update(id: string, product: Record<string, any>): Promise<IProduct | null> {
         const filteredProduct = Object.fromEntries(
             Object.entries(product).filter(([_, value]) => value !== undefined)
@@ -138,6 +150,18 @@ export class ProductMongoRepository implements IProductRepository {
     async delete(id: string): Promise<boolean> {
         const deleted = await Product.findByIdAndDelete(id);
         return !!deleted;
+    }
+
+    async incrementStock(id: string, quantity: number): Promise<IProduct | null> {
+        const product = await Product.findById(id);
+        if (!product) return null;
+
+        product.stockQuantity = product.stockQuantity + quantity;
+        if (product.stockQuantity > 0 && product.availability === "Out of Stock") {
+            product.availability = "In Stock";
+        }
+        await product.save();
+        return product.populate(POPULATE_FIELDS);
     }
 
     async existsBySku(sku: string): Promise<boolean> {
