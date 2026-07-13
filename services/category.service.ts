@@ -32,6 +32,10 @@ export class CategoryService {
         return await categoryRepository.getAll(search);
     }
 
+    async getPublishedCategories(search: string): Promise<ICategory[]> {
+        return await categoryRepository.getPublished(search);
+    }
+
     async getCategoryById(id: string): Promise<ICategory> {
         const category = await categoryRepository.getById(id);
         if (!category) {

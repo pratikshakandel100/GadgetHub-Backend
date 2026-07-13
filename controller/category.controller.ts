@@ -6,10 +6,19 @@ import { CreateCategoryDTO, UpdateCategoryDTO, UpdateCategoryAttributesDTO } fro
 
 const categoryService = new CategoryService();
 
+const mergeUploadedImage = (req: Request) => {
+    const body = { ...req.body };
+    if (req.file) {
+        body.image = "/uploads/" + req.file.filename;
+    }
+    return body;
+};
+
 export class CategoryController {
     async createCategory(req: Request, res: Response) {
         try {
-            const categoryData = CreateCategoryDTO.safeParse(req.body);
+            const body = mergeUploadedImage(req);
+            const categoryData = CreateCategoryDTO.safeParse(body);
             if (!categoryData.success) {
                 return ApiResponseHelper.error(res, z.prettifyError(categoryData.error), 400);
             }
@@ -38,6 +47,20 @@ export class CategoryController {
         }
     }
 
+    async getPublishedCategories(req: Request, res: Response) {
+        try {
+            const search = (req.query.search as string) || "";
+            const categories = await categoryService.getPublishedCategories(search);
+            return ApiResponseHelper.success(res, categories, "Categories fetched successfully");
+        } catch (error: Error | any | unknown) {
+            return ApiResponseHelper.error(
+                res,
+                error.message || "Internal Server Error",
+                error.status || 500
+            );
+        }
+    }
+
     async getCategoryById(req: Request<{ id: string }>, res: Response) {
         try {
             const category = await categoryService.getCategoryById(req.params.id);
@@ -53,7 +76,8 @@ export class CategoryController {
 
     async updateCategory(req: Request<{ id: string }>, res: Response) {
         try {
-            const categoryData = UpdateCategoryDTO.safeParse(req.body);
+            const body = mergeUploadedImage(req);
+            const categoryData = UpdateCategoryDTO.safeParse(body);
             if (!categoryData.success) {
                 return ApiResponseHelper.error(res, z.prettifyError(categoryData.error), 400);
             }

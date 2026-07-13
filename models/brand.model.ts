@@ -4,6 +4,7 @@ export interface IBrand extends Document {
     _id: mongoose.Types.ObjectId;
     name: string;
     slug: string;
+    image?: string;
     status: "Active" | "Inactive";
     createdAt: Date;
     updatedAt: Date;
@@ -13,6 +14,7 @@ const BrandMongoSchema: Schema = new Schema<IBrand>(
     {
         name: { type: String, required: true, unique: true },
         slug: { type: String, required: true, unique: true },
+        image: { type: String, required: false },
         status: {
             type: String,
             enum: ["Active", "Inactive"],

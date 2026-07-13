@@ -6,10 +6,19 @@ import { CreateBrandDTO, UpdateBrandDTO } from "../dtos/brand.dto";
 
 const brandService = new BrandService();
 
+const mergeUploadedImage = (req: Request) => {
+    const body = { ...req.body };
+    if (req.file) {
+        body.image = "/uploads/" + req.file.filename;
+    }
+    return body;
+};
+
 export class BrandController {
     async createBrand(req: Request, res: Response) {
         try {
-            const brandData = CreateBrandDTO.safeParse(req.body);
+            const body = mergeUploadedImage(req);
+            const brandData = CreateBrandDTO.safeParse(body);
             if (!brandData.success) {
                 return ApiResponseHelper.error(res, z.prettifyError(brandData.error), 400);
             }
@@ -53,7 +62,8 @@ export class BrandController {
 
     async updateBrand(req: Request<{ id: string }>, res: Response) {
         try {
-            const brandData = UpdateBrandDTO.safeParse(req.body);
+            const body = mergeUploadedImage(req);
+            const brandData = UpdateBrandDTO.safeParse(body);
             if (!brandData.success) {
                 return ApiResponseHelper.error(res, z.prettifyError(brandData.error), 400);
             }

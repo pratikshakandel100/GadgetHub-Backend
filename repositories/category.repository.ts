@@ -10,6 +10,7 @@ export interface ICategoryWithCount extends Omit<ICategory, keyof import("mongoo
 export interface ICategoryRepository {
     create(category: CreateCategoryDTO & { slug: string }): Promise<ICategory>;
     getAll(search: string): Promise<ICategoryWithCount[]>;
+    getPublished(search: string): Promise<ICategory[]>;
     getById(id: string): Promise<ICategory | null>;
     findByName(name: string): Promise<ICategory | null>;
     findBySlug(slug: string): Promise<ICategory | null>;
@@ -42,6 +43,14 @@ export class CategoryMongoRepository implements ICategoryRepository {
         );
 
         return categoriesWithCount;
+    }
+
+    async getPublished(search: string): Promise<ICategory[]> {
+        const filter: any = { status: "Active" };
+        if (search) {
+            filter.name = { $regex: search, $options: "i" };
+        }
+        return await Category.find(filter).sort({ name: 1 });
     }
 
     async getById(id: string): Promise<ICategory | null> {
