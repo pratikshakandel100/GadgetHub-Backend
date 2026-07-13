@@ -9,6 +9,7 @@ export const CategorySchema = z.object({
     name: z.string().min(1, "Category name is required"),
     slug: optionalString,
     description: optionalString,
+    image: optionalString,
     status: z.enum(["Active", "Inactive"]).default("Active")
 });
 

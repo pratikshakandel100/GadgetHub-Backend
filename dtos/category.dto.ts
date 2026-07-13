@@ -4,6 +4,7 @@ import { CategorySchema, UpdateCategoryAttributeSchemaPayload } from "../types/c
 export const CreateCategoryDTO = CategorySchema.pick({
     name: true,
     description: true,
+    image: true,
     status: true
 });
 
@@ -12,6 +13,7 @@ export type CreateCategoryDTO = z.infer<typeof CreateCategoryDTO>;
 export const UpdateCategoryDTO = CategorySchema.pick({
     name: true,
     description: true,
+    image: true,
     status: true
 }).partial();
 

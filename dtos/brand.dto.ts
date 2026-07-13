@@ -3,6 +3,7 @@ import { BrandSchema } from "../types/brand.type";
 
 export const CreateBrandDTO = BrandSchema.pick({
     name: true,
+    image: true,
     status: true
 });
 
@@ -10,6 +11,7 @@ export type CreateBrandDTO = z.infer<typeof CreateBrandDTO>;
 
 export const UpdateBrandDTO = BrandSchema.pick({
     name: true,
+    image: true,
     status: true
 }).partial();
 
