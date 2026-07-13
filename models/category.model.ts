@@ -16,6 +16,7 @@ export interface ICategory extends Document {
     name: string;
     slug: string;
     description?: string;
+    image?: string;
     status: "Active" | "Inactive";
     attributeSchema: ICategoryAttribute[];
     createdAt: Date;
@@ -27,6 +28,7 @@ const CategoryMongoSchema: Schema = new Schema<ICategory>(
         name: { type: String, required: true, unique: true },
         slug: { type: String, required: true, unique: true },
         description: { type: String, required: false },
+        image: { type: String, required: false },
         status: {
             type: String,
             enum: ["Active", "Inactive"],
