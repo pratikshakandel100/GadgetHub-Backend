@@ -2,6 +2,7 @@ import { Router } from "express";
 import { BrandController } from "../controller/brand.controller";
 import { authorizedMiddleware } from "../middlewares/authorized.middleware";
 import { adminMiddleware } from "../middlewares/admin.middleware";
+import { uploads } from "../middlewares/upload.middleware";
 
 const brandRouter = Router();
 const brandController = new BrandController();
@@ -10,6 +11,7 @@ brandRouter.post(
     "/",
     authorizedMiddleware,
     adminMiddleware,
+    uploads.single("image"),
     brandController.createBrand
 );
 
@@ -31,6 +33,7 @@ brandRouter.put(
     "/:id",
     authorizedMiddleware,
     adminMiddleware,
+    uploads.single("image"),
     brandController.updateBrand
 );
 
