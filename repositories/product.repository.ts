@@ -35,10 +35,9 @@ export interface IProductRepository {
     update(id: string, product: Record<string, any>): Promise<IProduct | null>;
     updateStatus(id: string, status: "Draft" | "Published"): Promise<IProduct | null>;
     incrementStock(id: string, quantity: number): Promise<IProduct | null>;
+    decrementStock(id: string, quantity: number): Promise<IProduct | null>;
     delete(id: string): Promise<boolean>;
     existsBySku(sku: string): Promise<boolean>;
-    decrementStock(id: string, quantity: number): Promise<IProduct | null>;
-    incrementStock(id: string, quantity: number): Promise<IProduct | null>;
 }
 
 const POPULATE_FIELDS = [
@@ -180,18 +179,6 @@ export class ProductMongoRepository implements IProductRepository {
             product.availability = "Out of Stock";
         }
         await product.save();
-        return product;
-    }
-
-    async incrementStock(id: string, quantity: number): Promise<IProduct | null> {
-        const product = await Product.findById(id);
-        if (!product) return null;
-
-        product.stockQuantity = product.stockQuantity + quantity;
-        if (product.stockQuantity > 0 && product.availability === "Out of Stock") {
-            product.availability = "In Stock";
-        }
-        await product.save();
-        return product;
+        return product.populate(POPULATE_FIELDS);
     }
 }
