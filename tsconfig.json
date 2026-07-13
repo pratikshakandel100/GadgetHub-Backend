@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "module": "nodenext",
+    "target": "esnext",
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "strict": false,
+    "skipLibCheck": true
+  }
+}
