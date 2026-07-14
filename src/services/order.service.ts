@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { OrderMongoRepository, IOrderListResult } from "../repositories/order.repository";
 import { CartMongoRepository } from "../repositories/cart.repository";
 import { ProductMongoRepository } from "../repositories/product.repository";
+import { NotificationService } from "./notification.service";
 import { CreateOrderDTO } from "../dtos/order.dto";
 import { IOrder, OrderStatus } from "../models/order.model";
 import { HttpException } from "../exceptions/http-exception";
@@ -10,6 +11,7 @@ import { HttpException } from "../exceptions/http-exception";
 const orderRepository = new OrderMongoRepository();
 const cartRepository = new CartMongoRepository();
 const productRepository = new ProductMongoRepository();
+const notificationService = new NotificationService();
 
 const TERMINAL_STATUSES: OrderStatus[] = ["Delivered", "Cancelled"];
 const SHIPPING_FREE_THRESHOLD = 500;
@@ -96,6 +98,8 @@ export class OrderService {
 
         await cartRepository.clear(userId);
 
+        await notificationService.notifyAdminsOrderPlaced(order);
+
         return order;
     }
 
@@ -138,6 +142,10 @@ export class OrderService {
         if (!updated) {
             throw new HttpException(500, "Failed to update order status");
         }
+
+        const recipientId = (updated.user as unknown as { _id: mongoose.Types.ObjectId })._id.toString();
+        await notificationService.notifyUserOrderStatusChanged(updated, recipientId);
+
         return updated;
     }
 }

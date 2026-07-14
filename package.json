@@ -8,7 +8,7 @@
     "start": "npx tsx index.ts",
     "start-day2": "node day2.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "admin": "npx tsx scripts/CreateAdmin.ts"
+    "admin": "npx tsx src/scripts/CreateAdmin.ts"
   },
   "keywords": [],
   "author": "",
