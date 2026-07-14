@@ -29,18 +29,22 @@ const storage = multer.diskStorage(
     }
 );
 
+const ALLOWED_IMAGE_MIMETYPES = [
+    "image/jpeg", // .jpg / .jpeg
+    "image/png",  // .png
+    "image/webp", // .webp
+    "image/gif"   // .gif
+];
+
 const fileFilter = (
-    req: Request, 
-    file: Express.Multer.File, 
+    req: Request,
+    file: Express.Multer.File,
     cb: multer.FileFilterCallback
 ) => {
-    if (
-        file.mimetype === "image/jpeg" || 
-        file.mimetype === "image/png"
-    ) {
+    if (ALLOWED_IMAGE_MIMETYPES.includes(file.mimetype)) {
         cb(null, true); // accept file
     } else {
-        cb(new HttpException(400, "Only JPEG and PNG files are allowed")); // reject file
+        cb(new HttpException(400, "Only JPEG, PNG, WEBP, and GIF image files are allowed")); // reject file
     }
 }
 const upload = multer(
