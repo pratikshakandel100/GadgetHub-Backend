@@ -34,20 +34,16 @@ export const authorizedMiddleware =
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const token = getTokenFromRequest(req);
-            console.log('Auth middleware - Token found:', !!token);
             if (!token) throw new HttpException(401, 'Please login to continue');
             const decodedToken = jwt.verify(token, SECRET_KEY) as Record<string, any>;
-            console.log('Auth middleware - Decoded token:', decodedToken);
             if (!decodedToken || !decodedToken.id) {
                 throw new HttpException(401, 'Invalid or expired login session');
             } // make function async
             const user = await userRepository.findById(decodedToken.id);
-            console.log('Auth middleware - User found:', !!user, 'User role:', user?.role);
             if (!user) throw new HttpException(401, 'Login session user not found');
             req.user = user; // attach user to request (like tag)
             return next();
         } catch (err: Error | any) {
-            console.log('Auth middleware - Error:', err.name, err.message);
             const status = err.name === "JsonWebTokenError" || err.name === "TokenExpiredError"
                 ? 401
                 : err.status || 500;
