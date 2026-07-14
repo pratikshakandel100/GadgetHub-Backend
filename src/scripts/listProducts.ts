@@ -1,5 +1,5 @@
-import { connectToMongoDB } from "../src/database/mongodb";
-import Product from "../src/models/product.model";
+import { connectToMongoDB } from "../database/mongodb";
+import Product from "../models/product.model";
 
 async function list() {
   await connectToMongoDB();

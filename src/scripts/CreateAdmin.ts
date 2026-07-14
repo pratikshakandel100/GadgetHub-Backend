@@ -1,6 +1,6 @@
-import { connectToMongoDB } from "../src/database/mongodb";
+import { connectToMongoDB } from "../database/mongodb";
 import bcrypt from "bcryptjs";
-import User from "../src/models/user.model";
+import User from "../models/user.model";
 
 connectToMongoDB();
 
