@@ -126,10 +126,7 @@ const ProductMongoSchema: Schema = new Schema<IProduct>(
   }
 );
 
-// Sparse so legacy documents without a variantKey don't collide on `null`,
-// while enforcing at the database level that no two documents can share the
-// same seller+name+brand+category+attributes identity (prevents duplicate
-// variants even under concurrent create requests).
+
 ProductMongoSchema.index({ variantKey: 1 }, { unique: true, sparse: true });
 
 export default mongoose.model<IProduct>(
