@@ -1,5 +1,7 @@
 import { CreateProductDTO } from "../dtos/product.dto";
 import Product, { IProduct } from "../models/product.model";
+import { buildPaginationMeta, SortOrder } from "../utils/query.util";
+import { stripUndefined } from "../utils/object.util";
 
 export interface IProductListResult {
     products: IProduct[];
@@ -22,13 +24,19 @@ export interface IProductRepository {
         limit: number,
         search: string,
         category: string,
-        status: string
+        status: string,
+        sort: Record<string, SortOrder>,
+        minPrice?: number,
+        maxPrice?: number
     ): Promise<IProductListResult>;
     getPublished(
         page: number,
         limit: number,
         search: string,
-        category: string
+        category: string,
+        sort: Record<string, SortOrder>,
+        minPrice?: number,
+        maxPrice?: number
     ): Promise<IProductListResult>;
     getById(id: string): Promise<IProduct | null>;
     getByVariantKey(variantKey: string): Promise<IProduct | null>;
@@ -56,7 +64,10 @@ export class ProductMongoRepository implements IProductRepository {
         limit: number,
         search: string,
         category: string,
-        status: string
+        status: string,
+        sort: Record<string, SortOrder>,
+        minPrice?: number,
+        maxPrice?: number
     ): Promise<IProductListResult> {
         const query: any = {};
 
@@ -68,30 +79,30 @@ export class ProductMongoRepository implements IProductRepository {
         }
         if (category) query.category = category;
         if (status) query.status = status;
+        if (minPrice !== undefined || maxPrice !== undefined) {
+            query.sellingPrice = stripUndefined({ $gte: minPrice, $lte: maxPrice });
+        }
 
         const skip = (page - 1) * limit;
         const products = await Product.find(query)
             .populate(POPULATE_FIELDS)
-            .sort({ createdAt: -1 })
+            .sort(sort)
             .skip(skip)
             .limit(limit);
 
         const total = await Product.countDocuments(query);
 
-        return {
-            products,
-            total,
-            page,
-            limit,
-            totalPages: Math.ceil(total / limit)
-        };
+        return { products, ...buildPaginationMeta(total, page, limit) };
     }
 
     async getPublished(
         page: number,
         limit: number,
         search: string,
-        category: string
+        category: string,
+        sort: Record<string, SortOrder>,
+        minPrice?: number,
+        maxPrice?: number
     ): Promise<IProductListResult> {
         const query: any = { status: "Published" };
 
@@ -102,23 +113,20 @@ export class ProductMongoRepository implements IProductRepository {
             ];
         }
         if (category) query.category = category;
+        if (minPrice !== undefined || maxPrice !== undefined) {
+            query.sellingPrice = stripUndefined({ $gte: minPrice, $lte: maxPrice });
+        }
 
         const skip = (page - 1) * limit;
         const products = await Product.find(query)
             .populate(POPULATE_FIELDS)
-            .sort({ createdAt: -1 })
+            .sort(sort)
             .skip(skip)
             .limit(limit);
 
         const total = await Product.countDocuments(query);
 
-        return {
-            products,
-            total,
-            page,
-            limit,
-            totalPages: Math.ceil(total / limit)
-        };
+        return { products, ...buildPaginationMeta(total, page, limit) };
     }
 
     async getById(id: string): Promise<IProduct | null> {
@@ -130,12 +138,9 @@ export class ProductMongoRepository implements IProductRepository {
     }
 
     async update(id: string, product: Record<string, any>): Promise<IProduct | null> {
-        const filteredProduct = Object.fromEntries(
-            Object.entries(product).filter(([_, value]) => value !== undefined)
-        );
         return await Product.findByIdAndUpdate(
             id,
-            { $set: filteredProduct },
+            { $set: stripUndefined(product) },
             { new: true, runValidators: true }
         ).populate(POPULATE_FIELDS);
     }
