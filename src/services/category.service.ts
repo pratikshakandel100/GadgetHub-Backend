@@ -28,8 +28,13 @@ export class CategoryService {
         return await categoryRepository.create({ ...categoryData, slug });
     }
 
-    async getAllCategories(search: string): Promise<ICategoryWithCount[]> {
-        return await categoryRepository.getAll(search);
+    async getAllCategories(
+        search: string,
+        sort: Record<string, 1 | -1>,
+        page?: number,
+        limit?: number
+    ): Promise<{ categories: ICategoryWithCount[]; total: number }> {
+        return await categoryRepository.getAll(search, sort, page, limit);
     }
 
     async getPublishedCategories(search: string): Promise<ICategory[]> {
