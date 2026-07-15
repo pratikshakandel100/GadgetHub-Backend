@@ -3,180 +3,151 @@ import { z } from "zod";
 import { Request, Response } from "express";
 import { ProductService } from "../services/product.service";
 import { CreateProductDTO, UpdateProductDTO, UpdateProductStatusDTO } from "../dtos/product.dto";
+import { mergeUploadedImages } from "../utils/upload.util";
+import { parsePagination, parseSort } from "../utils/query.util";
+import { buildEntityLinks, buildCollectionLinks, buildResourceUrl, HateoasLinks } from "../utils/hateoas.util";
+import { assertNotStale } from "../utils/precondition.util";
 
 const productService = new ProductService();
 
-const mergeUploadedImages = (req: Request) => {
-    const body = { ...req.body };
-    if (req.files) {
-        const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+const IMAGE_FIELDS = [
+    { field: "mainImage" },
+    { field: "galleryImages", multiple: true },
+    { field: "thumbnailImage" }
+];
 
-        if (files.mainImage && files.mainImage[0]) {
-            body.mainImage = "/uploads/" + files.mainImage[0].filename;
-        }
-        if (files.galleryImages) {
-            body.galleryImages = files.galleryImages.map((file) => "/uploads/" + file.filename);
-        }
-        if (files.thumbnailImage && files.thumbnailImage[0]) {
-            body.thumbnailImage = "/uploads/" + files.thumbnailImage[0].filename;
-        }
+const PRODUCT_SORT_FIELDS = ["sellingPrice", "originalPrice", "name", "createdAt"];
+
+const productLinks = (req: Request, product: any): HateoasLinks => {
+    const origin = `${req.protocol}://${req.get("host")}`;
+    const extra: HateoasLinks = {};
+    if (product.category?._id) {
+        extra.category = { href: `${origin}/api/v1/categories/${product.category._id}`, method: "GET" };
     }
-    return body;
+    if (product.brand?._id) {
+        extra.brand = { href: `${origin}/api/v1/brands/${product.brand._id}`, method: "GET" };
+    }
+    return buildEntityLinks(req, product._id.toString(), extra);
 };
 
 export class ProductController {
     async createProduct(req: Request, res: Response) {
-        try {
-            const sellerId = req.user?._id?.toString();
-            if (!sellerId) {
-                return ApiResponseHelper.error(res, "Unauthorized user not found", 401);
-            }
+        const sellerId = req.user!._id.toString();
 
-            const body = mergeUploadedImages(req);
-            const productData = CreateProductDTO.safeParse(body);
-            if (!productData.success) {
-                return ApiResponseHelper.error(res, z.prettifyError(productData.error), 400);
-            }
-
-            const { product, created } = await productService.createProduct(productData.data, sellerId);
-            return ApiResponseHelper.success(
-                res,
-                product,
-                created
-                    ? "Product created successfully"
-                    : "A matching variant already exists — stock quantity was updated instead of creating a duplicate"
-            );
-        } catch (error: Error | any | unknown) {
-            return ApiResponseHelper.error(
-                res,
-                error.message || "Internal Server Error",
-                error.status || 500
-            );
+        const body = mergeUploadedImages(req, IMAGE_FIELDS);
+        const productData = CreateProductDTO.safeParse(body);
+        if (!productData.success) {
+            return ApiResponseHelper.error(res, z.prettifyError(productData.error), 400);
         }
+
+        const { product, created } = await productService.createProduct(productData.data, sellerId);
+        return ApiResponseHelper.success(
+            res,
+            product,
+            created
+                ? "Product created successfully"
+                : "A matching variant already exists — stock quantity was updated instead of creating a duplicate",
+            created ? 201 : 200,
+            undefined,
+            {
+                location: created ? buildResourceUrl(req, product._id.toString()) : undefined,
+                links: productLinks(req, product)
+            }
+        );
     }
 
     async getAllProducts(req: Request, res: Response) {
-        try {
-            const page = Number(req.query.page) || 1;
-            const limit = Number(req.query.limit) || 10;
-            const search = (req.query.search as string) || "";
-            const category = (req.query.category as string) || "";
-            const status = (req.query.status as string) || "";
+        const { page, limit } = parsePagination(req.query);
+        const search = (req.query.search as string) || "";
+        const category = (req.query.category as string) || "";
+        const status = (req.query.status as string) || "";
+        const minPrice = req.query.minPrice ? Number(req.query.minPrice) : undefined;
+        const maxPrice = req.query.maxPrice ? Number(req.query.maxPrice) : undefined;
+        const sort = parseSort(req.query, PRODUCT_SORT_FIELDS, "createdAt", -1);
 
-            const result = await productService.getAllProducts(page, limit, search, category, status);
+        const result = await productService.getAllProducts(page, limit, search, category, status, sort, minPrice, maxPrice);
 
-            return ApiResponseHelper.success(res, result.products, "Products fetched successfully", 200, {
-                page: result.page,
-                limit: result.limit,
-                total: result.total,
-                totalPages: result.totalPages
-            });
-        } catch (error: Error | any | unknown) {
-            return ApiResponseHelper.error(
-                res,
-                error.message || "Internal Server Error",
-                error.status || 500
-            );
-        }
+        return ApiResponseHelper.success(res, result.products, "Products fetched successfully", 200, {
+            page: result.page,
+            limit: result.limit,
+            total: result.total,
+            totalPages: result.totalPages
+        }, {
+            cacheControl: "private, no-store",
+            links: buildCollectionLinks(req, result.page, result.limit, result.total)
+        });
     }
 
     async getPublishedProducts(req: Request, res: Response) {
-        try {
-            const page = Number(req.query.page) || 1;
-            const limit = Number(req.query.limit) || 10;
-            const search = (req.query.search as string) || "";
-            const category = (req.query.category as string) || "";
+        const { page, limit } = parsePagination(req.query);
+        const search = (req.query.search as string) || "";
+        const category = (req.query.category as string) || "";
+        const minPrice = req.query.minPrice ? Number(req.query.minPrice) : undefined;
+        const maxPrice = req.query.maxPrice ? Number(req.query.maxPrice) : undefined;
+        const sort = parseSort(req.query, PRODUCT_SORT_FIELDS, "createdAt", -1);
 
-            const result = await productService.getPublishedProducts(page, limit, search, category);
+        const result = await productService.getPublishedProducts(page, limit, search, category, sort, minPrice, maxPrice);
 
-            return ApiResponseHelper.success(res, result.products, "Published products fetched successfully", 200, {
-                page: result.page,
-                limit: result.limit,
-                total: result.total,
-                totalPages: result.totalPages
-            });
-        } catch (error: Error | any | unknown) {
-            return ApiResponseHelper.error(
-                res,
-                error.message || "Internal Server Error",
-                error.status || 500
-            );
-        }
+        return ApiResponseHelper.success(res, result.products, "Published products fetched successfully", 200, {
+            page: result.page,
+            limit: result.limit,
+            total: result.total,
+            totalPages: result.totalPages
+        }, {
+            cacheControl: "public, max-age=30",
+            links: buildCollectionLinks(req, result.page, result.limit, result.total)
+        });
     }
 
     async getProductById(req: Request<{ id: string }>, res: Response) {
-        try {
-            const product = await productService.getProductById(req.params.id);
-            return ApiResponseHelper.success(res, product, "Product fetched successfully");
-        } catch (error: Error | any | unknown) {
-            return ApiResponseHelper.error(
-                res,
-                error.message || "Internal Server Error",
-                error.status || 500
-            );
-        }
+        const product = await productService.getProductById(req.params.id);
+        return ApiResponseHelper.success(res, product, "Product fetched successfully", 200, undefined, {
+            cacheControl: "private, no-store",
+            links: productLinks(req, product)
+        });
     }
 
     async getPublishedProductById(req: Request<{ id: string }>, res: Response) {
-        try {
-            const product = await productService.getPublishedProductById(req.params.id);
-            return ApiResponseHelper.success(res, product, "Product fetched successfully");
-        } catch (error: Error | any | unknown) {
-            return ApiResponseHelper.error(
-                res,
-                error.message || "Internal Server Error",
-                error.status || 500
-            );
-        }
+        const product = await productService.getPublishedProductById(req.params.id);
+        return ApiResponseHelper.success(res, product, "Product fetched successfully", 200, undefined, {
+            cacheControl: "public, max-age=30",
+            links: productLinks(req, product)
+        });
     }
 
     async updateProduct(req: Request<{ id: string }>, res: Response) {
-        try {
-            const body = mergeUploadedImages(req);
-            const productData = UpdateProductDTO.safeParse(body);
-            if (!productData.success) {
-                return ApiResponseHelper.error(res, z.prettifyError(productData.error), 400);
-            }
+        const existing = await productService.getProductById(req.params.id);
+        assertNotStale(req, existing);
 
-            const product = await productService.updateProduct(req.params.id, productData.data);
-            return ApiResponseHelper.success(res, product, "Product updated successfully");
-        } catch (error: Error | any | unknown) {
-            return ApiResponseHelper.error(
-                res,
-                error.message || "Internal Server Error",
-                error.status || 500
-            );
+        const body = mergeUploadedImages(req, IMAGE_FIELDS);
+        const productData = UpdateProductDTO.safeParse(body);
+        if (!productData.success) {
+            return ApiResponseHelper.error(res, z.prettifyError(productData.error), 400);
         }
+
+        const product = await productService.updateProduct(req.params.id, productData.data);
+        return ApiResponseHelper.success(res, product, "Product updated successfully", 200, undefined, {
+            links: productLinks(req, product)
+        });
     }
 
     async updateStatus(req: Request<{ id: string }>, res: Response) {
-        try {
-            const statusData = UpdateProductStatusDTO.safeParse(req.body);
-            if (!statusData.success) {
-                return ApiResponseHelper.error(res, z.prettifyError(statusData.error), 400);
-            }
-
-            const product = await productService.updateProductStatus(req.params.id, statusData.data.status);
-            return ApiResponseHelper.success(res, product, "Product status updated successfully");
-        } catch (error: Error | any | unknown) {
-            return ApiResponseHelper.error(
-                res,
-                error.message || "Internal Server Error",
-                error.status || 500
-            );
+        const statusData = UpdateProductStatusDTO.safeParse(req.body);
+        if (!statusData.success) {
+            return ApiResponseHelper.error(res, z.prettifyError(statusData.error), 400);
         }
+
+        const product = await productService.updateProductStatus(req.params.id, statusData.data.status);
+        return ApiResponseHelper.success(res, product, "Product status updated successfully", 200, undefined, {
+            links: productLinks(req, product)
+        });
     }
 
     async deleteProduct(req: Request<{ id: string }>, res: Response) {
-        try {
-            await productService.deleteProduct(req.params.id);
-            return ApiResponseHelper.success(res, {}, "Product deleted successfully");
-        } catch (error: Error | any | unknown) {
-            return ApiResponseHelper.error(
-                res,
-                error.message || "Internal Server Error",
-                error.status || 500
-            );
-        }
+        const existing = await productService.getProductById(req.params.id);
+        assertNotStale(req, existing);
+
+        await productService.deleteProduct(req.params.id);
+        return ApiResponseHelper.success(res, {}, "Product deleted successfully");
     }
 }
