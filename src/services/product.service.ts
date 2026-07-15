@@ -108,18 +108,24 @@ export class ProductService {
         limit: number,
         search: string,
         category: string,
-        status: string
+        status: string,
+        sort: Record<string, 1 | -1>,
+        minPrice?: number,
+        maxPrice?: number
     ): Promise<IProductListResult> {
-        return await productRepository.getAll(page, limit, search, category, status);
+        return await productRepository.getAll(page, limit, search, category, status, sort, minPrice, maxPrice);
     }
 
     async getPublishedProducts(
         page: number,
         limit: number,
         search: string,
-        category: string
+        category: string,
+        sort: Record<string, 1 | -1>,
+        minPrice?: number,
+        maxPrice?: number
     ): Promise<IProductListResult> {
-        return await productRepository.getPublished(page, limit, search, category);
+        return await productRepository.getPublished(page, limit, search, category, sort, minPrice, maxPrice);
     }
 
     async getProductById(id: string): Promise<IProduct> {
