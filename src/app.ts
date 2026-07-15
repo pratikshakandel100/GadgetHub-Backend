@@ -1,6 +1,8 @@
 import express, { Application, NextFunction, Request, Response } from "express";
+import rateLimit from "express-rate-limit";
 import { HttpException } from "./exceptions/http-exception";
 import { ApiResponseHelper } from "./utils/apihelper.util";
+import { conditionalGetMiddleware } from "./middlewares/conditionalGet.middleware";
 import userRouter from "./routes/user.routes";
 import adminUserRouter from "./routes/admin.routes";
 import productRouter from "./routes/product.routes";
@@ -19,13 +21,52 @@ const app: Application = express();
 // 1. Fixed the optionsSuccessStatus typo
 const corsOptions = {
     origin: "*", // Use string "*" instead of an array containing "*" for general wildcard matches
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "If-None-Match",
+        "If-Match",
+        "If-Modified-Since",
+        "If-Unmodified-Since"
+    ],
+    exposedHeaders: [
+        "ETag",
+        "Location",
+        "Last-Modified",
+        "Link",
+        "RateLimit-Limit",
+        "RateLimit-Remaining",
+        "RateLimit-Reset"
+    ],
     optionsSuccessStatus: 200 // Fixed typo here
 };
-app.use(cors(corsOptions)); 
+app.use(cors(corsOptions));
 
-app.use(express.json()); 
-app.use(express.urlencoded({ extended: true, limit: "50mb" })); 
-app.use(morgan("combined")); 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+app.use(morgan("combined"));
+app.use(conditionalGetMiddleware);
+
+// Generous general rate limit — shouldn't interfere with normal dev/testing traffic.
+const generalLimiter = rateLimit({
+    windowMs: 5 * 60 * 1000,
+    limit: 300,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { status: 429, success: false, message: "Too many requests, please try again later.", data: null }
+});
+// Stricter limit on login/register specifically, to blunt brute-force attempts.
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { status: 429, success: false, message: "Too many attempts, please try again later.", data: null }
+});
+app.use(generalLimiter);
+app.use("/api/v1/auth/login", authLimiter);
+app.use("/api/v1/auth/register", authLimiter);
 
 // 2. Your API registration is perfectly fine
 app.use("/api/v1/auth", userRouter);
