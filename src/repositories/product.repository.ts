@@ -39,6 +39,7 @@ export interface IProductRepository {
         maxPrice?: number
     ): Promise<IProductListResult>;
     getById(id: string): Promise<IProduct | null>;
+    getPublishedByIds(ids: string[]): Promise<IProduct[]>;
     getByVariantKey(variantKey: string): Promise<IProduct | null>;
     update(id: string, product: Record<string, any>): Promise<IProduct | null>;
     updateStatus(id: string, status: "Draft" | "Published"): Promise<IProduct | null>;
@@ -131,6 +132,10 @@ export class ProductMongoRepository implements IProductRepository {
 
     async getById(id: string): Promise<IProduct | null> {
         return await Product.findById(id).populate(POPULATE_FIELDS);
+    }
+
+    async getPublishedByIds(ids: string[]): Promise<IProduct[]> {
+        return await Product.find({ _id: { $in: ids }, status: "Published" }).populate(POPULATE_FIELDS);
     }
 
     async getByVariantKey(variantKey: string): Promise<IProduct | null> {

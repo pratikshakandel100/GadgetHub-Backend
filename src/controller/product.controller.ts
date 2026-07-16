@@ -115,6 +115,16 @@ export class ProductController {
         });
     }
 
+    async getPublishedProductsByIds(req: Request, res: Response) {
+        const idsParam = (req.query.ids as string) || "";
+        const ids = idsParam.split(",").map((id) => id.trim()).filter(Boolean);
+
+        const products = await productService.getPublishedProductsByIds(ids);
+        return ApiResponseHelper.success(res, products, "Products fetched successfully", 200, undefined, {
+            cacheControl: "public, max-age=30"
+        });
+    }
+
     async updateProduct(req: Request<{ id: string }>, res: Response) {
         const existing = await productService.getProductById(req.params.id);
         assertNotStale(req, existing);

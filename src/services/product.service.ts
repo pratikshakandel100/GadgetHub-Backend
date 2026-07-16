@@ -2,6 +2,7 @@ import { ProductMongoRepository, IProductListResult } from "../repositories/prod
 import { CategoryMongoRepository } from "../repositories/category.repository";
 import { BrandMongoRepository } from "../repositories/brand.repository";
 import { CounterMongoRepository } from "../repositories/counter.repository";
+import { ReviewMongoRepository } from "../repositories/review.repository";
 import { CreateProductDTO, UpdateProductDTO } from "../dtos/product.dto";
 import { IProduct } from "../models/product.model";
 import { HttpException } from "../exceptions/http-exception";
@@ -12,8 +13,10 @@ const productRepository = new ProductMongoRepository();
 const categoryRepository = new CategoryMongoRepository();
 const brandRepository = new BrandMongoRepository();
 const counterRepository = new CounterMongoRepository();
+const reviewRepository = new ReviewMongoRepository();
 
 const MONGO_DUPLICATE_KEY_ERROR_CODE = 11000;
+const MAX_COMPARE_PRODUCTS = 4;
 
 export interface ICreateProductResult {
     product: IProduct;
@@ -142,6 +145,25 @@ export class ProductService {
             throw new HttpException(404, "Product not found");
         }
         return product;
+    }
+
+    async getPublishedProductsByIds(ids: string[]): Promise<Record<string, unknown>[]> {
+        const uniqueIds = Array.from(new Set(ids)).slice(0, MAX_COMPARE_PRODUCTS);
+        if (uniqueIds.length === 0) {
+            return [];
+        }
+
+        const products = await productRepository.getPublishedByIds(uniqueIds);
+        const ratingSummary = await reviewRepository.getRatingSummaryByProductIds(uniqueIds);
+
+        return products.map((product) => {
+            const rating = ratingSummary[product._id.toString()];
+            return {
+                ...product.toObject(),
+                averageRating: rating ? Math.round(rating.averageRating * 10) / 10 : 0,
+                totalReviews: rating?.totalReviews ?? 0
+            };
+        });
     }
 
     async updateProduct(id: string, productData: UpdateProductDTO): Promise<IProduct> {
