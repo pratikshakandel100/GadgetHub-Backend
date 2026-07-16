@@ -10,6 +10,7 @@ export interface IReview extends Document {
     order: mongoose.Types.ObjectId;
     rating: number;
     comment: string;
+    images: string[];
     status: ReviewStatus;
     createdAt: Date;
     updatedAt: Date;
@@ -22,6 +23,7 @@ const ReviewMongoSchema: Schema = new Schema<IReview>(
         order: { type: Schema.Types.ObjectId, ref: "Order", required: true },
         rating: { type: Number, required: true, min: 1, max: 5 },
         comment: { type: String, required: true, trim: true },
+        images: [{ type: String }],
         status: { type: String, enum: REVIEW_STATUSES, default: "Published" }
     },
     {
