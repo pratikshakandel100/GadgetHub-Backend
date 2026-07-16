@@ -13,6 +13,7 @@ import wishlistRouter from "./routes/wishlist.routes";
 import orderRouter from "./routes/order.routes";
 import notificationRouter from "./routes/notification.routes";
 import dashboardRouter from "./routes/dashboard.routes";
+import reviewRouter from "./routes/review.routes";
 import cors from "cors";
 import morgan from "morgan";
 import path from "path";
@@ -80,6 +81,7 @@ app.use("/api/v1/wishlist", wishlistRouter);
 app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/notifications", notificationRouter);
 app.use("/api/v1/admin/dashboard", dashboardRouter);
+app.use("/api/v1/reviews", reviewRouter);
 
 // 3. Made static path resolution bulletproof using process.cwd() (project root)
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads"))); 
