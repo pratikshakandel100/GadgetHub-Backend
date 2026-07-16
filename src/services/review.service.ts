@@ -40,7 +40,8 @@ export class ReviewService {
                 product: data.product,
                 order: data.order,
                 rating: data.rating,
-                comment: data.comment
+                comment: data.comment,
+                images: data.images
             });
         } catch (error: any) {
             if (error.code === 11000) {
@@ -52,6 +53,15 @@ export class ReviewService {
 
     async getMyReviews(userId: string): Promise<IReview[]> {
         return await reviewRepository.getByUser(userId);
+    }
+
+    async getProductReviews(productId: string): Promise<{ reviews: IReview[]; averageRating: number; totalReviews: number }> {
+        const reviews = await reviewRepository.getByProduct(productId);
+        const totalReviews = reviews.length;
+        const averageRating = totalReviews > 0
+            ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+            : 0;
+        return { reviews, averageRating, totalReviews };
     }
 
     async getAllReviews(
