@@ -38,6 +38,11 @@ productRouter.get(
 );
 
 productRouter.get(
+    "/compare",
+    productController.getPublishedProductsByIds
+);
+
+productRouter.get(
     "/:id",
     authorizedMiddleware,
     adminMiddleware,
