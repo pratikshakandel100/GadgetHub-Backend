@@ -15,11 +15,13 @@ export interface ICreateReviewData {
     order: string;
     rating: number;
     comment: string;
+    images?: string[];
 }
 
 export interface IReviewRepository {
     create(data: ICreateReviewData): Promise<IReview>;
     getByUser(userId: string): Promise<IReview[]>;
+    getByProduct(productId: string): Promise<IReview[]>;
     exists(userId: string, productId: string, orderId: string): Promise<boolean>;
     getAll(page: number, limit: number, status: string, search: string, sort: Record<string, SortOrder>): Promise<IReviewListResult>;
     updateStatus(id: string, status: ReviewStatus): Promise<IReview | null>;
@@ -37,6 +39,12 @@ export class ReviewMongoRepository implements IReviewRepository {
 
     async getByUser(userId: string): Promise<IReview[]> {
         return await Review.find({ user: userId }).populate(PRODUCT_POPULATE);
+    }
+
+    async getByProduct(productId: string): Promise<IReview[]> {
+        return await Review.find({ product: productId, status: "Published" })
+            .populate(USER_POPULATE)
+            .sort({ createdAt: -1 });
     }
 
     async exists(userId: string, productId: string, orderId: string): Promise<boolean> {
@@ -76,6 +84,7 @@ export class ReviewMongoRepository implements IReviewRepository {
                 $project: {
                     rating: 1,
                     comment: 1,
+                    images: 1,
                     status: 1,
                     createdAt: 1,
                     updatedAt: 1,
