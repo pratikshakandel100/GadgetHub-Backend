@@ -29,7 +29,8 @@ export class BrandService {
     }
 
     async getAllBrands(search: string): Promise<IBrandWithCount[]> {
-        return await brandRepository.getAll(search);
+        const { brands } = await brandRepository.getAll(search, { name: 1 });
+        return brands;
     }
 
     async getBrandById(id: string): Promise<IBrand> {
