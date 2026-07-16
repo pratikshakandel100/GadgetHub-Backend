@@ -1,5 +1,11 @@
+import mongoose from "mongoose";
 import Review, { IReview, ReviewStatus } from "../models/review.model";
 import { buildPaginationMeta, SortOrder } from "../utils/query.util";
+
+export interface IRatingSummary {
+    averageRating: number;
+    totalReviews: number;
+}
 
 export interface IReviewListResult {
     reviews: IReview[];
@@ -22,6 +28,7 @@ export interface IReviewRepository {
     create(data: ICreateReviewData): Promise<IReview>;
     getByUser(userId: string): Promise<IReview[]>;
     getByProduct(productId: string): Promise<IReview[]>;
+    getRatingSummaryByProductIds(productIds: string[]): Promise<Record<string, IRatingSummary>>;
     exists(userId: string, productId: string, orderId: string): Promise<boolean>;
     getAll(page: number, limit: number, status: string, search: string, sort: Record<string, SortOrder>): Promise<IReviewListResult>;
     updateStatus(id: string, status: ReviewStatus): Promise<IReview | null>;
@@ -45,6 +52,33 @@ export class ReviewMongoRepository implements IReviewRepository {
         return await Review.find({ product: productId, status: "Published" })
             .populate(USER_POPULATE)
             .sort({ createdAt: -1 });
+    }
+
+    async getRatingSummaryByProductIds(productIds: string[]): Promise<Record<string, IRatingSummary>> {
+        const results = await Review.aggregate([
+            {
+                $match: {
+                    product: { $in: productIds.map((id) => new mongoose.Types.ObjectId(id)) },
+                    status: "Published"
+                }
+            },
+            {
+                $group: {
+                    _id: "$product",
+                    averageRating: { $avg: "$rating" },
+                    totalReviews: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const summary: Record<string, IRatingSummary> = {};
+        for (const row of results) {
+            summary[row._id.toString()] = {
+                averageRating: row.averageRating,
+                totalReviews: row.totalReviews
+            };
+        }
+        return summary;
     }
 
     async exists(userId: string, productId: string, orderId: string): Promise<boolean> {
