@@ -4,10 +4,12 @@ import { Request, Response } from "express";
 import { ReviewService } from "../services/review.service";
 import { CreateReviewDTO, UpdateReviewStatusDTO } from "../dtos/review.dto";
 import { parsePagination, parseSort } from "../utils/query.util";
+import { mergeUploadedImages } from "../utils/upload.util";
 
 const reviewService = new ReviewService();
 
 const REVIEW_SORT_FIELDS = ["createdAt", "rating"];
+const REVIEW_IMAGE_FIELDS = [{ field: "images", multiple: true }];
 
 export class ReviewController {
     async createReview(req: Request, res: Response) {
@@ -17,7 +19,8 @@ export class ReviewController {
                 return ApiResponseHelper.error(res, "Unauthorized user not found", 401);
             }
 
-            const reviewData = CreateReviewDTO.safeParse(req.body);
+            const body = mergeUploadedImages(req, REVIEW_IMAGE_FIELDS);
+            const reviewData = CreateReviewDTO.safeParse(body);
             if (!reviewData.success) {
                 return ApiResponseHelper.error(res, z.prettifyError(reviewData.error), 400);
             }
@@ -42,6 +45,19 @@ export class ReviewController {
 
             const reviews = await reviewService.getMyReviews(userId);
             return ApiResponseHelper.success(res, reviews, "Reviews fetched successfully");
+        } catch (error: Error | any | unknown) {
+            return ApiResponseHelper.error(
+                res,
+                error.message || "Internal Server Error",
+                error.status || 500
+            );
+        }
+    }
+
+    async getProductReviews(req: Request<{ productId: string }>, res: Response) {
+        try {
+            const summary = await reviewService.getProductReviews(req.params.productId);
+            return ApiResponseHelper.success(res, summary, "Product reviews fetched successfully");
         } catch (error: Error | any | unknown) {
             return ApiResponseHelper.error(
                 res,
