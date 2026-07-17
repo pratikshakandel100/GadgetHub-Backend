@@ -14,6 +14,7 @@ import orderRouter from "./routes/order.routes";
 import notificationRouter from "./routes/notification.routes";
 import dashboardRouter from "./routes/dashboard.routes";
 import reviewRouter from "./routes/review.routes";
+import aiRouter from "./routes/ai.routes";
 import cors from "cors";
 import morgan from "morgan";
 import path from "path";
@@ -66,9 +67,18 @@ const authLimiter = rateLimit({
     legacyHeaders: false,
     message: { status: 429, success: false, message: "Too many attempts, please try again later.", data: null }
 });
+// AI chat calls a paid LLM per request — much tighter than the general limiter.
+const aiLimiter = rateLimit({
+    windowMs: 5 * 60 * 1000,
+    limit: 20,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { status: 429, success: false, message: "Too many AI requests, please try again later.", data: null }
+});
 app.use(generalLimiter);
 app.use("/api/v1/auth/login", authLimiter);
 app.use("/api/v1/auth/register", authLimiter);
+app.use("/api/v1/ai/chat", aiLimiter);
 
 // 2. Your API registration is perfectly fine
 app.use("/api/v1/auth", userRouter);
@@ -82,6 +92,7 @@ app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/notifications", notificationRouter);
 app.use("/api/v1/admin/dashboard", dashboardRouter);
 app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/ai", aiRouter);
 
 // 3. Made static path resolution bulletproof using process.cwd() (project root)
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads"))); 
