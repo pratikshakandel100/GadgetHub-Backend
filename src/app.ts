@@ -78,7 +78,7 @@ const aiLimiter = rateLimit({
 app.use(generalLimiter);
 app.use("/api/v1/auth/login", authLimiter);
 app.use("/api/v1/auth/register", authLimiter);
-app.use("/api/v1/ai/chat", aiLimiter);
+app.use("/api/v1/ai", aiLimiter);
 
 // 2. Your API registration is perfectly fine
 app.use("/api/v1/auth", userRouter);

@@ -5,3 +5,9 @@ export const AiChatSchema = z.object({
 });
 
 export type AiChatType = z.infer<typeof AiChatSchema>;
+
+export const AiCompareSchema = z.object({
+    productIds: z.array(z.string()).min(2, "Select at least 2 products to compare").max(4, "You can compare up to 4 products")
+});
+
+export type AiCompareType = z.infer<typeof AiCompareSchema>;
