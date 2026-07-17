@@ -17,6 +17,14 @@ export interface ICreateProductData extends CreateProductDTO {
     seller: string;
 }
 
+export interface IAssistantSearchParams {
+    keywords: string[];
+    categoryIds?: string[];
+    brandIds?: string[];
+    maxPrice?: number;
+    limit: number;
+}
+
 export interface IProductRepository {
     create(product: ICreateProductData): Promise<IProduct>;
     getAll(
@@ -41,6 +49,7 @@ export interface IProductRepository {
     getById(id: string): Promise<IProduct | null>;
     getPublishedByIds(ids: string[]): Promise<IProduct[]>;
     getByVariantKey(variantKey: string): Promise<IProduct | null>;
+    searchForAssistant(params: IAssistantSearchParams): Promise<IProduct[]>;
     update(id: string, product: Record<string, any>): Promise<IProduct | null>;
     updateStatus(id: string, status: "Draft" | "Published"): Promise<IProduct | null>;
     incrementStock(id: string, quantity: number): Promise<IProduct | null>;
@@ -140,6 +149,40 @@ export class ProductMongoRepository implements IProductRepository {
 
     async getByVariantKey(variantKey: string): Promise<IProduct | null> {
         return await Product.findOne({ variantKey }).populate(POPULATE_FIELDS);
+    }
+
+    async searchForAssistant(params: IAssistantSearchParams): Promise<IProduct[]> {
+        const { keywords, categoryIds, brandIds, maxPrice, limit } = params;
+
+        const query: any = { status: "Published", availability: "In Stock" };
+
+        if (keywords.length > 0) {
+            // Every keyword must hit at least one field — an AND of per-keyword ORs —
+            // so a multi-word query like "gaming laptop" narrows rather than widens.
+            // Matched against name + structured specifications only, not the prose
+            // description fields — a headset's description mentioning "compatible
+            // with laptops" or "great for gaming" would otherwise false-positive
+            // against a "gaming laptop" query even though it isn't one.
+            query.$and = keywords.map((keyword) => {
+                const regex = { $regex: keyword, $options: "i" };
+                const or: any[] = [
+                    { name: regex },
+                    { "specifications.value": regex }
+                ];
+                if (categoryIds && categoryIds.length > 0) or.push({ category: { $in: categoryIds } });
+                if (brandIds && brandIds.length > 0) or.push({ brand: { $in: brandIds } });
+                return { $or: or };
+            });
+        }
+
+        if (maxPrice !== undefined) {
+            query.sellingPrice = { $lte: maxPrice };
+        }
+
+        return await Product.find(query)
+            .populate(POPULATE_FIELDS)
+            .sort({ bestSeller: -1, featured: -1, createdAt: -1 })
+            .limit(limit);
     }
 
     async update(id: string, product: Record<string, any>): Promise<IProduct | null> {
