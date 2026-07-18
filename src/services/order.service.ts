@@ -77,6 +77,27 @@ export class OrderService {
             subtotal += product.sellingPrice * cartItem.quantity;
         }
 
+        // Reserve stock atomically before the order exists in the DB. If a
+        // concurrent checkout already claimed the last units, decrementStock
+        // returns null here (its own filter re-checks stock), so we back out
+        // any items already reserved for this order instead of leaving it
+        // half-decremented.
+        const reserved: { product: string; quantity: number }[] = [];
+        try {
+            for (const item of items) {
+                const updated = await productRepository.decrementStock(item.product, item.quantity);
+                if (!updated) {
+                    throw new HttpException(400, `Insufficient stock for "${item.name}"`);
+                }
+                reserved.push({ product: item.product, quantity: item.quantity });
+            }
+        } catch (err) {
+            for (const item of reserved) {
+                await productRepository.incrementStock(item.product, item.quantity);
+            }
+            throw err;
+        }
+
         const shippingFee = subtotal > SHIPPING_FREE_THRESHOLD ? 0 : SHIPPING_FEE;
         const total = subtotal + shippingFee;
         const orderNumber = await generateOrderNumber();
@@ -91,10 +112,6 @@ export class OrderService {
             shippingFee,
             total
         });
-
-        for (const item of items) {
-            await productRepository.decrementStock(item.product, item.quantity);
-        }
 
         await cartRepository.clear(userId);
 
