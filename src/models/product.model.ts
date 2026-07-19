@@ -20,7 +20,7 @@ export interface IProduct extends Document {
   name: string;
   sku: string;
   category: mongoose.Types.ObjectId;
-  subcategory: string;
+  subcategory?: mongoose.Types.ObjectId;
   brand: mongoose.Types.ObjectId;
   shortDescription: string;
   fullDescription: string;
@@ -66,7 +66,7 @@ const ProductMongoSchema: Schema = new Schema<IProduct>(
     name: { type: String, required: true },
     sku: { type: String, required: true, unique: true },
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
-    subcategory: { type: String, required: false },
+    subcategory: { type: Schema.Types.ObjectId, ref: "Subcategory", required: false },
     brand: { type: Schema.Types.ObjectId, ref: "Brand", required: true },
     shortDescription: { type: String, required: true },
     fullDescription: { type: String, required: true },

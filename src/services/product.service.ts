@@ -1,5 +1,6 @@
 import { ProductMongoRepository, IProductListResult } from "../repositories/product.repository";
 import { CategoryMongoRepository } from "../repositories/category.repository";
+import { SubcategoryMongoRepository } from "../repositories/subcategory.repository";
 import { BrandMongoRepository } from "../repositories/brand.repository";
 import { CounterMongoRepository } from "../repositories/counter.repository";
 import { ReviewMongoRepository } from "../repositories/review.repository";
@@ -11,6 +12,7 @@ import { ICategoryAttribute } from "../models/category.model";
 
 const productRepository = new ProductMongoRepository();
 const categoryRepository = new CategoryMongoRepository();
+const subcategoryRepository = new SubcategoryMongoRepository();
 const brandRepository = new BrandMongoRepository();
 const counterRepository = new CounterMongoRepository();
 const reviewRepository = new ReviewMongoRepository();
@@ -46,6 +48,19 @@ export class ProductService {
         }
     }
 
+    private async validateSubcategory(subcategoryId: string, categoryId: string): Promise<void> {
+        const subcategory = await subcategoryRepository.getById(subcategoryId);
+        if (!subcategory) {
+            throw new HttpException(404, "Subcategory not found");
+        }
+        // `category` is populated by the repository, so unwrap its `_id` rather than
+        // treating it as a raw ObjectId.
+        const categoryRef = subcategory.category as unknown as { _id: { toString(): string } };
+        if (categoryRef._id.toString() !== categoryId) {
+            throw new HttpException(400, "Subcategory does not belong to the selected category");
+        }
+    }
+
     async createProduct(productData: CreateProductDTO, sellerId: string): Promise<ICreateProductResult> {
         const category = await categoryRepository.getById(productData.category);
         if (!category) {
@@ -54,6 +69,9 @@ export class ProductService {
         const brand = await brandRepository.getById(productData.brand);
         if (!brand) {
             throw new HttpException(404, "Brand not found");
+        }
+        if (productData.subcategory) {
+            await this.validateSubcategory(productData.subcategory, productData.category);
         }
 
         this.validateCategoryAttributes(category.attributeSchema ?? [], productData.attributes);
@@ -183,6 +201,10 @@ export class ProductService {
             if (!brand) {
                 throw new HttpException(404, "Brand not found");
             }
+        }
+        if (productData.subcategory) {
+            const effectiveCategoryId = productData.category ?? (existingProduct.category as unknown as { _id: { toString(): string } })._id.toString();
+            await this.validateSubcategory(productData.subcategory, effectiveCategoryId);
         }
 
         const updated = await productRepository.update(id, productData);

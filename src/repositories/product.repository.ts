@@ -60,6 +60,7 @@ export interface IProductRepository {
 
 const POPULATE_FIELDS = [
     { path: "category", select: "name" },
+    { path: "subcategory", select: "name" },
     { path: "brand", select: "name" }
 ];
 
