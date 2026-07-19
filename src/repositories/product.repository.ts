@@ -208,15 +208,27 @@ export class ProductMongoRepository implements IProductRepository {
     }
 
     async incrementStock(id: string, quantity: number): Promise<IProduct | null> {
-        const product = await Product.findById(id);
-        if (!product) return null;
-
-        product.stockQuantity = product.stockQuantity + quantity;
-        if (product.stockQuantity > 0 && product.availability === "Out of Stock") {
-            product.availability = "In Stock";
-        }
-        await product.save();
-        return product.populate(POPULATE_FIELDS);
+        // Aggregation-pipeline update: the stockQuantity increment and the
+        // resulting availability flip happen as one atomic operation, so
+        // concurrent restocks/cancellations can't lose an update to each other.
+        return await Product.findOneAndUpdate(
+            { _id: id },
+            [
+                { $set: { stockQuantity: { $add: ["$stockQuantity", quantity] } } },
+                {
+                    $set: {
+                        availability: {
+                            $cond: [
+                                { $and: [{ $gt: ["$stockQuantity", 0] }, { $eq: ["$availability", "Out of Stock"] }] },
+                                "In Stock",
+                                "$availability"
+                            ]
+                        }
+                    }
+                }
+            ],
+            { new: true }
+        ).populate(POPULATE_FIELDS);
     }
 
     async existsBySku(sku: string): Promise<boolean> {
@@ -225,14 +237,23 @@ export class ProductMongoRepository implements IProductRepository {
     }
 
     async decrementStock(id: string, quantity: number): Promise<IProduct | null> {
-        const product = await Product.findById(id);
-        if (!product) return null;
-
-        product.stockQuantity = Math.max(0, product.stockQuantity - quantity);
-        if (product.stockQuantity === 0) {
-            product.availability = "Out of Stock";
-        }
-        await product.save();
-        return product.populate(POPULATE_FIELDS);
+        // The stockQuantity >= quantity filter and the decrement happen in a
+        // single atomic operation, so two concurrent orders can't both pass
+        // a stale stock check and oversell the last units. Returns null when
+        // there isn't enough stock, which the caller treats as a failure.
+        return await Product.findOneAndUpdate(
+            { _id: id, stockQuantity: { $gte: quantity } },
+            [
+                { $set: { stockQuantity: { $subtract: ["$stockQuantity", quantity] } } },
+                {
+                    $set: {
+                        availability: {
+                            $cond: [{ $eq: ["$stockQuantity", 0] }, "Out of Stock", "$availability"]
+                        }
+                    }
+                }
+            ],
+            { new: true }
+        ).populate(POPULATE_FIELDS);
     }
 }
