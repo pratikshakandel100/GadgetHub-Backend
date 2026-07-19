@@ -1,9 +1,11 @@
 import { CategoryMongoRepository, ICategoryWithCount } from "../repositories/category.repository";
+import { SubcategoryMongoRepository } from "../repositories/subcategory.repository";
 import { CreateCategoryDTO, UpdateCategoryDTO } from "../dtos/category.dto";
 import { ICategory, ICategoryAttribute } from "../models/category.model";
 import { HttpException } from "../exceptions/http-exception";
 
 const categoryRepository = new CategoryMongoRepository();
+const subcategoryRepository = new SubcategoryMongoRepository();
 
 const slugify = (name: string): string =>
     name
@@ -114,6 +116,11 @@ export class CategoryService {
         const productCount = await categoryRepository.countProducts(id);
         if (productCount > 0) {
             throw new HttpException(400, "Cannot delete category with existing products");
+        }
+
+        const subcategoryCount = await subcategoryRepository.countByCategory(id);
+        if (subcategoryCount > 0) {
+            throw new HttpException(400, "Cannot delete category with existing subcategories");
         }
 
         const isDeleted = await categoryRepository.delete(id);
