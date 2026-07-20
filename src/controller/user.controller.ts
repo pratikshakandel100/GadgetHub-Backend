@@ -2,7 +2,7 @@ import { UserService } from "../services/user.service";
 import { ApiResponseHelper } from "../utils/apihelper.util";
 import {z} from 'zod';
 import { Request, Response } from "express";
-import { CreateUserDTO, LoginUserDTO, UpdateUserDTO, AdminCreateUserDTO, AdminUpdateUserDTO } from "../dtos/user.dto";
+import { CreateUserDTO, LoginUserDTO, UpdateUserDTO, AdminCreateUserDTO, AdminUpdateUserDTO, GoogleAuthDTO } from "../dtos/user.dto";
 
 const userService = new UserService();
 
@@ -48,6 +48,24 @@ export class UserController{
         }
     }
 
+
+    async googleLogin(req: Request, res: Response){
+        try{
+            const parsedData = GoogleAuthDTO.safeParse(req.body);
+            if(!parsedData.success){
+                return ApiResponseHelper
+                .error(res, z.prettifyError(parsedData.error), 400)
+            }
+            const {user, token} = await userService.googleLogin(parsedData.data.idToken);
+            return ApiResponseHelper.success(res, {user: sanitizeUser(user), token}, "Google login successful");
+        } catch(error: Error|any|unknown){
+           return ApiResponseHelper.error(
+            res,
+            error.message || "Internal Server Error",
+            error.status || 500
+           );
+        }
+    }
 
     async whoami(req: Request, res: Response) {
         try {

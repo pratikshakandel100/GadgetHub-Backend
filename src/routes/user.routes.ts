@@ -8,6 +8,7 @@ const userController = new UserController();
 
 userRouter.post("/register", userController.createUser);
 userRouter.post("/login", userController.loginUser);
+userRouter.post("/google", userController.googleLogin);
 userRouter.post("/logout", authorizedMiddleware, userController.logoutUser);
 
 userRouter.get("/whoami",
