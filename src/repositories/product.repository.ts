@@ -27,6 +27,7 @@ export interface IAssistantSearchParams {
 
 export interface IProductRepository {
     create(product: ICreateProductData): Promise<IProduct>;
+    bulkCreate(products: ICreateProductData[]): Promise<IProduct[]>;
     getAll(
         page: number,
         limit: number,
@@ -55,6 +56,8 @@ export interface IProductRepository {
     incrementStock(id: string, quantity: number): Promise<IProduct | null>;
     decrementStock(id: string, quantity: number): Promise<IProduct | null>;
     delete(id: string): Promise<boolean>;
+    bulkDelete(ids: string[]): Promise<number>;
+    findByNames(names: string[]): Promise<IProduct[]>;
     existsBySku(sku: string): Promise<boolean>;
 }
 
@@ -68,6 +71,19 @@ export class ProductMongoRepository implements IProductRepository {
     async create(product: ICreateProductData): Promise<IProduct> {
         const created = await Product.create(product);
         return created.populate(POPULATE_FIELDS);
+    }
+
+    async bulkCreate(products: ICreateProductData[]): Promise<IProduct[]> {
+        if (products.length === 0) return [];
+        try {
+            const inserted = await Product.insertMany(products, { ordered: false });
+            return await Product.populate(inserted, POPULATE_FIELDS);
+        } catch (error: any) {
+            if (Array.isArray(error?.insertedDocs)) {
+                return await Product.populate(error.insertedDocs, POPULATE_FIELDS);
+            }
+            throw error;
+        }
     }
 
     async getAll(
@@ -205,6 +221,17 @@ export class ProductMongoRepository implements IProductRepository {
     async delete(id: string): Promise<boolean> {
         const deleted = await Product.findByIdAndDelete(id);
         return !!deleted;
+    }
+
+    async bulkDelete(ids: string[]): Promise<number> {
+        if (ids.length === 0) return 0;
+        const result = await Product.deleteMany({ _id: { $in: ids } });
+        return result.deletedCount ?? 0;
+    }
+
+    async findByNames(names: string[]): Promise<IProduct[]> {
+        if (names.length === 0) return [];
+        return await Product.find({ name: { $in: names } });
     }
 
     async incrementStock(id: string, quantity: number): Promise<IProduct | null> {

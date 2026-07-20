@@ -11,6 +11,7 @@ export interface ISubcategoryWithCount extends Omit<ISubcategory, keyof import("
 
 export interface ISubcategoryRepository {
     create(subcategory: CreateSubcategoryDTO & { slug: string }): Promise<ISubcategory>;
+    bulkCreate(subcategories: (CreateSubcategoryDTO & { slug: string })[]): Promise<ISubcategory[]>;
     getAll(
         search: string,
         category: string,
@@ -31,6 +32,18 @@ export interface ISubcategoryRepository {
 export class SubcategoryMongoRepository implements ISubcategoryRepository {
     async create(subcategory: CreateSubcategoryDTO & { slug: string }): Promise<ISubcategory> {
         return await Subcategory.create(subcategory);
+    }
+
+    async bulkCreate(subcategories: (CreateSubcategoryDTO & { slug: string })[]): Promise<ISubcategory[]> {
+        if (subcategories.length === 0) return [];
+        try {
+            return await Subcategory.insertMany(subcategories, { ordered: false });
+        } catch (error: any) {
+            if (Array.isArray(error?.insertedDocs)) {
+                return error.insertedDocs;
+            }
+            throw error;
+        }
     }
 
     async getAll(

@@ -13,6 +13,13 @@ subcategoryRouter.post(
     subcategoryController.createSubcategory
 );
 
+subcategoryRouter.post(
+    "/bulk",
+    authorizedMiddleware,
+    adminMiddleware,
+    subcategoryController.bulkCreateSubcategories
+);
+
 subcategoryRouter.get(
     "/",
     authorizedMiddleware,

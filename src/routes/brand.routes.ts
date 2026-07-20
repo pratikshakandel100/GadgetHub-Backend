@@ -15,6 +15,13 @@ brandRouter.post(
     brandController.createBrand
 );
 
+brandRouter.post(
+    "/bulk",
+    authorizedMiddleware,
+    adminMiddleware,
+    brandController.bulkCreateBrands
+);
+
 brandRouter.get(
     "/",
     authorizedMiddleware,

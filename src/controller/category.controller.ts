@@ -2,7 +2,7 @@ import { CategoryService } from "../services/category.service";
 import { ApiResponseHelper } from "../utils/apihelper.util";
 import { z } from "zod";
 import { Request, Response } from "express";
-import { CreateCategoryDTO, UpdateCategoryDTO, UpdateCategoryAttributesDTO } from "../dtos/category.dto";
+import { CreateCategoryDTO, UpdateCategoryDTO, UpdateCategoryAttributesDTO, BulkCreateCategoryDTO } from "../dtos/category.dto";
 import { mergeUploadedImage } from "../utils/upload.util";
 import { parsePagination, parseSort, buildPaginationMeta } from "../utils/query.util";
 import { buildEntityLinks, buildCollectionLinks } from "../utils/hateoas.util";
@@ -24,6 +24,23 @@ export class CategoryController {
             location: buildEntityLinks(req, category._id.toString()).self.href,
             links: buildEntityLinks(req, category._id.toString())
         });
+    }
+
+    async bulkCreateCategories(req: Request, res: Response) {
+        const parsed = BulkCreateCategoryDTO.safeParse(req.body);
+        if (!parsed.success) {
+            return ApiResponseHelper.error(res, z.prettifyError(parsed.error), 400);
+        }
+        const result = await categoryService.bulkCreateCategories(parsed.data);
+        return ApiResponseHelper.success(
+            res,
+            result,
+            `${result.insertedCount} of ${parsed.data.length} categories inserted successfully` +
+                (result.subcategories.insertedCount > 0
+                    ? `, ${result.subcategories.insertedCount} subcategories inserted successfully`
+                    : ""),
+            201
+        );
     }
 
     async getAllCategories(req: Request, res: Response) {

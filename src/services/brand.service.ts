@@ -28,6 +28,43 @@ export class BrandService {
         return await brandRepository.create({ ...brandData, slug });
     }
 
+    async bulkCreateBrands(brandsData: CreateBrandDTO[]): Promise<{
+        insertedCount: number;
+        inserted: IBrand[];
+        skipped: { name: string; reason: string }[];
+    }> {
+        const seenNames = new Set<string>();
+        const seenSlugs = new Set<string>();
+        const toInsert: (CreateBrandDTO & { slug: string })[] = [];
+        const skipped: { name: string; reason: string }[] = [];
+
+        for (const brandData of brandsData) {
+            const normalizedName = brandData.name.trim().toLowerCase();
+            if (seenNames.has(normalizedName)) {
+                skipped.push({ name: brandData.name, reason: "Duplicate name in request payload" });
+                continue;
+            }
+
+            const existingName = await brandRepository.findByName(brandData.name);
+            if (existingName) {
+                skipped.push({ name: brandData.name, reason: "Brand name already exists" });
+                continue;
+            }
+
+            let slug = slugify(brandData.name);
+            if (seenSlugs.has(slug) || await brandRepository.findBySlug(slug)) {
+                slug = `${slug}-${Date.now().toString(36)}${seenSlugs.size}`;
+            }
+
+            seenNames.add(normalizedName);
+            seenSlugs.add(slug);
+            toInsert.push({ ...brandData, slug });
+        }
+
+        const inserted = await brandRepository.bulkCreate(toInsert);
+        return { insertedCount: inserted.length, inserted, skipped };
+    }
+
     async getAllBrands(search: string): Promise<IBrandWithCount[]> {
         const { brands } = await brandRepository.getAll(search, { name: 1 });
         return brands;

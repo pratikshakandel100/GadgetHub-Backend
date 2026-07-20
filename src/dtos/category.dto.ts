@@ -22,3 +22,20 @@ export type UpdateCategoryDTO = z.infer<typeof UpdateCategoryDTO>;
 export const UpdateCategoryAttributesDTO = UpdateCategoryAttributeSchemaPayload;
 
 export type UpdateCategoryAttributesDTO = z.infer<typeof UpdateCategoryAttributesDTO>;
+
+export const BulkCreateSubcategoryItemDTO = z.object({
+    name: z.string().min(1, "Subcategory name is required"),
+    status: z.enum(["Active", "Inactive"]).default("Active")
+});
+
+export type BulkCreateSubcategoryItemDTO = z.infer<typeof BulkCreateSubcategoryItemDTO>;
+
+export const BulkCreateCategoryItemDTO = CreateCategoryDTO.extend({
+    subcategories: z.array(BulkCreateSubcategoryItemDTO).optional().default([])
+});
+
+export type BulkCreateCategoryItemDTO = z.infer<typeof BulkCreateCategoryItemDTO>;
+
+export const BulkCreateCategoryDTO = z.array(BulkCreateCategoryItemDTO).min(1, "At least one category is required");
+
+export type BulkCreateCategoryDTO = z.infer<typeof BulkCreateCategoryDTO>;

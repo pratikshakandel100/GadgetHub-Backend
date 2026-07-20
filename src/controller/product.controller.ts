@@ -2,7 +2,7 @@ import { ApiResponseHelper } from "../utils/apihelper.util";
 import { z } from "zod";
 import { Request, Response } from "express";
 import { ProductService } from "../services/product.service";
-import { CreateProductDTO, UpdateProductDTO, UpdateProductStatusDTO } from "../dtos/product.dto";
+import { CreateProductDTO, UpdateProductDTO, UpdateProductStatusDTO, BulkCreateProductDTO, BulkDeleteProductDTO } from "../dtos/product.dto";
 import { mergeUploadedImages } from "../utils/upload.util";
 import { parsePagination, parseSort } from "../utils/query.util";
 import { buildEntityLinks, buildCollectionLinks, buildResourceUrl, HateoasLinks } from "../utils/hateoas.util";
@@ -53,6 +53,23 @@ export class ProductController {
                 location: created ? buildResourceUrl(req, product._id.toString()) : undefined,
                 links: productLinks(req, product)
             }
+        );
+    }
+
+    async bulkCreateProducts(req: Request, res: Response) {
+        const sellerId = req.user!._id.toString();
+
+        const parsed = BulkCreateProductDTO.safeParse(req.body);
+        if (!parsed.success) {
+            return ApiResponseHelper.error(res, z.prettifyError(parsed.error), 400);
+        }
+
+        const result = await productService.bulkCreateProducts(parsed.data, sellerId);
+        return ApiResponseHelper.success(
+            res,
+            result,
+            `${result.insertedCount} of ${parsed.data.length} products inserted successfully`,
+            201
         );
     }
 
@@ -151,6 +168,20 @@ export class ProductController {
         return ApiResponseHelper.success(res, product, "Product status updated successfully", 200, undefined, {
             links: productLinks(req, product)
         });
+    }
+
+    async bulkDeleteProducts(req: Request, res: Response) {
+        const parsed = BulkDeleteProductDTO.safeParse(req.body);
+        if (!parsed.success) {
+            return ApiResponseHelper.error(res, z.prettifyError(parsed.error), 400);
+        }
+        const result = await productService.bulkDeleteProducts(parsed.data.ids, parsed.data.names);
+        return ApiResponseHelper.success(
+            res,
+            result,
+            `${result.deletedCount} product(s) deleted successfully`,
+            200
+        );
     }
 
     async deleteProduct(req: Request<{ id: string }>, res: Response) {

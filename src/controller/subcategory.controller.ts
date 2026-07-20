@@ -2,7 +2,7 @@ import { SubcategoryService } from "../services/subcategory.service";
 import { ApiResponseHelper } from "../utils/apihelper.util";
 import { z } from "zod";
 import { Request, Response } from "express";
-import { CreateSubcategoryDTO, UpdateSubcategoryDTO } from "../dtos/subcategory.dto";
+import { CreateSubcategoryDTO, UpdateSubcategoryDTO, BulkCreateSubcategoryDTO } from "../dtos/subcategory.dto";
 import { parsePagination, parseSort, buildPaginationMeta } from "../utils/query.util";
 import { buildEntityLinks, buildCollectionLinks } from "../utils/hateoas.util";
 import { assertNotStale } from "../utils/precondition.util";
@@ -22,6 +22,20 @@ export class SubcategoryController {
             location: buildEntityLinks(req, subcategory._id.toString()).self.href,
             links: buildEntityLinks(req, subcategory._id.toString())
         });
+    }
+
+    async bulkCreateSubcategories(req: Request, res: Response) {
+        const parsed = BulkCreateSubcategoryDTO.safeParse(req.body);
+        if (!parsed.success) {
+            return ApiResponseHelper.error(res, z.prettifyError(parsed.error), 400);
+        }
+        const result = await subcategoryService.bulkCreateSubcategories(parsed.data);
+        return ApiResponseHelper.success(
+            res,
+            result,
+            `${result.insertedCount} of ${parsed.data.length} subcategories inserted successfully`,
+            201
+        );
     }
 
     async getAllSubcategories(req: Request, res: Response) {
