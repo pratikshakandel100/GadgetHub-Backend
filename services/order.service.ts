@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import mongoose from "mongoose";
-import { OrderMongoRepository, IOrderListResult } from "../repositories/order.repository";
+import { OrderMongoRepository, IOrderListResult, IOrderFilters } from "../repositories/order.repository";
 import { CartMongoRepository } from "../repositories/cart.repository";
 import { ProductMongoRepository } from "../repositories/product.repository";
 import { CreateOrderDTO } from "../dtos/order.dto";
@@ -14,6 +14,15 @@ const productRepository = new ProductMongoRepository();
 const TERMINAL_STATUSES: OrderStatus[] = ["Delivered", "Cancelled"];
 const SHIPPING_FREE_THRESHOLD = 500;
 const SHIPPING_FEE = 15;
+
+// Sequential order flow: Pending -> Confirmed (approve) -> Packed -> Shipped
+// (ship action, needs courier/tracking) -> Delivered. Cancellation is a
+// separate branch, always requires a reason, available from any non-terminal step.
+const NEXT_STATUS: Partial<Record<OrderStatus, OrderStatus>> = {
+    Pending: "Confirmed",
+    Confirmed: "Packed",
+    Shipped: "Delivered"
+};
 
 interface IPopulatedCartProduct {
     _id: mongoose.Types.ObjectId;
@@ -115,11 +124,22 @@ export class OrderService {
         return order;
     }
 
-    async getAllOrders(page: number, limit: number, status: string, search: string): Promise<IOrderListResult> {
-        return await orderRepository.getAll(page, limit, status, search);
+    async getAllOrders(page: number, limit: number, status: string, search: string, filters?: IOrderFilters): Promise<IOrderListResult> {
+        return await orderRepository.getAll(page, limit, status, search, filters);
     }
 
+    // Handles Approve (Pending -> Confirmed), Pack (Confirmed -> Packed), and
+    // Deliver (Shipped -> Delivered) — the three transitions that need no
+    // extra data. Shipped and Cancelled always go through their own methods
+    // below, since those require courier/tracking or a reason respectively.
     async updateOrderStatus(id: string, status: OrderStatus): Promise<IOrder> {
+        if (status === "Shipped") {
+            throw new HttpException(400, "Use the ship action to mark an order Shipped — courier and tracking number are required");
+        }
+        if (status === "Cancelled") {
+            throw new HttpException(400, "Use the cancel action to cancel an order — a reason is required");
+        }
+
         const existingOrder = await orderRepository.getById(id);
         if (!existingOrder) {
             throw new HttpException(404, "Order not found");
@@ -128,15 +148,53 @@ export class OrderService {
             throw new HttpException(400, `Order is already ${existingOrder.status} and cannot be updated further`);
         }
 
-        if (status === "Cancelled") {
-            for (const item of existingOrder.items) {
-                await productRepository.incrementStock(item.product.toString(), item.quantity);
-            }
+        const expectedNext = NEXT_STATUS[existingOrder.status];
+        if (status !== expectedNext) {
+            throw new HttpException(400, `Order must move from "${existingOrder.status}" to "${expectedNext}" next`);
         }
 
         const updated = await orderRepository.updateStatus(id, status);
         if (!updated) {
             throw new HttpException(500, "Failed to update order status");
+        }
+        return updated;
+    }
+
+    async shipOrder(id: string, courier: string, trackingNumber: string): Promise<IOrder> {
+        const existingOrder = await orderRepository.getById(id);
+        if (!existingOrder) {
+            throw new HttpException(404, "Order not found");
+        }
+        if (existingOrder.status !== "Packed") {
+            throw new HttpException(400, `Only Packed orders can be shipped (current status: ${existingOrder.status})`);
+        }
+
+        const updated = await orderRepository.updateShipment(id, courier, trackingNumber);
+        if (!updated) {
+            throw new HttpException(500, "Failed to update order shipment");
+        }
+        return updated;
+    }
+
+    // Covers both "Reject" (from Pending, in the admin UI) and "Cancel Order"
+    // (from Confirmed/Packed/Shipped) — same underlying transition, always
+    // with a reason, always restocking whatever was reserved for the order.
+    async cancelOrder(id: string, reason: string): Promise<IOrder> {
+        const existingOrder = await orderRepository.getById(id);
+        if (!existingOrder) {
+            throw new HttpException(404, "Order not found");
+        }
+        if (TERMINAL_STATUSES.includes(existingOrder.status)) {
+            throw new HttpException(400, `Order is already ${existingOrder.status} and cannot be cancelled`);
+        }
+
+        for (const item of existingOrder.items) {
+            await productRepository.incrementStock(item.product.toString(), item.quantity);
+        }
+
+        const updated = await orderRepository.updateCancellation(id, reason);
+        if (!updated) {
+            throw new HttpException(500, "Failed to cancel order");
         }
         return updated;
     }

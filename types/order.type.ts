@@ -27,3 +27,22 @@ export const UpdateOrderStatusSchema = z.object({
 });
 
 export type UpdateOrderStatusType = z.infer<typeof UpdateOrderStatusSchema>;
+
+export const CANCEL_REASONS = ["Out of Stock", "Invalid Payment", "Customer Request", "Other"] as const;
+
+export const CancelOrderSchema = z.object({
+    reason: z.enum(CANCEL_REASONS),
+    note: z.preprocess(
+        (value) => value === "" ? undefined : value,
+        z.string().optional()
+    )
+});
+
+export type CancelOrderType = z.infer<typeof CancelOrderSchema>;
+
+export const ShipOrderSchema = z.object({
+    courier: z.string().min(1, "Courier name is required"),
+    trackingNumber: z.string().min(1, "Tracking number is required")
+});
+
+export type ShipOrderType = z.infer<typeof ShipOrderSchema>;
