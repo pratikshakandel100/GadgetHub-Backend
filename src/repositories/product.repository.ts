@@ -254,7 +254,7 @@ export class ProductMongoRepository implements IProductRepository {
                     }
                 }
             ],
-            { new: true }
+            { new: true, updatePipeline: true }
         ).populate(POPULATE_FIELDS);
     }
 
@@ -280,7 +280,7 @@ export class ProductMongoRepository implements IProductRepository {
                     }
                 }
             ],
-            { new: true }
+            { new: true, updatePipeline: true }
         ).populate(POPULATE_FIELDS);
     }
 }
