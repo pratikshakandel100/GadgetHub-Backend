@@ -8,6 +8,8 @@ export interface ICreateNotificationData {
     message: string;
     order?: string;
     orderNumber?: string;
+    product?: string;
+    productName?: string;
 }
 
 export interface INotificationListResult {

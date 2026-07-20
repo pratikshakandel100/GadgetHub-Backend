@@ -268,10 +268,18 @@ export class ProductMongoRepository implements IProductRepository {
         // single atomic operation, so two concurrent orders can't both pass
         // a stale stock check and oversell the last units. Returns null when
         // there isn't enough stock, which the caller treats as a failure.
+        // soldQuantity is a cumulative "ever sold" counter — it is intentionally
+        // not reversed by incrementStock (rollback/cancellation), since it tracks
+        // gross demand rather than net current standing (that's what stockQuantity is for).
         return await Product.findOneAndUpdate(
             { _id: id, stockQuantity: { $gte: quantity } },
             [
-                { $set: { stockQuantity: { $subtract: ["$stockQuantity", quantity] } } },
+                {
+                    $set: {
+                        stockQuantity: { $subtract: ["$stockQuantity", quantity] },
+                        soldQuantity: { $add: [{ $ifNull: ["$soldQuantity", 0] }, quantity] }
+                    }
+                },
                 {
                     $set: {
                         availability: {

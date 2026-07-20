@@ -31,6 +31,9 @@ export interface IProduct extends Document {
   stockQuantity: number;
   minimumStockAlert: number;
   availability: string;
+  soldQuantity: number;
+  lastRestockedAt?: Date;
+  lastStockUpdatedBy?: mongoose.Types.ObjectId;
   specifications: ISpecification[];
   variants: IVariant[];
   variantAttributes: IVariantAttribute[];
@@ -76,11 +79,14 @@ const ProductMongoSchema: Schema = new Schema<IProduct>(
     taxMargin: { type: Number, required: false },
     stockQuantity: { type: Number, required: true, default: 0 },
     minimumStockAlert: { type: Number, required: true, default: 5 },
-    availability: { 
-      type: String, 
+    availability: {
+      type: String,
       enum: ['In Stock', 'Out of Stock', 'Pre-order'],
       default: 'In Stock'
     },
+    soldQuantity: { type: Number, required: true, default: 0 },
+    lastRestockedAt: { type: Date, required: false },
+    lastStockUpdatedBy: { type: Schema.Types.ObjectId, ref: "User", required: false },
     specifications: [{
       key: { type: String, required: true },
       value: { type: String, required: true }
