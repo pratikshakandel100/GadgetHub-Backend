@@ -11,6 +11,10 @@ export const ORDER_STATUSES = [
 
 export type OrderStatus = typeof ORDER_STATUSES[number];
 
+export const PAYMENT_STATUSES = ["Pending", "Paid", "Failed", "Refunded"] as const;
+
+export type PaymentStatus = typeof PAYMENT_STATUSES[number];
+
 export interface IOrderItem {
     product: mongoose.Types.ObjectId;
     name: string;
@@ -44,6 +48,12 @@ export interface IOrder extends Document {
     items: IOrderItem[];
     shippingAddress: IShippingAddress;
     paymentMethod: "cod" | "online";
+    paymentStatus: PaymentStatus;
+    transactionId?: string;
+    referenceId?: string;
+    paidAt?: Date;
+    amount: number;
+    currency: string;
     subtotal: number;
     shippingFee: number;
     total: number;
@@ -79,6 +89,12 @@ const OrderMongoSchema: Schema = new Schema<IOrder>(
             addressType: { type: String, required: false }
         },
         paymentMethod: { type: String, enum: ["cod", "online"], required: true },
+        paymentStatus: { type: String, enum: PAYMENT_STATUSES, default: "Pending" },
+        transactionId: { type: String, required: false },
+        referenceId: { type: String, required: false, unique: true, sparse: true },
+        paidAt: { type: Date, required: false },
+        amount: { type: Number, required: true },
+        currency: { type: String, required: true, default: "NPR" },
         subtotal: { type: Number, required: true },
         shippingFee: { type: Number, required: true, default: 0 },
         total: { type: Number, required: true },
