@@ -59,6 +59,9 @@ export interface IOrder extends Document {
     total: number;
     status: OrderStatus;
     statusHistory: IOrderStatusHistoryEntry[];
+    courier?: string;
+    trackingNumber?: string;
+    cancelReason?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -104,7 +107,10 @@ const OrderMongoSchema: Schema = new Schema<IOrder>(
                 status: { type: String, enum: ORDER_STATUSES, required: true },
                 changedAt: { type: Date, required: true, default: Date.now }
             }
-        ]
+        ],
+        courier: { type: String, required: false },
+        trackingNumber: { type: String, required: false },
+        cancelReason: { type: String, required: false }
     },
     {
         timestamps: true
