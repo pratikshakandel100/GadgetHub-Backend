@@ -1,8 +1,8 @@
-import app from './app';
+import app from './src/app';
 import dotenv from "dotenv";
 
-import { PORT as SERVER_PORT } from './config/constant';
-import { connectToMongoDB } from './database/mongodb';
+import { PORT as SERVER_PORT } from './src/config/constant';
+import { connectToMongoDB } from './src/database/mongodb';
 
 dotenv.config();
 connectToMongoDB()
