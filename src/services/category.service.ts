@@ -1,7 +1,8 @@
 import { CategoryMongoRepository, ICategoryWithCount } from "../repositories/category.repository";
 import { SubcategoryMongoRepository } from "../repositories/subcategory.repository";
-import { CreateCategoryDTO, UpdateCategoryDTO } from "../dtos/category.dto";
+import { CreateCategoryDTO, UpdateCategoryDTO, BulkCreateCategoryItemDTO, BulkCreateSubcategoryItemDTO } from "../dtos/category.dto";
 import { ICategory, ICategoryAttribute } from "../models/category.model";
+import { ISubcategory } from "../models/subcategory.model";
 import { HttpException } from "../exceptions/http-exception";
 
 const categoryRepository = new CategoryMongoRepository();
@@ -28,6 +29,101 @@ export class CategoryService {
         }
 
         return await categoryRepository.create({ ...categoryData, slug });
+    }
+
+    async bulkCreateCategories(categoriesData: BulkCreateCategoryItemDTO[]): Promise<{
+        insertedCount: number;
+        inserted: ICategory[];
+        skipped: { name: string; reason: string }[];
+        subcategories: {
+            insertedCount: number;
+            inserted: ISubcategory[];
+            skipped: { name: string; category: string; reason: string }[];
+        };
+    }> {
+        const seenNames = new Set<string>();
+        const seenSlugs = new Set<string>();
+        const toInsert: (CreateCategoryDTO & { slug: string })[] = [];
+        const skipped: { name: string; reason: string }[] = [];
+        // Subcategories arrive nested under a category that doesn't have an _id
+        // yet, so stash them keyed by normalized category name and reattach
+        // once we know which categories actually made it into the DB.
+        const pendingSubcategoriesByName = new Map<string, BulkCreateSubcategoryItemDTO[]>();
+
+        for (const { subcategories, ...categoryData } of categoriesData) {
+            const normalizedName = categoryData.name.trim().toLowerCase();
+            if (seenNames.has(normalizedName)) {
+                skipped.push({ name: categoryData.name, reason: "Duplicate name in request payload" });
+                continue;
+            }
+
+            const existingName = await categoryRepository.findByName(categoryData.name);
+            if (existingName) {
+                skipped.push({ name: categoryData.name, reason: "Category name already exists" });
+                continue;
+            }
+
+            let slug = slugify(categoryData.name);
+            if (seenSlugs.has(slug) || await categoryRepository.findBySlug(slug)) {
+                slug = `${slug}-${Date.now().toString(36)}${seenSlugs.size}`;
+            }
+
+            seenNames.add(normalizedName);
+            seenSlugs.add(slug);
+            toInsert.push({ ...categoryData, slug });
+            if (subcategories && subcategories.length > 0) {
+                pendingSubcategoriesByName.set(normalizedName, subcategories);
+            }
+        }
+
+        const inserted = await categoryRepository.bulkCreate(toInsert);
+        const subcategoryResult = await this.bulkCreateSubcategoriesForNewCategories(inserted, pendingSubcategoriesByName);
+
+        return { insertedCount: inserted.length, inserted, skipped, subcategories: subcategoryResult };
+    }
+
+    private async bulkCreateSubcategoriesForNewCategories(
+        insertedCategories: ICategory[],
+        pendingSubcategoriesByName: Map<string, BulkCreateSubcategoryItemDTO[]>
+    ): Promise<{
+        insertedCount: number;
+        inserted: ISubcategory[];
+        skipped: { name: string; category: string; reason: string }[];
+    }> {
+        const seenSlugs = new Set<string>();
+        const toInsert: { name: string; category: string; status: "Active" | "Inactive"; slug: string }[] = [];
+        const skipped: { name: string; category: string; reason: string }[] = [];
+
+        for (const category of insertedCategories) {
+            const subcategories = pendingSubcategoriesByName.get(category.name.trim().toLowerCase());
+            if (!subcategories) continue;
+
+            const seenNamesInCategory = new Set<string>();
+            for (const subcategoryData of subcategories) {
+                const normalizedName = subcategoryData.name.trim().toLowerCase();
+                if (seenNamesInCategory.has(normalizedName)) {
+                    skipped.push({ name: subcategoryData.name, category: category.name, reason: "Duplicate name in request payload" });
+                    continue;
+                }
+                seenNamesInCategory.add(normalizedName);
+
+                let slug = slugify(subcategoryData.name);
+                if (seenSlugs.has(slug) || await subcategoryRepository.findBySlug(slug)) {
+                    slug = `${slug}-${Date.now().toString(36)}${seenSlugs.size}`;
+                }
+                seenSlugs.add(slug);
+
+                toInsert.push({
+                    name: subcategoryData.name,
+                    category: category._id.toString(),
+                    status: subcategoryData.status,
+                    slug
+                });
+            }
+        }
+
+        const inserted = await subcategoryRepository.bulkCreate(toInsert);
+        return { insertedCount: inserted.length, inserted, skipped };
     }
 
     async getAllCategories(

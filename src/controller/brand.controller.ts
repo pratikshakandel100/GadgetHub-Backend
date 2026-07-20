@@ -2,7 +2,7 @@ import { BrandService } from "../services/brand.service";
 import { ApiResponseHelper } from "../utils/apihelper.util";
 import { z } from "zod";
 import { Request, Response } from "express";
-import { CreateBrandDTO, UpdateBrandDTO } from "../dtos/brand.dto";
+import { CreateBrandDTO, UpdateBrandDTO, BulkCreateBrandDTO } from "../dtos/brand.dto";
 
 const brandService = new BrandService();
 
@@ -24,6 +24,28 @@ export class BrandController {
             }
             const brand = await brandService.createBrand(brandData.data);
             return ApiResponseHelper.success(res, brand, "Brand created successfully");
+        } catch (error: Error | any | unknown) {
+            return ApiResponseHelper.error(
+                res,
+                error.message || "Internal Server Error",
+                error.status || 500
+            );
+        }
+    }
+
+    async bulkCreateBrands(req: Request, res: Response) {
+        try {
+            const parsed = BulkCreateBrandDTO.safeParse(req.body);
+            if (!parsed.success) {
+                return ApiResponseHelper.error(res, z.prettifyError(parsed.error), 400);
+            }
+            const result = await brandService.bulkCreateBrands(parsed.data);
+            return ApiResponseHelper.success(
+                res,
+                result,
+                `${result.insertedCount} of ${parsed.data.length} brands inserted successfully`,
+                201
+            );
         } catch (error: Error | any | unknown) {
             return ApiResponseHelper.error(
                 res,

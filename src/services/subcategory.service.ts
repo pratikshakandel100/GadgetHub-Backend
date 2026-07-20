@@ -38,6 +38,52 @@ export class SubcategoryService {
         return await subcategoryRepository.create({ ...subcategoryData, slug });
     }
 
+    async bulkCreateSubcategories(subcategoriesData: CreateSubcategoryDTO[]): Promise<{
+        insertedCount: number;
+        inserted: ISubcategory[];
+        skipped: { name: string; category: string; reason: string }[];
+    }> {
+        const seenKeys = new Set<string>();
+        const seenSlugs = new Set<string>();
+        const toInsert: (CreateSubcategoryDTO & { slug: string })[] = [];
+        const skipped: { name: string; category: string; reason: string }[] = [];
+
+        for (const subcategoryData of subcategoriesData) {
+            const key = `${subcategoryData.category}::${subcategoryData.name.trim().toLowerCase()}`;
+            if (seenKeys.has(key)) {
+                skipped.push({ name: subcategoryData.name, category: subcategoryData.category, reason: "Duplicate name in request payload" });
+                continue;
+            }
+
+            const category = await categoryRepository.getById(subcategoryData.category);
+            if (!category) {
+                skipped.push({ name: subcategoryData.name, category: subcategoryData.category, reason: "Category not found" });
+                continue;
+            }
+
+            const existingName = await subcategoryRepository.findByNameInCategory(
+                subcategoryData.name,
+                subcategoryData.category
+            );
+            if (existingName) {
+                skipped.push({ name: subcategoryData.name, category: subcategoryData.category, reason: "Subcategory name already exists in this category" });
+                continue;
+            }
+
+            let slug = slugify(subcategoryData.name);
+            if (seenSlugs.has(slug) || await subcategoryRepository.findBySlug(slug)) {
+                slug = `${slug}-${Date.now().toString(36)}${seenSlugs.size}`;
+            }
+
+            seenKeys.add(key);
+            seenSlugs.add(slug);
+            toInsert.push({ ...subcategoryData, slug });
+        }
+
+        const inserted = await subcategoryRepository.bulkCreate(toInsert);
+        return { insertedCount: inserted.length, inserted, skipped };
+    }
+
     async getAllSubcategories(
         search: string,
         category: string,

@@ -11,6 +11,7 @@ export interface ICategoryWithCount extends Omit<ICategory, keyof import("mongoo
 
 export interface ICategoryRepository {
     create(category: CreateCategoryDTO & { slug: string }): Promise<ICategory>;
+    bulkCreate(categories: (CreateCategoryDTO & { slug: string })[]): Promise<ICategory[]>;
     getAll(
         search: string,
         sort: Record<string, SortOrder>,
@@ -30,6 +31,21 @@ export interface ICategoryRepository {
 export class CategoryMongoRepository implements ICategoryRepository {
     async create(category: CreateCategoryDTO & { slug: string }): Promise<ICategory> {
         return await Category.create(category);
+    }
+
+    async bulkCreate(categories: (CreateCategoryDTO & { slug: string })[]): Promise<ICategory[]> {
+        if (categories.length === 0) return [];
+        try {
+            return await Category.insertMany(categories, { ordered: false });
+        } catch (error: any) {
+            // ordered:false lets independent inserts succeed even if a sibling
+            // hits the unique index (name/slug race); Mongoose still throws but
+            // attaches the docs that made it in.
+            if (Array.isArray(error?.insertedDocs)) {
+                return error.insertedDocs;
+            }
+            throw error;
+        }
     }
 
     async getAll(

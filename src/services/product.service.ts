@@ -1,4 +1,4 @@
-import { ProductMongoRepository, IProductListResult } from "../repositories/product.repository";
+import { ProductMongoRepository, IProductListResult, ICreateProductData } from "../repositories/product.repository";
 import { CategoryMongoRepository } from "../repositories/category.repository";
 import { SubcategoryMongoRepository } from "../repositories/subcategory.repository";
 import { BrandMongoRepository } from "../repositories/brand.repository";
@@ -46,6 +46,10 @@ export class ProductService {
                 throw new HttpException(400, `"${attr.label}" must be a number`);
             }
         }
+    }
+
+    private isObjectId(value: string): boolean {
+        return /^[0-9a-fA-F]{24}$/.test(value);
     }
 
     private async validateSubcategory(subcategoryId: string, categoryId: string): Promise<void> {
@@ -122,6 +126,91 @@ export class ProductService {
             }
             throw error;
         }
+    }
+
+    async bulkCreateProducts(productsData: CreateProductDTO[], sellerId: string): Promise<{
+        insertedCount: number;
+        inserted: IProduct[];
+        failed: { index: number; name?: string; reason: string }[];
+    }> {
+        const toInsert: ICreateProductData[] = [];
+        const failed: { index: number; name?: string; reason: string }[] = [];
+        const seenVariantKeys = new Set<string>();
+
+        for (let index = 0; index < productsData.length; index++) {
+            const productData = productsData[index];
+            try {
+                // Bulk imports are often hand-written outside the admin UI (e.g. via
+                // Postman), where the operator knows category/brand/subcategory
+                // *names*, not their ObjectIds. Accept either: a 24-hex-char string
+                // is looked up by id, anything else is resolved by name.
+                const category = this.isObjectId(productData.category)
+                    ? await categoryRepository.getById(productData.category)
+                    : await categoryRepository.findByName(productData.category);
+                if (!category) throw new HttpException(404, `Category not found: "${productData.category}"`);
+
+                const brand = this.isObjectId(productData.brand)
+                    ? await brandRepository.getById(productData.brand)
+                    : await brandRepository.findByName(productData.brand);
+                if (!brand) throw new HttpException(404, `Brand not found: "${productData.brand}"`);
+
+                const categoryId = category._id.toString();
+                const brandId = brand._id.toString();
+
+                let subcategoryId: string | undefined;
+                if (productData.subcategory) {
+                    const subcategory = this.isObjectId(productData.subcategory)
+                        ? await subcategoryRepository.getById(productData.subcategory)
+                        : await subcategoryRepository.findByNameInCategory(productData.subcategory, categoryId);
+                    if (!subcategory) throw new HttpException(404, `Subcategory not found: "${productData.subcategory}"`);
+                    subcategoryId = subcategory._id.toString();
+                }
+
+                this.validateCategoryAttributes(category.attributeSchema ?? [], productData.attributes);
+
+                const variantKey = buildVariantKey(
+                    sellerId,
+                    productData.name,
+                    brandId,
+                    categoryId,
+                    productData.variantAttributes
+                );
+
+                if (seenVariantKeys.has(variantKey)) {
+                    throw new HttpException(400, "Duplicate variant within the submitted batch");
+                }
+                const existingVariant = await productRepository.getByVariantKey(variantKey);
+                if (existingVariant) {
+                    throw new HttpException(400, "A matching variant already exists");
+                }
+
+                const { categoryCode, brandCode, variantCode } = buildSkuCodes(category.name, brand.name, productData.variantAttributes);
+                const sequenceKey = buildSkuSequenceKey(categoryCode, brandCode);
+                const sequence = await counterRepository.getNextSequence(sequenceKey);
+                const sku = formatSku(categoryCode, brandCode, variantCode, sequence);
+
+                const skuExists = await productRepository.existsBySku(sku);
+                if (skuExists) {
+                    throw new HttpException(400, `Duplicate SKU: ${sku}`);
+                }
+
+                seenVariantKeys.add(variantKey);
+                toInsert.push({
+                    ...productData,
+                    category: categoryId,
+                    brand: brandId,
+                    subcategory: subcategoryId,
+                    sku,
+                    variantKey,
+                    seller: sellerId
+                });
+            } catch (error: any) {
+                failed.push({ index, name: productData?.name, reason: error.message || "Failed to validate product" });
+            }
+        }
+
+        const inserted = await productRepository.bulkCreate(toInsert);
+        return { insertedCount: inserted.length, inserted, failed };
     }
 
     async getAllProducts(
@@ -225,6 +314,34 @@ export class ProductService {
             throw new HttpException(500, "Failed to update product status");
         }
         return updated;
+    }
+
+    async bulkDeleteProducts(ids: string[], names: string[]): Promise<{
+        deletedCount: number;
+        notFound: string[];
+    }> {
+        const notFound: string[] = [];
+        const idsToDelete = new Set<string>();
+
+        for (const id of ids) {
+            if (this.isObjectId(id)) {
+                idsToDelete.add(id);
+            } else {
+                notFound.push(id);
+            }
+        }
+
+        if (names.length > 0) {
+            const found = await productRepository.findByNames(names);
+            const foundNames = new Set(found.map((p) => p.name));
+            found.forEach((p) => idsToDelete.add(p._id.toString()));
+            names.forEach((name) => {
+                if (!foundNames.has(name)) notFound.push(name);
+            });
+        }
+
+        const deletedCount = await productRepository.bulkDelete(Array.from(idsToDelete));
+        return { deletedCount, notFound };
     }
 
     async deleteProduct(id: string): Promise<void> {

@@ -11,6 +11,7 @@ export interface IBrandWithCount extends Omit<IBrand, keyof import("mongoose").D
 
 export interface IBrandRepository {
     create(brand: CreateBrandDTO & { slug: string }): Promise<IBrand>;
+    bulkCreate(brands: (CreateBrandDTO & { slug: string })[]): Promise<IBrand[]>;
     getAll(
         search: string,
         sort: Record<string, SortOrder>,
@@ -28,6 +29,18 @@ export interface IBrandRepository {
 export class BrandMongoRepository implements IBrandRepository {
     async create(brand: CreateBrandDTO & { slug: string }): Promise<IBrand> {
         return await Brand.create(brand);
+    }
+
+    async bulkCreate(brands: (CreateBrandDTO & { slug: string })[]): Promise<IBrand[]> {
+        if (brands.length === 0) return [];
+        try {
+            return await Brand.insertMany(brands, { ordered: false });
+        } catch (error: any) {
+            if (Array.isArray(error?.insertedDocs)) {
+                return error.insertedDocs;
+            }
+            throw error;
+        }
     }
 
     async getAll(
