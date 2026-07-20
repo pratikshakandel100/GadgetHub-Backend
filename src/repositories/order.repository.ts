@@ -1,4 +1,4 @@
-import Order, { IOrder, OrderStatus, IShippingAddress } from "../models/order.model";
+import Order, { IOrder, OrderStatus, PaymentStatus, IShippingAddress } from "../models/order.model";
 import { buildPaginationMeta, SortOrder } from "../utils/query.util";
 
 export interface IOrderListResult {
@@ -22,17 +22,29 @@ export interface ICreateOrderData {
     }[];
     shippingAddress: IShippingAddress;
     paymentMethod: "cod" | "online";
+    paymentStatus: PaymentStatus;
+    amount: number;
+    currency: string;
     subtotal: number;
     shippingFee: number;
     total: number;
 }
 
+export interface IUpdatePaymentData {
+    paymentStatus?: PaymentStatus;
+    transactionId?: string;
+    referenceId?: string;
+    paidAt?: Date;
+}
+
 export interface IOrderRepository {
     create(data: ICreateOrderData): Promise<IOrder>;
     getById(id: string): Promise<IOrder | null>;
+    getByReferenceId(referenceId: string): Promise<IOrder | null>;
     getByUser(userId: string, page: number, limit: number, status: string, sort: Record<string, SortOrder>): Promise<IOrderListResult>;
     getAll(page: number, limit: number, status: string, search: string, sort: Record<string, SortOrder>): Promise<IOrderListResult>;
     updateStatus(id: string, status: OrderStatus): Promise<IOrder | null>;
+    updatePayment(id: string, data: IUpdatePaymentData): Promise<IOrder | null>;
     existsByOrderNumber(orderNumber: string): Promise<boolean>;
 }
 
@@ -50,6 +62,10 @@ export class OrderMongoRepository implements IOrderRepository {
 
     async getById(id: string): Promise<IOrder | null> {
         return await Order.findById(id).populate(USER_POPULATE);
+    }
+
+    async getByReferenceId(referenceId: string): Promise<IOrder | null> {
+        return await Order.findOne({ referenceId }).populate(USER_POPULATE);
     }
 
     async getByUser(userId: string, page: number, limit: number, status: string, sort: Record<string, SortOrder>): Promise<IOrderListResult> {
@@ -96,6 +112,14 @@ export class OrderMongoRepository implements IOrderRepository {
                 $set: { status },
                 $push: { statusHistory: { status, changedAt: new Date() } }
             },
+            { new: true, runValidators: true }
+        ).populate(USER_POPULATE);
+    }
+
+    async updatePayment(id: string, data: IUpdatePaymentData): Promise<IOrder | null> {
+        return await Order.findByIdAndUpdate(
+            id,
+            { $set: data },
             { new: true, runValidators: true }
         ).populate(USER_POPULATE);
     }
