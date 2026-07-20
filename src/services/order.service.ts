@@ -4,6 +4,7 @@ import { OrderMongoRepository, IOrderListResult, IOrderFilters } from "../reposi
 import { CartMongoRepository } from "../repositories/cart.repository";
 import { ProductMongoRepository } from "../repositories/product.repository";
 import { ShippingAddressMongoRepository } from "../repositories/shipping-address.repository";
+import { StockMovementMongoRepository } from "../repositories/stock-movement.repository";
 import { NotificationService } from "./notification.service";
 import { CreateOrderDTO } from "../dtos/order.dto";
 import { IOrder, IShippingAddress, OrderStatus } from "../models/order.model";
@@ -15,6 +16,7 @@ const orderRepository = new OrderMongoRepository();
 const cartRepository = new CartMongoRepository();
 const productRepository = new ProductMongoRepository();
 const shippingAddressRepository = new ShippingAddressMongoRepository();
+const stockMovementRepository = new StockMovementMongoRepository();
 const notificationService = new NotificationService();
 
 // Copies only the physical-address fields onto the order — bookkeeping
@@ -114,6 +116,7 @@ export class OrderService {
         // payments defer the decrement until PaymentService confirms the
         // eSewa transaction actually completed, so an abandoned/failed
         // payment never removes stock for a purchase that didn't happen.
+        const codReservations: { product: string; quantity: number; previousStock: number; newStock: number }[] = [];
         if (orderData.paymentMethod === "cod") {
             const reserved: { product: string; quantity: number }[] = [];
             try {
@@ -123,6 +126,9 @@ export class OrderService {
                         throw new HttpException(400, `Insufficient stock for "${item.name}"`);
                     }
                     reserved.push({ product: item.product, quantity: item.quantity });
+                    const previousStock = updated.stockQuantity + item.quantity;
+                    codReservations.push({ product: item.product, quantity: item.quantity, previousStock, newStock: updated.stockQuantity });
+                    await notificationService.notifyAdminsLowStockIfCrossed(previousStock, updated);
                 }
             } catch (err) {
                 for (const item of reserved) {
@@ -151,6 +157,18 @@ export class OrderService {
         });
 
         await cartRepository.clear(userId);
+
+        for (const reservation of codReservations) {
+            await stockMovementRepository.create({
+                product: reservation.product,
+                type: "order",
+                quantityDelta: -reservation.quantity,
+                previousStock: reservation.previousStock,
+                newStock: reservation.newStock,
+                order: order._id.toString(),
+                orderNumber: order.orderNumber
+            });
+        }
 
         await notificationService.notifyAdminsOrderPlaced(order);
 
@@ -250,7 +268,18 @@ export class OrderService {
 
         if (existingOrder.paymentMethod === "cod" || existingOrder.paymentStatus === "Paid") {
             for (const item of existingOrder.items) {
-                await productRepository.incrementStock(item.product.toString(), item.quantity);
+                const updated = await productRepository.incrementStock(item.product.toString(), item.quantity);
+                if (updated) {
+                    await stockMovementRepository.create({
+                        product: item.product.toString(),
+                        type: "order",
+                        quantityDelta: item.quantity,
+                        previousStock: updated.stockQuantity - item.quantity,
+                        newStock: updated.stockQuantity,
+                        order: existingOrder._id.toString(),
+                        orderNumber: existingOrder.orderNumber
+                    });
+                }
             }
         }
 
@@ -286,7 +315,19 @@ export class OrderService {
             const updated = await productRepository.decrementStock(item.product.toString(), item.quantity);
             if (!updated) {
                 console.error(`Insufficient stock to reserve product ${item.product} for paid order ${order.orderNumber}`);
+                continue;
             }
+            const previousStock = updated.stockQuantity + item.quantity;
+            await stockMovementRepository.create({
+                product: item.product.toString(),
+                type: "order",
+                quantityDelta: -item.quantity,
+                previousStock,
+                newStock: updated.stockQuantity,
+                order: order._id.toString(),
+                orderNumber: order.orderNumber
+            });
+            await notificationService.notifyAdminsLowStockIfCrossed(previousStock, updated);
         }
 
         const updated = await orderRepository.updatePayment(orderId, {

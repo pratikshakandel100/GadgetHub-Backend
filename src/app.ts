@@ -16,6 +16,7 @@ import shippingAddressRouter from "./routes/shipping-address.routes";
 import paymentRouter from "./routes/payment.routes";
 import notificationRouter from "./routes/notification.routes";
 import dashboardRouter from "./routes/dashboard.routes";
+import inventoryRouter from "./routes/inventory.routes";
 import reviewRouter from "./routes/review.routes";
 import aiRouter from "./routes/ai.routes";
 import cors from "cors";
@@ -98,6 +99,7 @@ app.use("/api/v1/shipping-addresses", shippingAddressRouter);
 app.use("/api/v1/payments", paymentRouter);
 app.use("/api/v1/notifications", notificationRouter);
 app.use("/api/v1/admin/dashboard", dashboardRouter);
+app.use("/api/v1/inventory", inventoryRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/ai", aiRouter);
 
