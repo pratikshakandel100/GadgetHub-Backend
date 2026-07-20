@@ -43,6 +43,11 @@ export const AdminCreateUserDTO = CreateUserDTO.extend({
     role: z.enum(["admin", "user"]).optional().default("user"),
 });
 
+export const GoogleAuthDTO = z.object({
+    idToken: z.string().min(1, "Google ID token is required"),
+});
+export type GoogleAuthDTO = z.infer<typeof GoogleAuthDTO>;
+
 export const AdminUpdateUserDTO = UserSchema.pick({
     fullname: true,
     email: true,
