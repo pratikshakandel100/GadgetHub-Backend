@@ -4,9 +4,11 @@ import { IUser } from "../models/user.model";
 import { HttpException } from "../exceptions/http-exception";
 import bycryptjs from "bcrypt";
 import jwt from "jsonwebtoken";
-import { SECRET_KEY } from "../config/constant";
+import { OAuth2Client } from "google-auth-library";
+import { SECRET_KEY, GOOGLE_CLIENT_ID } from "../config/constant";
 
 const userRepository = new UserMongoRepository();
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
  export class UserService{
     async createUser(userData: CreateUserDTO): Promise<IUser>{
         const existingEmail = await userRepository.findByEmail(userData.email);
@@ -24,6 +26,9 @@ const userRepository = new UserMongoRepository();
         if(!user){
             throw new HttpException(400, "Sorry! Invalid email");
         };
+       if(!user.password){
+        throw new HttpException(400, "This account uses Google Sign-In. Please continue with Google.");
+       }
        const isPasswordValid = await bycryptjs.compare(
         loginData.password,
         user.password
@@ -34,6 +39,40 @@ const userRepository = new UserMongoRepository();
 
        const token = jwt.sign({id: user._id, email: user.email, role: user.role}, SECRET_KEY, {expiresIn: "30d"});
        return {user,token};
+    }
+
+    async googleLogin(idToken: string): Promise<{ user: IUser; token: string }> {
+        if (!GOOGLE_CLIENT_ID) {
+            throw new HttpException(500, "Google Sign-In is not configured");
+        }
+
+        let payload;
+        try {
+            const ticket = await googleClient.verifyIdToken({ idToken, audience: GOOGLE_CLIENT_ID });
+            payload = ticket.getPayload();
+        } catch {
+            throw new HttpException(401, "Invalid Google token");
+        }
+
+        if (!payload?.email || !payload.email_verified) {
+            throw new HttpException(400, "Google account has no verified email");
+        }
+
+        let user = await userRepository.findByEmail(payload.email);
+        if (!user) {
+            user = await userRepository.createGoogleUser({
+                fullname: payload.name || payload.email.split("@")[0],
+                email: payload.email,
+                googleId: payload.sub,
+                profileImage: payload.picture,
+            });
+        } else if (!user.googleId) {
+            // Existing email/password account signing in with Google for the first time — link it.
+            user = (await userRepository.update(user._id.toString(), { googleId: payload.sub })) ?? user;
+        }
+
+        const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, SECRET_KEY, { expiresIn: "30d" });
+        return { user, token };
     }
 
     async updateUser(id: string, userData: UpdateUserDTO): Promise<IUser> {

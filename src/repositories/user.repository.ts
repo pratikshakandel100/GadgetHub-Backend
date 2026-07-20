@@ -5,6 +5,8 @@ export interface IUserRepository {
     findByEmail(email: string): Promise<IUser|null>;
     createUser(user: CreateUserDTO): Promise<IUser>;
     findById(id: string): Promise<IUser | null>;
+    findByGoogleId(googleId: string): Promise<IUser | null>;
+    createGoogleUser(user: { fullname: string; email: string; googleId: string; profileImage?: string }): Promise<IUser>;
     getAll(
         page: number,
         limit: number,
@@ -50,6 +52,16 @@ export class UserMongoRepository implements IUserRepository {
     async findById(id: string): Promise<IUser|null> {
         const foundUser = await User.findById(id);
         return foundUser;
+    }
+
+    async findByGoogleId(googleId: string): Promise<IUser | null> {
+        const foundUser = await User.findOne({ googleId });
+        return foundUser;
+    }
+
+    async createGoogleUser(user: { fullname: string; email: string; googleId: string; profileImage?: string }): Promise<IUser> {
+        const createdUser = await User.create(user);
+        return createdUser;
     }
 
     // Implementation of "Find All"
