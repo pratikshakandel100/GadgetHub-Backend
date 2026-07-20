@@ -22,13 +22,14 @@ export interface IOrderItem {
 
 export interface IShippingAddress {
     fullName: string;
-    phone: string;
-    email?: string;
+    phoneNumber: string;
+    province: string;
+    district: string;
+    municipality: string;
+    wardNumber: number;
     street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
+    landmark?: string;
+    addressType?: string;
 }
 
 export interface IOrderStatusHistoryEntry {
@@ -68,13 +69,14 @@ const OrderMongoSchema: Schema = new Schema<IOrder>(
         ],
         shippingAddress: {
             fullName: { type: String, required: true },
-            phone: { type: String, required: true },
-            email: { type: String, required: false },
+            phoneNumber: { type: String, required: true },
+            province: { type: String, required: true },
+            district: { type: String, required: true },
+            municipality: { type: String, required: true },
+            wardNumber: { type: Number, required: true },
             street: { type: String, required: true },
-            city: { type: String, required: true },
-            state: { type: String, required: true },
-            zipCode: { type: String, required: true },
-            country: { type: String, required: true }
+            landmark: { type: String, required: false },
+            addressType: { type: String, required: false }
         },
         paymentMethod: { type: String, enum: ["cod", "online"], required: true },
         subtotal: { type: Number, required: true },

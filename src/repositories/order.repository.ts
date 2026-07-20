@@ -1,5 +1,4 @@
-import Order, { IOrder, OrderStatus } from "../models/order.model";
-import { CreateOrderDTO } from "../dtos/order.dto";
+import Order, { IOrder, OrderStatus, IShippingAddress } from "../models/order.model";
 import { buildPaginationMeta, SortOrder } from "../utils/query.util";
 
 export interface IOrderListResult {
@@ -21,7 +20,7 @@ export interface ICreateOrderData {
         price: number;
         quantity: number;
     }[];
-    shippingAddress: CreateOrderDTO["shippingAddress"];
+    shippingAddress: IShippingAddress;
     paymentMethod: "cod" | "online";
     subtotal: number;
     shippingFee: number;

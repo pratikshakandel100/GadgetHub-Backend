@@ -3,15 +3,33 @@ import mongoose from "mongoose";
 import { OrderMongoRepository, IOrderListResult } from "../repositories/order.repository";
 import { CartMongoRepository } from "../repositories/cart.repository";
 import { ProductMongoRepository } from "../repositories/product.repository";
+import { ShippingAddressMongoRepository } from "../repositories/shipping-address.repository";
 import { NotificationService } from "./notification.service";
 import { CreateOrderDTO } from "../dtos/order.dto";
-import { IOrder, OrderStatus } from "../models/order.model";
+import { IOrder, IShippingAddress, OrderStatus } from "../models/order.model";
+import { IShippingAddress as ISavedShippingAddress } from "../models/shipping-address.model";
 import { HttpException } from "../exceptions/http-exception";
 
 const orderRepository = new OrderMongoRepository();
 const cartRepository = new CartMongoRepository();
 const productRepository = new ProductMongoRepository();
+const shippingAddressRepository = new ShippingAddressMongoRepository();
 const notificationService = new NotificationService();
+
+// Copies only the physical-address fields onto the order — bookkeeping
+// fields like isDefault belong to the address book, not the snapshot —
+// so later edits/deletes of the saved address never affect past orders.
+const snapshotShippingAddress = (address: ISavedShippingAddress): IShippingAddress => ({
+    fullName: address.fullName,
+    phoneNumber: address.phoneNumber,
+    province: address.province,
+    district: address.district,
+    municipality: address.municipality,
+    wardNumber: address.wardNumber,
+    street: address.street,
+    landmark: address.landmark,
+    addressType: address.addressType
+});
 
 const TERMINAL_STATUSES: OrderStatus[] = ["Delivered", "Cancelled"];
 const SHIPPING_FREE_THRESHOLD = 500;
@@ -45,6 +63,11 @@ const generateOrderNumber = async (): Promise<string> => {
 
 export class OrderService {
     async createOrder(userId: string, orderData: CreateOrderDTO): Promise<IOrder> {
+        const savedAddress = await shippingAddressRepository.getById(orderData.shippingAddressId);
+        if (!savedAddress || savedAddress.user.toString() !== userId) {
+            throw new HttpException(404, "Shipping address not found");
+        }
+
         const cart = await cartRepository.findByUser(userId);
         if (!cart || cart.items.length === 0) {
             throw new HttpException(400, "Your cart is empty");
@@ -106,7 +129,7 @@ export class OrderService {
             orderNumber,
             user: userId,
             items,
-            shippingAddress: orderData.shippingAddress,
+            shippingAddress: snapshotShippingAddress(savedAddress),
             paymentMethod: orderData.paymentMethod,
             subtotal,
             shippingFee,
