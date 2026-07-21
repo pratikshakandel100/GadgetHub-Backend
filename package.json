@@ -9,7 +9,10 @@
     "start-day2": "node day2.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "admin": "npx tsx src/scripts/CreateAdmin.ts",
-    "migrate:subcategories": "npx tsx src/scripts/migrateSubcategories.ts"
+    "migrate:subcategories": "npx tsx src/scripts/migrateSubcategories.ts",
+    "categories:placeholder-images": "npx tsx src/scripts/assignCategoryPlaceholderImages.ts",
+    "categories:images-from-products": "npx tsx src/scripts/assignCategoryImagesFromProducts.ts",
+    "brands:logos": "npx tsx src/scripts/assignBrandLogos.ts"
   },
   "keywords": [],
   "author": "",
