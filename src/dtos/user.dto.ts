@@ -48,6 +48,27 @@ export const GoogleAuthDTO = z.object({
 });
 export type GoogleAuthDTO = z.infer<typeof GoogleAuthDTO>;
 
+export const RefreshTokenDTO = z.object({
+    refreshToken: z.string().min(1, "Refresh token is required"),
+});
+export type RefreshTokenDTO = z.infer<typeof RefreshTokenDTO>;
+
+export const LogoutDTO = z.object({
+    refreshToken: z.string().optional(),
+});
+export type LogoutDTO = z.infer<typeof LogoutDTO>;
+
+export const ForgotPasswordDTO = z.object({
+    email: z.email("Invalid email address"),
+});
+export type ForgotPasswordDTO = z.infer<typeof ForgotPasswordDTO>;
+
+export const ResetPasswordDTO = z.object({
+    token: z.string().min(1, "Reset token is required"),
+    password: z.string().min(6, "Password must be at least 6 characters long"),
+});
+export type ResetPasswordDTO = z.infer<typeof ResetPasswordDTO>;
+
 export const AdminUpdateUserDTO = UserSchema.pick({
     fullname: true,
     email: true,

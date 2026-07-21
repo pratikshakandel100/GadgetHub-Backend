@@ -3,6 +3,7 @@ import rateLimit from "express-rate-limit";
 import { HttpException } from "./exceptions/http-exception";
 import { ApiResponseHelper } from "./utils/apihelper.util";
 import { conditionalGetMiddleware } from "./middlewares/conditionalGet.middleware";
+import { LOGIN_RATE_LIMIT_MAX_ATTEMPTS, LOGIN_RATE_LIMIT_WINDOW_MINUTES } from "./config/constant";
 import userRouter from "./routes/user.routes";
 import adminUserRouter from "./routes/admin.routes";
 import productRouter from "./routes/product.routes";
@@ -63,13 +64,29 @@ const generalLimiter = rateLimit({
     legacyHeaders: false,
     message: { status: 429, success: false, message: "Too many requests, please try again later.", data: null }
 });
-// Stricter limit on login/register specifically, to blunt brute-force attempts.
+// IP-level backstop against one IP spraying many different accounts. Kept
+// separate from login's own limiter below — sharing one counter across
+// login+register+google would let register/google traffic eat into the
+// login budget (and vice versa) for no reason, since they're different
+// abuse shapes.
 const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    limit: 10,
+    windowMs: LOGIN_RATE_LIMIT_WINDOW_MINUTES * 60 * 1000,
+    limit: LOGIN_RATE_LIMIT_MAX_ATTEMPTS,
     standardHeaders: true,
     legacyHeaders: false,
-    message: { status: 429, success: false, message: "Too many attempts, please try again later.", data: null }
+    message: { status: 429, success: false, message: `Too many attempts, please try again in ${LOGIN_RATE_LIMIT_WINDOW_MINUTES} minutes.`, data: null }
+});
+// Login gets its own counter, distinct from authLimiter, so it doesn't
+// share a budget with register/google/forgot-password traffic. This is the
+// IP-level backstop; per-account lockout (a tighter, more specific 5
+// attempts) lives in user.service.ts and is what actually engages first
+// for repeated bad passwords on one account.
+const loginLimiter = rateLimit({
+    windowMs: LOGIN_RATE_LIMIT_WINDOW_MINUTES * 60 * 1000,
+    limit: LOGIN_RATE_LIMIT_MAX_ATTEMPTS,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { status: 429, success: false, message: `Too many login attempts. Please try again in ${LOGIN_RATE_LIMIT_WINDOW_MINUTES} minutes.`, data: null }
 });
 // AI chat calls a paid LLM per request — much tighter than the general limiter.
 const aiLimiter = rateLimit({
@@ -80,9 +97,12 @@ const aiLimiter = rateLimit({
     message: { status: 429, success: false, message: "Too many AI requests, please try again later.", data: null }
 });
 app.use(generalLimiter);
-app.use("/api/v1/auth/login", authLimiter);
+app.use("/api/v1/auth/login", loginLimiter);
 app.use("/api/v1/auth/register", authLimiter);
 app.use("/api/v1/auth/google", authLimiter);
+// Forgot-password sends an email per request — same abuse shape as
+// register/google (not login), so it shares that limiter instead.
+app.use("/api/v1/auth/forgot-password", authLimiter);
 app.use("/api/v1/ai", aiLimiter);
 
 // 2. Your API registration is perfectly fine
