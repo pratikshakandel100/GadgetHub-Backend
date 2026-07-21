@@ -11,6 +11,10 @@ export const ORDER_STATUSES = [
 
 export type OrderStatus = typeof ORDER_STATUSES[number];
 
+export const PAYMENT_STATUSES = ["Pending", "Paid", "Failed", "Refunded"] as const;
+
+export type PaymentStatus = typeof PAYMENT_STATUSES[number];
+
 export interface IOrderItem {
     product: mongoose.Types.ObjectId;
     name: string;
@@ -22,13 +26,14 @@ export interface IOrderItem {
 
 export interface IShippingAddress {
     fullName: string;
-    phone: string;
-    email?: string;
+    phoneNumber: string;
+    province: string;
+    district: string;
+    municipality: string;
+    wardNumber: number;
     street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
+    landmark?: string;
+    addressType?: string;
 }
 
 export interface IOrderStatusHistoryEntry {
@@ -43,11 +48,20 @@ export interface IOrder extends Document {
     items: IOrderItem[];
     shippingAddress: IShippingAddress;
     paymentMethod: "cod" | "online";
+    paymentStatus: PaymentStatus;
+    transactionId?: string;
+    referenceId?: string;
+    paidAt?: Date;
+    amount: number;
+    currency: string;
     subtotal: number;
     shippingFee: number;
     total: number;
     status: OrderStatus;
     statusHistory: IOrderStatusHistoryEntry[];
+    courier?: string;
+    trackingNumber?: string;
+    cancelReason?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -68,15 +82,22 @@ const OrderMongoSchema: Schema = new Schema<IOrder>(
         ],
         shippingAddress: {
             fullName: { type: String, required: true },
-            phone: { type: String, required: true },
-            email: { type: String, required: false },
+            phoneNumber: { type: String, required: true },
+            province: { type: String, required: true },
+            district: { type: String, required: true },
+            municipality: { type: String, required: true },
+            wardNumber: { type: Number, required: true },
             street: { type: String, required: true },
-            city: { type: String, required: true },
-            state: { type: String, required: true },
-            zipCode: { type: String, required: true },
-            country: { type: String, required: true }
+            landmark: { type: String, required: false },
+            addressType: { type: String, required: false }
         },
         paymentMethod: { type: String, enum: ["cod", "online"], required: true },
+        paymentStatus: { type: String, enum: PAYMENT_STATUSES, default: "Pending" },
+        transactionId: { type: String, required: false },
+        referenceId: { type: String, required: false, unique: true, sparse: true },
+        paidAt: { type: Date, required: false },
+        amount: { type: Number, required: true },
+        currency: { type: String, required: true, default: "NPR" },
         subtotal: { type: Number, required: true },
         shippingFee: { type: Number, required: true, default: 0 },
         total: { type: Number, required: true },
@@ -86,7 +107,10 @@ const OrderMongoSchema: Schema = new Schema<IOrder>(
                 status: { type: String, enum: ORDER_STATUSES, required: true },
                 changedAt: { type: Date, required: true, default: Date.now }
             }
-        ]
+        ],
+        courier: { type: String, required: false },
+        trackingNumber: { type: String, required: false },
+        cancelReason: { type: String, required: false }
     },
     {
         timestamps: true

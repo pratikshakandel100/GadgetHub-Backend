@@ -1,6 +1,8 @@
 import { CreateCategoryDTO } from "../dtos/category.dto";
 import Category, { ICategory, ICategoryAttribute } from "../models/category.model";
 import Product from "../models/product.model";
+import { SortOrder } from "../utils/query.util";
+import { stripUndefined } from "../utils/object.util";
 
 export interface ICategoryWithCount extends Omit<ICategory, keyof import("mongoose").Document> {
     _id: import("mongoose").Types.ObjectId;
@@ -9,7 +11,13 @@ export interface ICategoryWithCount extends Omit<ICategory, keyof import("mongoo
 
 export interface ICategoryRepository {
     create(category: CreateCategoryDTO & { slug: string }): Promise<ICategory>;
-    getAll(search: string): Promise<ICategoryWithCount[]>;
+    bulkCreate(categories: (CreateCategoryDTO & { slug: string })[]): Promise<ICategory[]>;
+    getAll(
+        search: string,
+        sort: Record<string, SortOrder>,
+        page?: number,
+        limit?: number
+    ): Promise<{ categories: ICategoryWithCount[]; total: number }>;
     getPublished(search: string): Promise<ICategory[]>;
     getById(id: string): Promise<ICategory | null>;
     findByName(name: string): Promise<ICategory | null>;
@@ -25,12 +33,37 @@ export class CategoryMongoRepository implements ICategoryRepository {
         return await Category.create(category);
     }
 
-    async getAll(search: string): Promise<ICategoryWithCount[]> {
+    async bulkCreate(categories: (CreateCategoryDTO & { slug: string })[]): Promise<ICategory[]> {
+        if (categories.length === 0) return [];
+        try {
+            return await Category.insertMany(categories, { ordered: false });
+        } catch (error: any) {
+            // ordered:false lets independent inserts succeed even if a sibling
+            // hits the unique index (name/slug race); Mongoose still throws but
+            // attaches the docs that made it in.
+            if (Array.isArray(error?.insertedDocs)) {
+                return error.insertedDocs;
+            }
+            throw error;
+        }
+    }
+
+    async getAll(
+        search: string,
+        sort: Record<string, SortOrder>,
+        page?: number,
+        limit?: number
+    ): Promise<{ categories: ICategoryWithCount[]; total: number }> {
         const filter = search
             ? { name: { $regex: search, $options: "i" } }
             : {};
 
-        const categories = await Category.find(filter).sort({ createdAt: -1 });
+        let query = Category.find(filter).sort(sort);
+        if (page !== undefined && limit !== undefined) {
+            query = query.skip((page - 1) * limit).limit(limit);
+        }
+        const categories = await query;
+        const total = await Category.countDocuments(filter);
 
         const categoriesWithCount = await Promise.all(
             categories.map(async (category) => {
@@ -42,7 +75,7 @@ export class CategoryMongoRepository implements ICategoryRepository {
             })
         );
 
-        return categoriesWithCount;
+        return { categories: categoriesWithCount, total };
     }
 
     async getPublished(search: string): Promise<ICategory[]> {
@@ -66,12 +99,9 @@ export class CategoryMongoRepository implements ICategoryRepository {
     }
 
     async update(id: string, category: Partial<ICategory>): Promise<ICategory | null> {
-        const filteredCategory = Object.fromEntries(
-            Object.entries(category).filter(([_, value]) => value !== undefined)
-        );
         return await Category.findByIdAndUpdate(
             id,
-            { $set: filteredCategory },
+            { $set: stripUndefined(category) },
             { new: true, runValidators: true }
         );
     }

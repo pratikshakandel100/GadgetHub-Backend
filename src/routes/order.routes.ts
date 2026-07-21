@@ -11,5 +11,7 @@ orderRouter.get("/", authorizedMiddleware, orderController.getMyOrders);
 orderRouter.get("/admin/all", authorizedMiddleware, adminMiddleware, orderController.getAllOrders);
 orderRouter.get("/:id", authorizedMiddleware, orderController.getOrderById);
 orderRouter.patch("/:id/status", authorizedMiddleware, adminMiddleware, orderController.updateOrderStatus);
+orderRouter.patch("/:id/ship", authorizedMiddleware, adminMiddleware, orderController.shipOrder);
+orderRouter.patch("/:id/cancel", authorizedMiddleware, adminMiddleware, orderController.cancelOrder);
 
 export default orderRouter;

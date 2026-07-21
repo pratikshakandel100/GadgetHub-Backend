@@ -29,22 +29,20 @@ const storage = multer.diskStorage(
     }
 );
 
-const ALLOWED_IMAGE_MIMETYPES = [
-    "image/jpeg", // .jpg / .jpeg
-    "image/png",  // .png
-    "image/webp", // .webp
-    "image/gif"   // .gif
-];
+// SVG is deliberately excluded even though it's `image/*` — it can carry inline
+// <script>/event-handler payloads, so accepting it here would let an upload
+// become stored XSS wherever the file is later served or embedded.
+const BLOCKED_IMAGE_MIMETYPES = ["image/svg+xml"];
 
 const fileFilter = (
     req: Request,
     file: Express.Multer.File,
     cb: multer.FileFilterCallback
 ) => {
-    if (ALLOWED_IMAGE_MIMETYPES.includes(file.mimetype)) {
+    if (file.mimetype.startsWith("image/") && !BLOCKED_IMAGE_MIMETYPES.includes(file.mimetype)) {
         cb(null, true); // accept file
     } else {
-        cb(new HttpException(400, "Only JPEG, PNG, WEBP, and GIF image files are allowed")); // reject file
+        cb(new HttpException(400, "Only image files are allowed (SVG is not supported)")); // reject file
     }
 }
 const upload = multer(

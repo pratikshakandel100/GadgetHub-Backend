@@ -1,6 +1,7 @@
 import { NotificationMongoRepository, INotificationListResult } from "../repositories/notification.repository";
 import { INotification } from "../models/notification.model";
 import { IOrder } from "../models/order.model";
+import { IProduct } from "../models/product.model";
 import { HttpException } from "../exceptions/http-exception";
 
 const notificationRepository = new NotificationMongoRepository();
@@ -27,6 +28,26 @@ export class NotificationService {
             order: order._id.toString(),
             orderNumber: order.orderNumber
         });
+    }
+
+    async notifyAdminsLowStock(product: IProduct): Promise<void> {
+        await notificationRepository.create({
+            audience: "admin",
+            type: "low_stock",
+            title: product.stockQuantity === 0 ? "Product out of stock" : "Low stock alert",
+            message: `${product.name} has ${product.stockQuantity} unit${product.stockQuantity === 1 ? "" : "s"} left (minimum alert: ${product.minimumStockAlert})`,
+            product: product._id.toString(),
+            productName: product.name
+        });
+    }
+
+    // Fires only on the transition into low/out-of-stock territory, not on every
+    // decrement while already below the threshold — otherwise every subsequent
+    // sale of a slow-restocked product would spam a fresh notification.
+    async notifyAdminsLowStockIfCrossed(previousStock: number, product: IProduct): Promise<void> {
+        if (product.stockQuantity <= product.minimumStockAlert && previousStock > product.minimumStockAlert) {
+            await this.notifyAdminsLowStock(product);
+        }
     }
 
     async getMyNotifications(userId: string, isAdmin: boolean, page: number, limit: number): Promise<INotificationListResult> {

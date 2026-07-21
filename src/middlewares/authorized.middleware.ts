@@ -47,6 +47,9 @@ export const authorizedMiddleware =
             const status = err.name === "JsonWebTokenError" || err.name === "TokenExpiredError"
                 ? 401
                 : err.status || 500;
+            if (status === 401) {
+                res.set("WWW-Authenticate", 'Bearer realm="gadgethub", error="invalid_token"');
+            }
             return ApiResponseHelper.error(
                 res,
                 status === 401 ? 'Invalid or expired login session' : err.message || 'Internal Server Error',

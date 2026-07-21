@@ -15,6 +15,13 @@ categoryRouter.post(
     categoryController.createCategory
 );
 
+categoryRouter.post(
+    "/bulk",
+    authorizedMiddleware,
+    adminMiddleware,
+    categoryController.bulkCreateCategories
+);
+
 categoryRouter.get(
     "/",
     authorizedMiddleware,

@@ -1,6 +1,8 @@
 import { CreateBrandDTO } from "../dtos/brand.dto";
 import Brand, { IBrand } from "../models/brand.model";
 import Product from "../models/product.model";
+import { SortOrder } from "../utils/query.util";
+import { stripUndefined } from "../utils/object.util";
 
 export interface IBrandWithCount extends Omit<IBrand, keyof import("mongoose").Document> {
     _id: import("mongoose").Types.ObjectId;
@@ -9,7 +11,13 @@ export interface IBrandWithCount extends Omit<IBrand, keyof import("mongoose").D
 
 export interface IBrandRepository {
     create(brand: CreateBrandDTO & { slug: string }): Promise<IBrand>;
-    getAll(search: string): Promise<IBrandWithCount[]>;
+    bulkCreate(brands: (CreateBrandDTO & { slug: string })[]): Promise<IBrand[]>;
+    getAll(
+        search: string,
+        sort: Record<string, SortOrder>,
+        page?: number,
+        limit?: number
+    ): Promise<{ brands: IBrandWithCount[]; total: number }>;
     getById(id: string): Promise<IBrand | null>;
     findByName(name: string): Promise<IBrand | null>;
     findBySlug(slug: string): Promise<IBrand | null>;
@@ -23,12 +31,34 @@ export class BrandMongoRepository implements IBrandRepository {
         return await Brand.create(brand);
     }
 
-    async getAll(search: string): Promise<IBrandWithCount[]> {
+    async bulkCreate(brands: (CreateBrandDTO & { slug: string })[]): Promise<IBrand[]> {
+        if (brands.length === 0) return [];
+        try {
+            return await Brand.insertMany(brands, { ordered: false });
+        } catch (error: any) {
+            if (Array.isArray(error?.insertedDocs)) {
+                return error.insertedDocs;
+            }
+            throw error;
+        }
+    }
+
+    async getAll(
+        search: string,
+        sort: Record<string, SortOrder>,
+        page?: number,
+        limit?: number
+    ): Promise<{ brands: IBrandWithCount[]; total: number }> {
         const filter = search
             ? { name: { $regex: search, $options: "i" } }
             : {};
 
-        const brands = await Brand.find(filter).sort({ createdAt: -1 });
+        let query = Brand.find(filter).sort(sort);
+        if (page !== undefined && limit !== undefined) {
+            query = query.skip((page - 1) * limit).limit(limit);
+        }
+        const brands = await query;
+        const total = await Brand.countDocuments(filter);
 
         const brandsWithCount = await Promise.all(
             brands.map(async (brand) => {
@@ -40,7 +70,7 @@ export class BrandMongoRepository implements IBrandRepository {
             })
         );
 
-        return brandsWithCount;
+        return { brands: brandsWithCount, total };
     }
 
     async getById(id: string): Promise<IBrand | null> {
@@ -56,12 +86,9 @@ export class BrandMongoRepository implements IBrandRepository {
     }
 
     async update(id: string, brand: Partial<IBrand>): Promise<IBrand | null> {
-        const filteredBrand = Object.fromEntries(
-            Object.entries(brand).filter(([_, value]) => value !== undefined)
-        );
         return await Brand.findByIdAndUpdate(
             id,
-            { $set: filteredBrand },
+            { $set: stripUndefined(brand) },
             { new: true, runValidators: true }
         );
     }

@@ -20,6 +20,13 @@ productRouter.post(
     productController.createProduct
 );
 
+productRouter.post(
+    "/bulk",
+    authorizedMiddleware,
+    adminMiddleware,
+    productController.bulkCreateProducts
+);
+
 productRouter.get(
     "/",
     authorizedMiddleware,
@@ -35,6 +42,11 @@ productRouter.get(
 productRouter.get(
     "/published/:id",
     productController.getPublishedProductById
+);
+
+productRouter.get(
+    "/compare",
+    productController.getPublishedProductsByIds
 );
 
 productRouter.get(
@@ -61,6 +73,13 @@ productRouter.patch(
     authorizedMiddleware,
     adminMiddleware,
     productController.updateStatus
+);
+
+productRouter.delete(
+    "/bulk",
+    authorizedMiddleware,
+    adminMiddleware,
+    productController.bulkDeleteProducts
 );
 
 productRouter.delete(

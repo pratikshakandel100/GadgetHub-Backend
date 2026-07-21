@@ -24,7 +24,8 @@ export const UserSchema = z.object({
     profileImage: optionalString,
     gender: optionalGender,
     dateOfBirth: optionalString,
-    address: optionalString
+    address: optionalString,
+    googleId: optionalString
 });
 
 export type UserType = z.infer<typeof UserSchema>;

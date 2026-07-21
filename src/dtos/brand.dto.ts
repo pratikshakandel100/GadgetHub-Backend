@@ -16,3 +16,7 @@ export const UpdateBrandDTO = BrandSchema.pick({
 }).partial();
 
 export type UpdateBrandDTO = z.infer<typeof UpdateBrandDTO>;
+
+export const BulkCreateBrandDTO = z.array(CreateBrandDTO).min(1, "At least one brand is required");
+
+export type BulkCreateBrandDTO = z.infer<typeof BulkCreateBrandDTO>;

@@ -12,7 +12,10 @@ const UserMongoSchema: Schema = new Schema<IUser>(
     {
         fullname: { type: String, required: true},
         email: {type: String, required: true, unique: true},
-        password: {type: String, required: true},
+        // Not required at the schema level: Google-authenticated users have no password.
+        // CreateUserDTO still requires it for normal email/password registration.
+        password: {type: String, required: false},
+        googleId: { type: String, required: false, unique: true, sparse: true },
         phoneNumber: { type: String, required: false },
         profileImage: { type: String, required: false },
         gender: {

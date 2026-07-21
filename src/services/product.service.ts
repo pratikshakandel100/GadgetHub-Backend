@@ -1,7 +1,9 @@
-import { ProductMongoRepository, IProductListResult } from "../repositories/product.repository";
+import { ProductMongoRepository, IProductListResult, ICreateProductData } from "../repositories/product.repository";
 import { CategoryMongoRepository } from "../repositories/category.repository";
+import { SubcategoryMongoRepository } from "../repositories/subcategory.repository";
 import { BrandMongoRepository } from "../repositories/brand.repository";
 import { CounterMongoRepository } from "../repositories/counter.repository";
+import { ReviewMongoRepository } from "../repositories/review.repository";
 import { CreateProductDTO, UpdateProductDTO } from "../dtos/product.dto";
 import { IProduct } from "../models/product.model";
 import { HttpException } from "../exceptions/http-exception";
@@ -10,10 +12,13 @@ import { ICategoryAttribute } from "../models/category.model";
 
 const productRepository = new ProductMongoRepository();
 const categoryRepository = new CategoryMongoRepository();
+const subcategoryRepository = new SubcategoryMongoRepository();
 const brandRepository = new BrandMongoRepository();
 const counterRepository = new CounterMongoRepository();
+const reviewRepository = new ReviewMongoRepository();
 
 const MONGO_DUPLICATE_KEY_ERROR_CODE = 11000;
+const MAX_COMPARE_PRODUCTS = 4;
 
 export interface ICreateProductResult {
     product: IProduct;
@@ -43,6 +48,23 @@ export class ProductService {
         }
     }
 
+    private isObjectId(value: string): boolean {
+        return /^[0-9a-fA-F]{24}$/.test(value);
+    }
+
+    private async validateSubcategory(subcategoryId: string, categoryId: string): Promise<void> {
+        const subcategory = await subcategoryRepository.getById(subcategoryId);
+        if (!subcategory) {
+            throw new HttpException(404, "Subcategory not found");
+        }
+        // `category` is populated by the repository, so unwrap its `_id` rather than
+        // treating it as a raw ObjectId.
+        const categoryRef = subcategory.category as unknown as { _id: { toString(): string } };
+        if (categoryRef._id.toString() !== categoryId) {
+            throw new HttpException(400, "Subcategory does not belong to the selected category");
+        }
+    }
+
     async createProduct(productData: CreateProductDTO, sellerId: string): Promise<ICreateProductResult> {
         const category = await categoryRepository.getById(productData.category);
         if (!category) {
@@ -51,6 +73,9 @@ export class ProductService {
         const brand = await brandRepository.getById(productData.brand);
         if (!brand) {
             throw new HttpException(404, "Brand not found");
+        }
+        if (productData.subcategory) {
+            await this.validateSubcategory(productData.subcategory, productData.category);
         }
 
         this.validateCategoryAttributes(category.attributeSchema ?? [], productData.attributes);
@@ -103,23 +128,114 @@ export class ProductService {
         }
     }
 
+    async bulkCreateProducts(productsData: CreateProductDTO[], sellerId: string): Promise<{
+        insertedCount: number;
+        inserted: IProduct[];
+        failed: { index: number; name?: string; reason: string }[];
+    }> {
+        const toInsert: ICreateProductData[] = [];
+        const failed: { index: number; name?: string; reason: string }[] = [];
+        const seenVariantKeys = new Set<string>();
+
+        for (let index = 0; index < productsData.length; index++) {
+            const productData = productsData[index];
+            try {
+                // Bulk imports are often hand-written outside the admin UI (e.g. via
+                // Postman), where the operator knows category/brand/subcategory
+                // *names*, not their ObjectIds. Accept either: a 24-hex-char string
+                // is looked up by id, anything else is resolved by name.
+                const category = this.isObjectId(productData.category)
+                    ? await categoryRepository.getById(productData.category)
+                    : await categoryRepository.findByName(productData.category);
+                if (!category) throw new HttpException(404, `Category not found: "${productData.category}"`);
+
+                const brand = this.isObjectId(productData.brand)
+                    ? await brandRepository.getById(productData.brand)
+                    : await brandRepository.findByName(productData.brand);
+                if (!brand) throw new HttpException(404, `Brand not found: "${productData.brand}"`);
+
+                const categoryId = category._id.toString();
+                const brandId = brand._id.toString();
+
+                let subcategoryId: string | undefined;
+                if (productData.subcategory) {
+                    const subcategory = this.isObjectId(productData.subcategory)
+                        ? await subcategoryRepository.getById(productData.subcategory)
+                        : await subcategoryRepository.findByNameInCategory(productData.subcategory, categoryId);
+                    if (!subcategory) throw new HttpException(404, `Subcategory not found: "${productData.subcategory}"`);
+                    subcategoryId = subcategory._id.toString();
+                }
+
+                this.validateCategoryAttributes(category.attributeSchema ?? [], productData.attributes);
+
+                const variantKey = buildVariantKey(
+                    sellerId,
+                    productData.name,
+                    brandId,
+                    categoryId,
+                    productData.variantAttributes
+                );
+
+                if (seenVariantKeys.has(variantKey)) {
+                    throw new HttpException(400, "Duplicate variant within the submitted batch");
+                }
+                const existingVariant = await productRepository.getByVariantKey(variantKey);
+                if (existingVariant) {
+                    throw new HttpException(400, "A matching variant already exists");
+                }
+
+                const { categoryCode, brandCode, variantCode } = buildSkuCodes(category.name, brand.name, productData.variantAttributes);
+                const sequenceKey = buildSkuSequenceKey(categoryCode, brandCode);
+                const sequence = await counterRepository.getNextSequence(sequenceKey);
+                const sku = formatSku(categoryCode, brandCode, variantCode, sequence);
+
+                const skuExists = await productRepository.existsBySku(sku);
+                if (skuExists) {
+                    throw new HttpException(400, `Duplicate SKU: ${sku}`);
+                }
+
+                seenVariantKeys.add(variantKey);
+                toInsert.push({
+                    ...productData,
+                    category: categoryId,
+                    brand: brandId,
+                    subcategory: subcategoryId,
+                    sku,
+                    variantKey,
+                    seller: sellerId
+                });
+            } catch (error: any) {
+                failed.push({ index, name: productData?.name, reason: error.message || "Failed to validate product" });
+            }
+        }
+
+        const inserted = await productRepository.bulkCreate(toInsert);
+        return { insertedCount: inserted.length, inserted, failed };
+    }
+
     async getAllProducts(
         page: number,
         limit: number,
         search: string,
         category: string,
-        status: string
+        status: string,
+        sort: Record<string, 1 | -1>,
+        minPrice?: number,
+        maxPrice?: number
     ): Promise<IProductListResult> {
-        return await productRepository.getAll(page, limit, search, category, status);
+        return await productRepository.getAll(page, limit, search, category, status, sort, minPrice, maxPrice);
     }
 
     async getPublishedProducts(
         page: number,
         limit: number,
         search: string,
-        category: string
+        category: string,
+        sort: Record<string, 1 | -1>,
+        minPrice?: number,
+        maxPrice?: number
     ): Promise<IProductListResult> {
-        return await productRepository.getPublished(page, limit, search, category);
+        return await productRepository.getPublished(page, limit, search, category, sort, minPrice, maxPrice);
     }
 
     async getProductById(id: string): Promise<IProduct> {
@@ -136,6 +252,25 @@ export class ProductService {
             throw new HttpException(404, "Product not found");
         }
         return product;
+    }
+
+    async getPublishedProductsByIds(ids: string[]): Promise<Record<string, unknown>[]> {
+        const uniqueIds = Array.from(new Set(ids)).slice(0, MAX_COMPARE_PRODUCTS);
+        if (uniqueIds.length === 0) {
+            return [];
+        }
+
+        const products = await productRepository.getPublishedByIds(uniqueIds);
+        const ratingSummary = await reviewRepository.getRatingSummaryByProductIds(uniqueIds);
+
+        return products.map((product) => {
+            const rating = ratingSummary[product._id.toString()];
+            return {
+                ...product.toObject(),
+                averageRating: rating ? Math.round(rating.averageRating * 10) / 10 : 0,
+                totalReviews: rating?.totalReviews ?? 0
+            };
+        });
     }
 
     async updateProduct(id: string, productData: UpdateProductDTO): Promise<IProduct> {
@@ -156,6 +291,10 @@ export class ProductService {
                 throw new HttpException(404, "Brand not found");
             }
         }
+        if (productData.subcategory) {
+            const effectiveCategoryId = productData.category ?? (existingProduct.category as unknown as { _id: { toString(): string } })._id.toString();
+            await this.validateSubcategory(productData.subcategory, effectiveCategoryId);
+        }
 
         const updated = await productRepository.update(id, productData);
         if (!updated) {
@@ -175,6 +314,34 @@ export class ProductService {
             throw new HttpException(500, "Failed to update product status");
         }
         return updated;
+    }
+
+    async bulkDeleteProducts(ids: string[], names: string[]): Promise<{
+        deletedCount: number;
+        notFound: string[];
+    }> {
+        const notFound: string[] = [];
+        const idsToDelete = new Set<string>();
+
+        for (const id of ids) {
+            if (this.isObjectId(id)) {
+                idsToDelete.add(id);
+            } else {
+                notFound.push(id);
+            }
+        }
+
+        if (names.length > 0) {
+            const found = await productRepository.findByNames(names);
+            const foundNames = new Set(found.map((p) => p.name));
+            found.forEach((p) => idsToDelete.add(p._id.toString()));
+            names.forEach((name) => {
+                if (!foundNames.has(name)) notFound.push(name);
+            });
+        }
+
+        const deletedCount = await productRepository.bulkDelete(Array.from(idsToDelete));
+        return { deletedCount, notFound };
     }
 
     async deleteProduct(id: string): Promise<void> {
