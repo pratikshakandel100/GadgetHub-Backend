@@ -3,9 +3,18 @@ import { CreateUserDTO, LoginUserDTO, UpdateUserDTO } from "../dtos/user.dto";
 import { IUser } from "../models/user.model";
 import { HttpException } from "../exceptions/http-exception";
 import bycryptjs from "bcrypt";
-import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
-import { SECRET_KEY, GOOGLE_CLIENT_ID } from "../config/constant";
+import { GOOGLE_CLIENT_ID, FRONTEND_URL, ACCOUNT_LOCKOUT_MAX_ATTEMPTS, ACCOUNT_LOCKOUT_MINUTES, PASSWORD_RESET_EXPIRES_MINUTES } from "../config/constant";
+import {
+    issueTokenPair,
+    rotateRefreshToken,
+    revokeRefreshToken,
+    revokeAllRefreshTokensForUser,
+    findActiveRefreshToken,
+    generateRawToken,
+    hashRawToken,
+} from "../utils/token.util";
+import { sendPasswordResetEmail } from "../utils/email.util";
 
 const userRepository = new UserMongoRepository();
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -29,19 +38,39 @@ const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
        if(!user.password){
         throw new HttpException(400, "This account uses Google Sign-In. Please continue with Google.");
        }
+
+       if (user.lockUntil && user.lockUntil.getTime() > Date.now()) {
+           const minutesLeft = Math.ceil((user.lockUntil.getTime() - Date.now()) / 60000);
+           throw new HttpException(423, `Too many failed attempts. Try again in ${minutesLeft} minute${minutesLeft === 1 ? "" : "s"}.`);
+       }
+
        const isPasswordValid = await bycryptjs.compare(
         loginData.password,
         user.password
        )
        if(!isPasswordValid){
+        const failedLoginAttempts = (user.failedLoginAttempts ?? 0) + 1;
+        const lockingNow = failedLoginAttempts >= ACCOUNT_LOCKOUT_MAX_ATTEMPTS;
+        await userRepository.update(user._id.toString(), {
+            failedLoginAttempts: lockingNow ? 0 : failedLoginAttempts,
+            lockUntil: lockingNow ? new Date(Date.now() + ACCOUNT_LOCKOUT_MINUTES * 60 * 1000) : (null as unknown as Date),
+        });
+        if (lockingNow) {
+            throw new HttpException(423, `Too many failed attempts. Account locked for ${ACCOUNT_LOCKOUT_MINUTES} minutes.`);
+        }
         throw new HttpException(400, "Sorry! Invalid Password");
        }
 
-       const token = jwt.sign({id: user._id, email: user.email, role: user.role}, SECRET_KEY, {expiresIn: "30d"});
-       return {user,token};
+       if (user.failedLoginAttempts) {
+           await userRepository.update(user._id.toString(), { failedLoginAttempts: 0, lockUntil: null as unknown as Date });
+           user.failedLoginAttempts = 0;
+       }
+
+       const { accessToken, refreshToken } = await issueTokenPair(user);
+       return { user, accessToken, refreshToken };
     }
 
-    async googleLogin(idToken: string): Promise<{ user: IUser; token: string }> {
+    async googleLogin(idToken: string): Promise<{ user: IUser; accessToken: string; refreshToken: string }> {
         if (!GOOGLE_CLIENT_ID) {
             throw new HttpException(500, "Google Sign-In is not configured");
         }
@@ -71,8 +100,67 @@ const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
             user = (await userRepository.update(user._id.toString(), { googleId: payload.sub })) ?? user;
         }
 
-        const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, SECRET_KEY, { expiresIn: "30d" });
-        return { user, token };
+        const { accessToken, refreshToken } = await issueTokenPair(user);
+        return { user, accessToken, refreshToken };
+    }
+
+    async refreshAccessToken(rawRefreshToken: string): Promise<{ user: IUser; accessToken: string; refreshToken: string }> {
+        const existing = await findActiveRefreshToken(rawRefreshToken);
+        if (!existing) {
+            throw new HttpException(401, "Session expired. Please log in again.");
+        }
+        const user = await userRepository.findById(existing.user.toString());
+        if (!user) {
+            throw new HttpException(401, "Session expired. Please log in again.");
+        }
+        const rotated = await rotateRefreshToken(rawRefreshToken, user);
+        if (!rotated) {
+            throw new HttpException(401, "Session expired. Please log in again.");
+        }
+        return { user, ...rotated };
+    }
+
+    async logoutUser(rawRefreshToken?: string): Promise<void> {
+        if (rawRefreshToken) {
+            await revokeRefreshToken(rawRefreshToken);
+        }
+    }
+
+    async forgotPassword(email: string): Promise<void> {
+        const user = await userRepository.findByEmail(email);
+        // Always behave the same whether or not the account exists, so this
+        // endpoint can't be used to enumerate registered emails.
+        if (!user || !user.password) {
+            return;
+        }
+
+        const rawToken = generateRawToken();
+        await userRepository.update(user._id.toString(), {
+            resetPasswordTokenHash: hashRawToken(rawToken),
+            resetPasswordExpires: new Date(Date.now() + PASSWORD_RESET_EXPIRES_MINUTES * 60 * 1000),
+        });
+
+        const resetUrl = `${FRONTEND_URL}/user/reset-password?token=${rawToken}`;
+        await sendPasswordResetEmail(user.email, resetUrl);
+    }
+
+    async resetPassword(rawToken: string, newPassword: string): Promise<void> {
+        const user = await userRepository.findByResetTokenHash(hashRawToken(rawToken));
+        if (!user) {
+            throw new HttpException(400, "This reset link is invalid or has expired");
+        }
+
+        const hashedPassword = await bycryptjs.hash(newPassword, 10);
+        await userRepository.update(user._id.toString(), {
+            password: hashedPassword,
+            resetPasswordTokenHash: null as unknown as string,
+            resetPasswordExpires: null as unknown as Date,
+            failedLoginAttempts: 0,
+            lockUntil: null as unknown as Date,
+        });
+
+        // A password reset means any stolen session should stop working too.
+        await revokeAllRefreshTokensForUser(user._id.toString());
     }
 
     async updateUser(id: string, userData: UpdateUserDTO): Promise<IUser> {
