@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Order, { IOrder, OrderStatus, PaymentStatus, IShippingAddress } from "../models/order.model";
 import User from "../models/user.model";
 import { buildPaginationMeta, SortOrder } from "../utils/query.util";
@@ -49,6 +50,7 @@ export interface IOrderRepository {
     getById(id: string): Promise<IOrder | null>;
     getByReferenceId(referenceId: string): Promise<IOrder | null>;
     getByUser(userId: string, page: number, limit: number, status: string, sort: Record<string, SortOrder>): Promise<IOrderListResult>;
+    getFrequentlyCoOccurring(productId: string, limit: number): Promise<{ productId: string; count: number }[]>;
     getAll(page: number, limit: number, status: string, search: string, sort: Record<string, SortOrder>, filters?: IOrderFilters): Promise<IOrderListResult>;
     updateStatus(id: string, status: OrderStatus): Promise<IOrder | null>;
     updateShipment(id: string, courier: string, trackingNumber: string): Promise<IOrder | null>;
@@ -90,6 +92,24 @@ export class OrderMongoRepository implements IOrderRepository {
         const total = await Order.countDocuments(query);
 
         return { orders, ...buildPaginationMeta(total, page, limit) };
+    }
+
+    async getFrequentlyCoOccurring(productId: string, limit: number): Promise<{ productId: string; count: number }[]> {
+        const productObjectId = new mongoose.Types.ObjectId(productId);
+
+        // Counts, across every order that contains `productId`, how many of
+        // those same orders also contain each other product — a basket
+        // co-occurrence count, one increment per order (not per unit ordered).
+        const results = await Order.aggregate([
+            { $match: { "items.product": productObjectId } },
+            { $unwind: "$items" },
+            { $match: { "items.product": { $ne: productObjectId } } },
+            { $group: { _id: "$items.product", count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: limit }
+        ]);
+
+        return results.map((r) => ({ productId: r._id.toString(), count: r.count }));
     }
 
     async getAll(page: number, limit: number, status: string, search: string, sort: Record<string, SortOrder>, filters: IOrderFilters = {}): Promise<IOrderListResult> {
