@@ -8,11 +8,7 @@
     "start": "npx tsx index.ts",
     "start-day2": "node day2.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "admin": "npx tsx src/scripts/CreateAdmin.ts",
-    "migrate:subcategories": "npx tsx src/scripts/migrateSubcategories.ts",
-    "categories:placeholder-images": "npx tsx src/scripts/assignCategoryPlaceholderImages.ts",
-    "categories:images-from-products": "npx tsx src/scripts/assignCategoryImagesFromProducts.ts",
-    "brands:logos": "npx tsx src/scripts/assignBrandLogos.ts"
+    "admin": "npx tsx src/scripts/CreateAdmin.ts"
   },
   "keywords": [],
   "author": "",
@@ -32,6 +28,7 @@
     "morgan": "^1.11.0",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.3",
+    "sharp": "^0.35.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
