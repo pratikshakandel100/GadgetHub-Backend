@@ -15,8 +15,26 @@ const POPULATE_FIELDS = {
 };
 
 export class CartMongoRepository implements ICartRepository {
+    /**
+     * A cart item's `product` populates to null when the referenced product
+     * was deleted from the catalog after being added to the cart. Rather than
+     * let that null reach every screen that reads `item.product.sellingPrice`,
+     * prune those stale entries here — the one place all cart reads flow
+     * through — and persist the removal so it doesn't keep resurfacing.
+     */
+    private async pruneOrphanedItems(cart: ICart | null): Promise<ICart | null> {
+        if (!cart) return cart;
+        const orphanedIds = cart.items.filter((item) => !item.product).map((item) => item._id);
+        if (orphanedIds.length === 0) return cart;
+
+        await Cart.updateOne({ _id: cart._id }, { $pull: { items: { _id: { $in: orphanedIds } } } });
+        cart.items = cart.items.filter((item) => !!item.product);
+        return cart;
+    }
+
     async findByUser(userId: string): Promise<ICart | null> {
-        return await Cart.findOne({ user: userId }).populate(POPULATE_FIELDS);
+        const cart = await Cart.findOne({ user: userId }).populate(POPULATE_FIELDS);
+        return this.pruneOrphanedItems(cart);
     }
 
     async createForUser(userId: string): Promise<ICart> {
@@ -31,29 +49,32 @@ export class CartMongoRepository implements ICartRepository {
             { new: true }
         ).populate(POPULATE_FIELDS);
 
-        if (cart) return cart;
+        if (cart) return this.pruneOrphanedItems(cart);
 
-        return await Cart.findOneAndUpdate(
+        const created = await Cart.findOneAndUpdate(
             { user: userId },
             { $push: { items: { product: productId, quantity } } },
             { new: true, upsert: true }
         ).populate(POPULATE_FIELDS);
+        return this.pruneOrphanedItems(created);
     }
 
     async updateItemQuantity(userId: string, productId: string, quantity: number): Promise<ICart | null> {
-        return await Cart.findOneAndUpdate(
+        const cart = await Cart.findOneAndUpdate(
             { user: userId, "items.product": productId },
             { $set: { "items.$.quantity": quantity } },
             { new: true }
         ).populate(POPULATE_FIELDS);
+        return this.pruneOrphanedItems(cart);
     }
 
     async removeItem(userId: string, productId: string): Promise<ICart | null> {
-        return await Cart.findOneAndUpdate(
+        const cart = await Cart.findOneAndUpdate(
             { user: userId },
             { $pull: { items: { product: productId } } },
             { new: true }
         ).populate(POPULATE_FIELDS);
+        return this.pruneOrphanedItems(cart);
     }
 
     async clear(userId: string): Promise<ICart | null> {
