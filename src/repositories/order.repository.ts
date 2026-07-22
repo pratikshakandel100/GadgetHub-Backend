@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Order, { IOrder, OrderStatus, PaymentStatus, IShippingAddress } from "../models/order.model";
+import Order, { IOrder, OrderStatus, PaymentStatus, IShippingAddress, IOrderShippingMethod } from "../models/order.model";
 import User from "../models/user.model";
 import { buildPaginationMeta, SortOrder } from "../utils/query.util";
 
@@ -23,6 +23,7 @@ export interface ICreateOrderData {
         quantity: number;
     }[];
     shippingAddress: IShippingAddress;
+    shippingMethod: IOrderShippingMethod;
     paymentMethod: "cod" | "online";
     paymentStatus: PaymentStatus;
     amount: number;

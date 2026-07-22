@@ -41,6 +41,11 @@ export interface IOrderStatusHistoryEntry {
     changedAt: Date;
 }
 
+export interface IOrderShippingMethod {
+    name: string;
+    estimatedDelivery: string;
+}
+
 export interface IOrder extends Document {
     _id: mongoose.Types.ObjectId;
     orderNumber: string;
@@ -59,6 +64,7 @@ export interface IOrder extends Document {
     total: number;
     status: OrderStatus;
     statusHistory: IOrderStatusHistoryEntry[];
+    shippingMethod?: IOrderShippingMethod;
     courier?: string;
     trackingNumber?: string;
     cancelReason?: string;
@@ -108,6 +114,14 @@ const OrderMongoSchema: Schema = new Schema<IOrder>(
                 changedAt: { type: Date, required: true, default: Date.now }
             }
         ],
+        shippingMethod: {
+            type: {
+                name: { type: String, required: true },
+                estimatedDelivery: { type: String, required: true }
+            },
+            required: false,
+            _id: false
+        },
         courier: { type: String, required: false },
         trackingNumber: { type: String, required: false },
         cancelReason: { type: String, required: false }

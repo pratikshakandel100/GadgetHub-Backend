@@ -4,6 +4,7 @@ import { OrderMongoRepository, IOrderListResult, IOrderFilters } from "../reposi
 import { CartMongoRepository } from "../repositories/cart.repository";
 import { ProductMongoRepository } from "../repositories/product.repository";
 import { ShippingAddressMongoRepository } from "../repositories/shipping-address.repository";
+import { ShippingMethodMongoRepository } from "../repositories/shipping-method.repository";
 import { StockMovementMongoRepository } from "../repositories/stock-movement.repository";
 import { NotificationService } from "./notification.service";
 import { CreateOrderDTO } from "../dtos/order.dto";
@@ -16,6 +17,7 @@ const orderRepository = new OrderMongoRepository();
 const cartRepository = new CartMongoRepository();
 const productRepository = new ProductMongoRepository();
 const shippingAddressRepository = new ShippingAddressMongoRepository();
+const shippingMethodRepository = new ShippingMethodMongoRepository();
 const stockMovementRepository = new StockMovementMongoRepository();
 const notificationService = new NotificationService();
 
@@ -35,8 +37,6 @@ const snapshotShippingAddress = (address: ISavedShippingAddress): IShippingAddre
 });
 
 const TERMINAL_STATUSES: OrderStatus[] = ["Delivered", "Cancelled"];
-const SHIPPING_FREE_THRESHOLD = 500;
-const SHIPPING_FEE = 15;
 
 // Sequential order flow: Pending -> Confirmed (approve) -> Packed -> Shipped
 // (ship action, needs courier/tracking) -> Delivered. Cancellation is a
@@ -80,6 +80,11 @@ export class OrderService {
             throw new HttpException(404, "Shipping address not found");
         }
 
+        const shippingMethod = await shippingMethodRepository.getById(orderData.shippingMethodId);
+        if (!shippingMethod || !shippingMethod.isActive) {
+            throw new HttpException(404, "Shipping method not found");
+        }
+
         const cart = await cartRepository.findByUser(userId);
         if (!cart || cart.items.length === 0) {
             throw new HttpException(400, "Your cart is empty");
@@ -112,6 +117,10 @@ export class OrderService {
             subtotal += product.sellingPrice * cartItem.quantity;
         }
 
+        if (shippingMethod.minOrderAmount && subtotal < shippingMethod.minOrderAmount) {
+            throw new HttpException(400, `"${shippingMethod.name}" requires a minimum order of Rs. ${shippingMethod.minOrderAmount.toLocaleString()}`);
+        }
+
         // Cash on delivery reserves stock immediately, same as before. Online
         // payments defer the decrement until PaymentService confirms the
         // eSewa transaction actually completed, so an abandoned/failed
@@ -138,7 +147,7 @@ export class OrderService {
             }
         }
 
-        const shippingFee = subtotal > SHIPPING_FREE_THRESHOLD ? 0 : SHIPPING_FEE;
+        const shippingFee = shippingMethod.charge;
         const total = subtotal + shippingFee;
         const orderNumber = await generateOrderNumber();
 
@@ -147,6 +156,7 @@ export class OrderService {
             user: userId,
             items,
             shippingAddress: snapshotShippingAddress(savedAddress),
+            shippingMethod: { name: shippingMethod.name, estimatedDelivery: shippingMethod.estimatedDelivery },
             paymentMethod: orderData.paymentMethod,
             paymentStatus: "Pending",
             amount: total,
