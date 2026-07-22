@@ -45,6 +45,11 @@ productRouter.get(
 );
 
 productRouter.get(
+    "/published/:id/similar",
+    productController.getSimilarProducts
+);
+
+productRouter.get(
     "/compare",
     productController.getPublishedProductsByIds
 );

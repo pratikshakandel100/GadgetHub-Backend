@@ -20,6 +20,7 @@ import dashboardRouter from "./routes/dashboard.routes";
 import inventoryRouter from "./routes/inventory.routes";
 import reviewRouter from "./routes/review.routes";
 import aiRouter from "./routes/ai.routes";
+import recommendationRouter from "./routes/recommendation.routes";
 import cors from "cors";
 import morgan from "morgan";
 import path from "path";
@@ -122,6 +123,7 @@ app.use("/api/v1/admin/dashboard", dashboardRouter);
 app.use("/api/v1/inventory", inventoryRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/ai", aiRouter);
+app.use("/api/v1/recommendations", recommendationRouter);
 
 // 3. Made static path resolution bulletproof using process.cwd() (project root)
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads"))); 
