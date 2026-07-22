@@ -19,6 +19,8 @@ const reviewRepository = new ReviewMongoRepository();
 
 const MONGO_DUPLICATE_KEY_ERROR_CODE = 11000;
 const MAX_COMPARE_PRODUCTS = 4;
+const DEFAULT_SIMILAR_LIMIT = 6;
+const MAX_SIMILAR_LIMIT = 12;
 
 export interface ICreateProductResult {
     product: IProduct;
@@ -271,6 +273,22 @@ export class ProductService {
                 totalReviews: rating?.totalReviews ?? 0
             };
         });
+    }
+
+    async getSimilarProducts(id: string, limit: number = DEFAULT_SIMILAR_LIMIT): Promise<IProduct[]> {
+        const product = await productRepository.getById(id);
+        if (!product || product.status !== "Published") {
+            throw new HttpException(404, "Product not found");
+        }
+
+        const clampedLimit = Math.min(Math.max(1, limit), MAX_SIMILAR_LIMIT);
+        // category/subcategory are populated refs on the fetched product, not raw ObjectIds.
+        const categoryId = (product.category as unknown as { _id: { toString(): string } })._id.toString();
+        const subcategoryId = product.subcategory
+            ? (product.subcategory as unknown as { _id: { toString(): string } })._id.toString()
+            : undefined;
+
+        return await productRepository.getSimilar(id, categoryId, subcategoryId, clampedLimit);
     }
 
     async updateProduct(id: string, productData: UpdateProductDTO): Promise<IProduct> {

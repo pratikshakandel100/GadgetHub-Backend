@@ -132,6 +132,14 @@ export class ProductController {
         });
     }
 
+    async getSimilarProducts(req: Request<{ id: string }>, res: Response) {
+        const limit = req.query.limit ? Number(req.query.limit) : undefined;
+        const products = await productService.getSimilarProducts(req.params.id, limit);
+        return ApiResponseHelper.success(res, products, "Similar products fetched successfully", 200, undefined, {
+            cacheControl: "public, max-age=30"
+        });
+    }
+
     async getPublishedProductsByIds(req: Request, res: Response) {
         const idsParam = (req.query.ids as string) || "";
         const ids = idsParam.split(",").map((id) => id.trim()).filter(Boolean);
