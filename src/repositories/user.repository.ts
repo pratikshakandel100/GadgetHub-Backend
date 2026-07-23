@@ -28,6 +28,7 @@ export interface IUserRepository {
     findByEmailWithResetFields(email: string): Promise<IUser | null>;
 
     cleanupExpiredResetFields(olderThan: Date): Promise<number>;
+    findByResetTokenHash(hash: string): Promise<IUser | null>;
 
 createUserByAdmin(user: CreateUserDTO): Promise<IUser>;
 
@@ -164,6 +165,8 @@ export class UserMongoRepository implements IUserRepository {
             }
         );
         return result.modifiedCount ?? 0;
+    async findByResetTokenHash(hash: string): Promise<IUser | null> {
+        return await User.findOne({ resetPasswordTokenHash: hash, resetPasswordExpires: { $gt: new Date() } });
     }
 
 async createUserByAdmin(user: CreateUserDTO): Promise<IUser> {

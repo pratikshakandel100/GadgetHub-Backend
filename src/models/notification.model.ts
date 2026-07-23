@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 export const NOTIFICATION_AUDIENCES = ["admin", "user"] as const;
 export type NotificationAudience = typeof NOTIFICATION_AUDIENCES[number];
 
-export const NOTIFICATION_TYPES = ["order_placed", "order_status_changed"] as const;
+export const NOTIFICATION_TYPES = ["order_placed", "order_status_changed", "low_stock"] as const;
 export type NotificationType = typeof NOTIFICATION_TYPES[number];
 
 export interface INotification extends Document {
@@ -15,6 +15,8 @@ export interface INotification extends Document {
     message: string;
     order?: mongoose.Types.ObjectId;
     orderNumber?: string;
+    product?: mongoose.Types.ObjectId;
+    productName?: string;
     read: boolean;
     createdAt: Date;
     updatedAt: Date;
@@ -29,6 +31,8 @@ const NotificationMongoSchema: Schema = new Schema<INotification>(
         message: { type: String, required: true },
         order: { type: Schema.Types.ObjectId, ref: "Order", required: false },
         orderNumber: { type: String, required: false },
+        product: { type: Schema.Types.ObjectId, ref: "Product", required: false },
+        productName: { type: String, required: false },
         read: { type: Boolean, default: false }
     },
     {

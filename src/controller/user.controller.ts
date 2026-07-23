@@ -3,6 +3,7 @@ import { ApiResponseHelper } from "../utils/apihelper.util";
 import {z} from 'zod';
 import { Request, Response } from "express";
 import { CreateUserDTO, LoginUserDTO, UpdateUserDTO, AdminCreateUserDTO, AdminUpdateUserDTO, GoogleAuthDTO, ForgotPasswordDTO, VerifyResetOtpDTO, ResetPasswordDTO } from "../dtos/user.dto";
+import { CreateUserDTO, LoginUserDTO, UpdateUserDTO, AdminCreateUserDTO, AdminUpdateUserDTO, GoogleAuthDTO, RefreshTokenDTO, LogoutDTO, ForgotPasswordDTO, ResetPasswordDTO } from "../dtos/user.dto";
 
 const userService = new UserService();
 
@@ -37,8 +38,8 @@ export class UserController{
                 return ApiResponseHelper
                 .error(res, z.prettifyError(parsedData.error), 400)
             }
-            const {user, token} = await userService.loginUser(parsedData.data);
-            return ApiResponseHelper.success(res, {user: sanitizeUser(user),token}, "Login Successfull");
+            const {user, accessToken, refreshToken} = await userService.loginUser(parsedData.data);
+            return ApiResponseHelper.success(res, {user: sanitizeUser(user), accessToken, refreshToken}, "Login Successfull");
         } catch(error: Error|any|unknown){
            return ApiResponseHelper.error(
             res,
@@ -56,8 +57,8 @@ export class UserController{
                 return ApiResponseHelper
                 .error(res, z.prettifyError(parsedData.error), 400)
             }
-            const {user, token} = await userService.googleLogin(parsedData.data.idToken);
-            return ApiResponseHelper.success(res, {user: sanitizeUser(user), token}, "Google login successful");
+            const {user, accessToken, refreshToken} = await userService.googleLogin(parsedData.data.idToken);
+            return ApiResponseHelper.success(res, {user: sanitizeUser(user), accessToken, refreshToken}, "Google login successful");
         } catch(error: Error|any|unknown){
            return ApiResponseHelper.error(
             res,
@@ -265,7 +266,68 @@ async createUserByAdmin(req:Request,res:Response){
 
 }
     async logoutUser(req: Request, res: Response) {
-        return ApiResponseHelper.success(res, null, "Logout successful");
+        try {
+            const parsedData = LogoutDTO.safeParse(req.body);
+            await userService.logoutUser(parsedData.success ? parsedData.data.refreshToken : undefined);
+            return ApiResponseHelper.success(res, null, "Logout successful");
+        } catch (error: Error | any | unknown) {
+            return ApiResponseHelper.error(
+                res,
+                error.message || "Internal Server Error",
+                error.status || 500
+            );
+        }
+    }
+
+    async refreshToken(req: Request, res: Response) {
+        try {
+            const parsedData = RefreshTokenDTO.safeParse(req.body);
+            if (!parsedData.success) {
+                return ApiResponseHelper.error(res, z.prettifyError(parsedData.error), 400);
+            }
+            const { user, accessToken, refreshToken } = await userService.refreshAccessToken(parsedData.data.refreshToken);
+            return ApiResponseHelper.success(res, { user: sanitizeUser(user), accessToken, refreshToken }, "Token refreshed");
+        } catch (error: Error | any | unknown) {
+            return ApiResponseHelper.error(
+                res,
+                error.message || "Internal Server Error",
+                error.status || 500
+            );
+        }
+    }
+
+    async forgotPassword(req: Request, res: Response) {
+        try {
+            const parsedData = ForgotPasswordDTO.safeParse(req.body);
+            if (!parsedData.success) {
+                return ApiResponseHelper.error(res, z.prettifyError(parsedData.error), 400);
+            }
+            await userService.forgotPassword(parsedData.data.email);
+            return ApiResponseHelper.success(res, null, "If that email is registered, a reset link has been sent");
+        } catch (error: Error | any | unknown) {
+            return ApiResponseHelper.error(
+                res,
+                error.message || "Internal Server Error",
+                error.status || 500
+            );
+        }
+    }
+
+    async resetPassword(req: Request, res: Response) {
+        try {
+            const parsedData = ResetPasswordDTO.safeParse(req.body);
+            if (!parsedData.success) {
+                return ApiResponseHelper.error(res, z.prettifyError(parsedData.error), 400);
+            }
+            await userService.resetPassword(parsedData.data.token, parsedData.data.password);
+            return ApiResponseHelper.success(res, null, "Password reset successful. Please log in.");
+        } catch (error: Error | any | unknown) {
+            return ApiResponseHelper.error(
+                res,
+                error.message || "Internal Server Error",
+                error.status || 500
+            );
+        }
     }
 
     async forgotPassword(req: Request, res: Response) {

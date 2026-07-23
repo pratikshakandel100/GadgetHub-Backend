@@ -8,8 +8,7 @@
     "start": "npx tsx index.ts",
     "start-day2": "node day2.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "admin": "npx tsx src/scripts/CreateAdmin.ts",
-    "migrate:subcategories": "npx tsx src/scripts/migrateSubcategories.ts"
+    "admin": "npx tsx src/scripts/CreateAdmin.ts"
   },
   "keywords": [],
   "author": "",
@@ -22,13 +21,14 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "express-rate-limit": "^8.5.2",
+    "express-rate-limit": "^8.6.0",
     "google-auth-library": "^10.9.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.6.3",
     "morgan": "^1.11.0",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.3",
+    "sharp": "^0.35.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {

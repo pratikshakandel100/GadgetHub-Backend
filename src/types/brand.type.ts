@@ -8,6 +8,7 @@ const optionalString = z.preprocess(
 export const BrandSchema = z.object({
     name: z.string().min(1, "Brand name is required"),
     slug: optionalString,
+    description: optionalString,
     image: optionalString,
     status: z.enum(["Active", "Inactive"]).default("Active")
 });

@@ -13,6 +13,8 @@ export interface IProductListResult {
 
 export interface ICreateProductData extends CreateProductDTO {
     sku: string;
+    slug: string;
+    productCode: string;
     variantKey: string;
     seller: string;
 }
@@ -48,7 +50,11 @@ export interface IProductRepository {
         maxPrice?: number
     ): Promise<IProductListResult>;
     getById(id: string): Promise<IProduct | null>;
+    getByCode(productCode: string): Promise<IProduct | null>;
     getPublishedByIds(ids: string[]): Promise<IProduct[]>;
+    getSimilar(productId: string, categoryId: string, subcategoryId: string | undefined, limit: number): Promise<IProduct[]>;
+    getCategoriesByProductIds(ids: string[]): Promise<{ id: string; category: string }[]>;
+    getRecommendedByCategories(categoryIds: string[], excludeIds: string[], limit: number): Promise<IProduct[]>;
     getByVariantKey(variantKey: string): Promise<IProduct | null>;
     searchForAssistant(params: IAssistantSearchParams): Promise<IProduct[]>;
     update(id: string, product: Record<string, any>): Promise<IProduct | null>;
@@ -160,8 +166,51 @@ export class ProductMongoRepository implements IProductRepository {
         return await Product.findById(id).populate(POPULATE_FIELDS);
     }
 
+    async getByCode(productCode: string): Promise<IProduct | null> {
+        return await Product.findOne({ productCode: productCode.toUpperCase() }).populate(POPULATE_FIELDS);
+    }
+
     async getPublishedByIds(ids: string[]): Promise<IProduct[]> {
         return await Product.find({ _id: { $in: ids }, status: "Published" }).populate(POPULATE_FIELDS);
+    }
+
+    async getSimilar(productId: string, categoryId: string, subcategoryId: string | undefined, limit: number): Promise<IProduct[]> {
+        const baseQuery: any = { _id: { $ne: productId }, status: "Published", category: categoryId };
+
+        // Prefer same-subcategory matches first (closer fit), then top up with
+        // same-category products from other subcategories if there aren't enough.
+        let results: IProduct[] = subcategoryId
+            ? await Product.find({ ...baseQuery, subcategory: subcategoryId }).populate(POPULATE_FIELDS).limit(limit)
+            : [];
+
+        if (results.length < limit) {
+            const excludeIds = [productId, ...results.map((r) => r._id.toString())];
+            const fallback = await Product.find({ ...baseQuery, _id: { $nin: excludeIds } })
+                .populate(POPULATE_FIELDS)
+                .limit(limit - results.length);
+            results = [...results, ...fallback];
+        }
+
+        return results;
+    }
+
+    async getCategoriesByProductIds(ids: string[]): Promise<{ id: string; category: string }[]> {
+        if (ids.length === 0) return [];
+        const products = await Product.find({ _id: { $in: ids } }).select("category");
+        return products.map((p) => ({ id: p._id.toString(), category: p.category.toString() }));
+    }
+
+    async getRecommendedByCategories(categoryIds: string[], excludeIds: string[], limit: number): Promise<IProduct[]> {
+        if (categoryIds.length === 0) return [];
+        return await Product.find({
+            category: { $in: categoryIds },
+            _id: { $nin: excludeIds },
+            status: "Published",
+            availability: "In Stock"
+        })
+            .populate(POPULATE_FIELDS)
+            .sort({ bestSeller: -1, featured: -1, createdAt: -1 })
+            .limit(limit);
     }
 
     async getByVariantKey(variantKey: string): Promise<IProduct | null> {
@@ -254,7 +303,7 @@ export class ProductMongoRepository implements IProductRepository {
                     }
                 }
             ],
-            { new: true }
+            { new: true, updatePipeline: true }
         ).populate(POPULATE_FIELDS);
     }
 
@@ -268,10 +317,18 @@ export class ProductMongoRepository implements IProductRepository {
         // single atomic operation, so two concurrent orders can't both pass
         // a stale stock check and oversell the last units. Returns null when
         // there isn't enough stock, which the caller treats as a failure.
+        // soldQuantity is a cumulative "ever sold" counter — it is intentionally
+        // not reversed by incrementStock (rollback/cancellation), since it tracks
+        // gross demand rather than net current standing (that's what stockQuantity is for).
         return await Product.findOneAndUpdate(
             { _id: id, stockQuantity: { $gte: quantity } },
             [
-                { $set: { stockQuantity: { $subtract: ["$stockQuantity", quantity] } } },
+                {
+                    $set: {
+                        stockQuantity: { $subtract: ["$stockQuantity", quantity] },
+                        soldQuantity: { $add: [{ $ifNull: ["$soldQuantity", 0] }, quantity] }
+                    }
+                },
                 {
                     $set: {
                         availability: {
@@ -280,7 +337,7 @@ export class ProductMongoRepository implements IProductRepository {
                     }
                 }
             ],
-            { new: true }
+            { new: true, updatePipeline: true }
         ).populate(POPULATE_FIELDS);
     }
 }

@@ -4,6 +4,10 @@ import { UserType } from "../types/user.type";
 //Document comes from Mongoose is adds MongoDB document methods and properties like user.save(), user.deleteOne like this
 export  interface IUser extends UserType, Document {
     _id: mongoose.Types.ObjectId;
+    failedLoginAttempts: number;
+    lockUntil?: Date;
+    resetPasswordTokenHash?: string;
+    resetPasswordExpires?: Date;
     createdAt: Date;
     updatedAt: Date;
     // SHA-256 hash of the current OTP (never the raw code). Cleared the moment it's consumed.
@@ -51,6 +55,10 @@ const UserMongoSchema: Schema = new Schema<IUser>(
         resetPasswordLastRequestAt: { type: Date, required: false, select: false, default: null },
         resetPasswordRequestWindowStart: { type: Date, required: false, select: false, default: null },
         resetPasswordRequestCount: { type: Number, required: false, select: false, default: 0 },
+        failedLoginAttempts: { type: Number, default: 0 },
+        lockUntil: { type: Date, required: false },
+        resetPasswordTokenHash: { type: String, required: false },
+        resetPasswordExpires: { type: Date, required: false },
     },
     {
         timestamps: true

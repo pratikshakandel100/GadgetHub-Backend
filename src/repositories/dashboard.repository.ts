@@ -20,6 +20,8 @@ export interface IDashboardTotals {
     revenueLastMonth: number;
     pendingOrders: number;
     pendingOrdersLast24h: number;
+    deliveredOrders: number;
+    cancelledOrders: number;
 }
 
 export interface IDashboardRepository {
@@ -78,7 +80,9 @@ export class DashboardMongoRepository implements IDashboardRepository {
             revenueThisMonthResult,
             revenueLastMonthResult,
             pendingOrders,
-            pendingOrdersLast24h
+            pendingOrdersLast24h,
+            deliveredOrders,
+            cancelledOrders
         ] = await Promise.all([
             Product.countDocuments(),
             Product.countDocuments({ createdAt: { $gte: startOfWeek } }),
@@ -99,7 +103,9 @@ export class DashboardMongoRepository implements IDashboardRepository {
                 { $group: { _id: null, revenue: { $sum: "$total" } } }
             ]),
             Order.countDocuments({ status: "Pending" }),
-            Order.countDocuments({ status: "Pending", createdAt: { $gte: last24h } })
+            Order.countDocuments({ status: "Pending", createdAt: { $gte: last24h } }),
+            Order.countDocuments({ status: "Delivered" }),
+            Order.countDocuments({ status: "Cancelled" })
         ]);
 
         return {
@@ -113,7 +119,9 @@ export class DashboardMongoRepository implements IDashboardRepository {
             revenueThisMonth: revenueThisMonthResult[0]?.revenue || 0,
             revenueLastMonth: revenueLastMonthResult[0]?.revenue || 0,
             pendingOrders,
-            pendingOrdersLast24h
+            pendingOrdersLast24h,
+            deliveredOrders,
+            cancelledOrders
         };
     }
 }

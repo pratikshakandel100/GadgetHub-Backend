@@ -2,15 +2,9 @@ import { BrandMongoRepository, IBrandWithCount } from "../repositories/brand.rep
 import { CreateBrandDTO, UpdateBrandDTO } from "../dtos/brand.dto";
 import { IBrand } from "../models/brand.model";
 import { HttpException } from "../exceptions/http-exception";
+import { slugify } from "../utils/slug.util";
 
 const brandRepository = new BrandMongoRepository();
-
-const slugify = (name: string): string =>
-    name
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
 
 export class BrandService {
     async createBrand(brandData: CreateBrandDTO): Promise<IBrand> {
