@@ -11,7 +11,7 @@ export interface ICartRepository {
 
 const POPULATE_FIELDS = {
     path: "items.product",
-    select: "name sku sellingPrice originalPrice mainImage stockQuantity availability status"
+    select: "name sku slug productCode sellingPrice originalPrice mainImage stockQuantity availability status"
 };
 
 export class CartMongoRepository implements ICartRepository {

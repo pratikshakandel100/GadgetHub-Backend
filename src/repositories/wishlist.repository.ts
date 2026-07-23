@@ -10,7 +10,7 @@ export interface IWishlistRepository {
 
 const POPULATE_FIELDS = {
     path: "products",
-    select: "name sku sellingPrice originalPrice mainImage stockQuantity availability status"
+    select: "name sku slug productCode sellingPrice originalPrice mainImage stockQuantity availability status"
 };
 
 export class WishlistMongoRepository implements IWishlistRepository {

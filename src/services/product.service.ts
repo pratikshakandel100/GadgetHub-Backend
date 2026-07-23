@@ -8,7 +8,14 @@ import { CreateProductDTO, UpdateProductDTO } from "../dtos/product.dto";
 import { IProduct } from "../models/product.model";
 import { HttpException } from "../exceptions/http-exception";
 import { buildVariantKey, buildSkuCodes, buildSkuSequenceKey, formatSku } from "../utils/sku.util";
+import { slugify } from "../utils/slug.util";
 import { ICategoryAttribute } from "../models/category.model";
+
+const PRODUCT_CODE_SEQUENCE_KEY = "productCode";
+const PRODUCT_CODE_PREFIX = "GH";
+
+const formatProductCode = (sequence: number): string =>
+    `${PRODUCT_CODE_PREFIX}${String(sequence).padStart(6, "0")}`;
 
 const productRepository = new ProductMongoRepository();
 const categoryRepository = new CategoryMongoRepository();
@@ -106,9 +113,11 @@ export class ProductService {
         const sequenceKey = buildSkuSequenceKey(categoryCode, brandCode);
         const sequence = await counterRepository.getNextSequence(sequenceKey);
         const sku = formatSku(categoryCode, brandCode, variantCode, sequence);
+        const slug = slugify(productData.name);
+        const productCode = formatProductCode(await counterRepository.getNextSequence(PRODUCT_CODE_SEQUENCE_KEY));
 
         try {
-            const created = await productRepository.create({ ...productData, sku, variantKey, seller: sellerId });
+            const created = await productRepository.create({ ...productData, sku, slug, productCode, variantKey, seller: sellerId });
             return { product: created, created: true };
         } catch (error: any) {
             // Two concurrent requests for the exact same variant can both pass
@@ -196,6 +205,9 @@ export class ProductService {
                     throw new HttpException(400, `Duplicate SKU: ${sku}`);
                 }
 
+                const slug = slugify(productData.name);
+                const productCode = formatProductCode(await counterRepository.getNextSequence(PRODUCT_CODE_SEQUENCE_KEY));
+
                 seenVariantKeys.add(variantKey);
                 toInsert.push({
                     ...productData,
@@ -203,6 +215,8 @@ export class ProductService {
                     brand: brandId,
                     subcategory: subcategoryId,
                     sku,
+                    slug,
+                    productCode,
                     variantKey,
                     seller: sellerId
                 });
@@ -248,8 +262,10 @@ export class ProductService {
         return product;
     }
 
-    async getPublishedProductById(id: string): Promise<IProduct> {
-        const product = await productRepository.getById(id);
+    async getPublishedProductById(idOrCode: string): Promise<IProduct> {
+        const product = this.isObjectId(idOrCode)
+            ? await productRepository.getById(idOrCode)
+            : await productRepository.getByCode(idOrCode);
         if (!product || product.status !== "Published") {
             throw new HttpException(404, "Product not found");
         }
