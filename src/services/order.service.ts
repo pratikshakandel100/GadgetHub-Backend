@@ -80,8 +80,13 @@ export class OrderService {
             throw new HttpException(404, "Shipping address not found");
         }
 
-        const shippingMethod = await shippingMethodRepository.getById(orderData.shippingMethodId);
-        if (!shippingMethod || !shippingMethod.isActive) {
+        // Shipping method selection was removed from checkout — orders ship
+        // free unless a shippingMethodId is explicitly passed (e.g. by an
+        // older client or a future re-introduction of the picker).
+        const shippingMethod = orderData.shippingMethodId
+            ? await shippingMethodRepository.getById(orderData.shippingMethodId)
+            : null;
+        if (orderData.shippingMethodId && (!shippingMethod || !shippingMethod.isActive)) {
             throw new HttpException(404, "Shipping method not found");
         }
 
@@ -117,7 +122,7 @@ export class OrderService {
             subtotal += product.sellingPrice * cartItem.quantity;
         }
 
-        if (shippingMethod.minOrderAmount && subtotal < shippingMethod.minOrderAmount) {
+        if (shippingMethod?.minOrderAmount && subtotal < shippingMethod.minOrderAmount) {
             throw new HttpException(400, `"${shippingMethod.name}" requires a minimum order of Rs. ${shippingMethod.minOrderAmount.toLocaleString()}`);
         }
 
@@ -147,7 +152,7 @@ export class OrderService {
             }
         }
 
-        const shippingFee = shippingMethod.charge;
+        const shippingFee = shippingMethod?.charge ?? 0;
         const total = subtotal + shippingFee;
         const orderNumber = await generateOrderNumber();
 
@@ -156,7 +161,7 @@ export class OrderService {
             user: userId,
             items,
             shippingAddress: snapshotShippingAddress(savedAddress),
-            shippingMethod: { name: shippingMethod.name, estimatedDelivery: shippingMethod.estimatedDelivery },
+            shippingMethod: shippingMethod ? { name: shippingMethod.name, estimatedDelivery: shippingMethod.estimatedDelivery } : undefined,
             paymentMethod: orderData.paymentMethod,
             paymentStatus: "Pending",
             amount: total,

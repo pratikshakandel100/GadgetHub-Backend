@@ -23,7 +23,7 @@ export interface ICreateOrderData {
         quantity: number;
     }[];
     shippingAddress: IShippingAddress;
-    shippingMethod: IOrderShippingMethod;
+    shippingMethod?: IOrderShippingMethod;
     paymentMethod: "cod" | "online";
     paymentStatus: PaymentStatus;
     amount: number;

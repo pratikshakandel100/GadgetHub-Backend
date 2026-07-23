@@ -3,7 +3,7 @@ import { ORDER_STATUSES } from "../models/order.model";
 
 export const CreateOrderSchema = z.object({
     shippingAddressId: z.string().min(1, "Please select a shipping address"),
-    shippingMethodId: z.string().min(1, "Please select a shipping method"),
+    shippingMethodId: z.string().min(1).optional(),
     paymentMethod: z.enum(["cod", "online"])
 });
 
