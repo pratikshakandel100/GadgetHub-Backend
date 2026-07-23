@@ -55,6 +55,7 @@ export interface IOrderRepository {
     getAll(page: number, limit: number, status: string, search: string, sort: Record<string, SortOrder>, filters?: IOrderFilters): Promise<IOrderListResult>;
     updateStatus(id: string, status: OrderStatus): Promise<IOrder | null>;
     updateShipment(id: string, courier: string, trackingNumber: string): Promise<IOrder | null>;
+    updateDelivery(id: string, deliveryPersonName: string, deliveryPersonPhone: string): Promise<IOrder | null>;
     updateCancellation(id: string, reason: string): Promise<IOrder | null>;
     updatePayment(id: string, data: IUpdatePaymentData): Promise<IOrder | null>;
     existsByOrderNumber(orderNumber: string): Promise<boolean>;
@@ -174,6 +175,17 @@ export class OrderMongoRepository implements IOrderRepository {
             {
                 $set: { status: "Shipped", courier, trackingNumber },
                 $push: { statusHistory: { status: "Shipped", changedAt: new Date() } }
+            },
+            { new: true, runValidators: true }
+        ).populate(USER_POPULATE);
+    }
+
+    async updateDelivery(id: string, deliveryPersonName: string, deliveryPersonPhone: string): Promise<IOrder | null> {
+        return await Order.findByIdAndUpdate(
+            id,
+            {
+                $set: { status: "Delivered", deliveryPersonName, deliveryPersonPhone },
+                $push: { statusHistory: { status: "Delivered", changedAt: new Date() } }
             },
             { new: true, runValidators: true }
         ).populate(USER_POPULATE);

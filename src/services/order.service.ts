@@ -39,12 +39,14 @@ const snapshotShippingAddress = (address: ISavedShippingAddress): IShippingAddre
 const TERMINAL_STATUSES: OrderStatus[] = ["Delivered", "Cancelled"];
 
 // Sequential order flow: Pending -> Confirmed (approve) -> Packed -> Shipped
-// (ship action, needs courier/tracking) -> Delivered. Cancellation is a
-// separate branch, always requires a reason, available from any non-terminal step.
+// (ship action, needs courier/tracking) -> Delivered (deliver action, needs
+// delivery person name/phone). Cancellation is a separate branch, always
+// requires a reason, available from any non-terminal step. Shipped and
+// Delivered are deliberately absent from this map — they always go through
+// their own dedicated methods below, never this generic transition.
 const NEXT_STATUS: Partial<Record<OrderStatus, OrderStatus>> = {
     Pending: "Confirmed",
-    Confirmed: "Packed",
-    Shipped: "Delivered"
+    Confirmed: "Packed"
 };
 
 interface IPopulatedCartProduct {
@@ -218,6 +220,9 @@ export class OrderService {
         if (status === "Shipped") {
             throw new HttpException(400, "Use the ship action to mark an order Shipped — courier and tracking number are required");
         }
+        if (status === "Delivered") {
+            throw new HttpException(400, "Use the deliver action to mark an order Delivered — the delivery person's name and phone are required");
+        }
         if (status === "Cancelled") {
             throw new HttpException(400, "Use the cancel action to cancel an order — a reason is required");
         }
@@ -258,6 +263,26 @@ export class OrderService {
         const updated = await orderRepository.updateShipment(id, courier, trackingNumber);
         if (!updated) {
             throw new HttpException(500, "Failed to update order shipment");
+        }
+
+        const recipientId = (updated.user as unknown as { _id: mongoose.Types.ObjectId })._id.toString();
+        await notificationService.notifyUserOrderStatusChanged(updated, recipientId);
+
+        return updated;
+    }
+
+    async deliverOrder(id: string, deliveryPersonName: string, deliveryPersonPhone: string): Promise<IOrder> {
+        const existingOrder = await orderRepository.getById(id);
+        if (!existingOrder) {
+            throw new HttpException(404, "Order not found");
+        }
+        if (existingOrder.status !== "Shipped") {
+            throw new HttpException(400, `Only Shipped orders can be marked Delivered (current status: ${existingOrder.status})`);
+        }
+
+        const updated = await orderRepository.updateDelivery(id, deliveryPersonName, deliveryPersonPhone);
+        if (!updated) {
+            throw new HttpException(500, "Failed to update order delivery");
         }
 
         const recipientId = (updated.user as unknown as { _id: mongoose.Types.ObjectId })._id.toString();

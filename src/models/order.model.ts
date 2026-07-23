@@ -67,6 +67,8 @@ export interface IOrder extends Document {
     shippingMethod?: IOrderShippingMethod;
     courier?: string;
     trackingNumber?: string;
+    deliveryPersonName?: string;
+    deliveryPersonPhone?: string;
     cancelReason?: string;
     createdAt: Date;
     updatedAt: Date;
@@ -124,6 +126,8 @@ const OrderMongoSchema: Schema = new Schema<IOrder>(
         },
         courier: { type: String, required: false },
         trackingNumber: { type: String, required: false },
+        deliveryPersonName: { type: String, required: false },
+        deliveryPersonPhone: { type: String, required: false },
         cancelReason: { type: String, required: false }
     },
     {

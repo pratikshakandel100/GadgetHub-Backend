@@ -33,3 +33,10 @@ export const ShipOrderSchema = z.object({
 });
 
 export type ShipOrderType = z.infer<typeof ShipOrderSchema>;
+
+export const DeliverOrderSchema = z.object({
+    deliveryPersonName: z.string().min(1, "Delivery person's name is required"),
+    deliveryPersonPhone: z.string().min(1, "Delivery person's phone number is required")
+});
+
+export type DeliverOrderType = z.infer<typeof DeliverOrderSchema>;
