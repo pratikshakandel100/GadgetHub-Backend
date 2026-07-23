@@ -76,10 +76,22 @@ const aiLimiter = rateLimit({
     legacyHeaders: false,
     message: { status: 429, success: false, message: "Too many AI requests, please try again later.", data: null }
 });
+// Per-IP throttle on the password-reset flow (separate bucket from login/register so the two
+// don't compete). Per-email cooldown/cap is enforced separately inside UserService.
+const passwordResetLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 15,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { status: 429, success: false, message: "Too many requests, please try again later.", data: null }
+});
 app.use(generalLimiter);
 app.use("/api/v1/auth/login", authLimiter);
 app.use("/api/v1/auth/register", authLimiter);
 app.use("/api/v1/auth/google", authLimiter);
+app.use("/api/v1/auth/forgot-password", passwordResetLimiter);
+app.use("/api/v1/auth/verify-reset-otp", passwordResetLimiter);
+app.use("/api/v1/auth/reset-password", passwordResetLimiter);
 app.use("/api/v1/ai", aiLimiter);
 
 // 2. Your API registration is perfectly fine
