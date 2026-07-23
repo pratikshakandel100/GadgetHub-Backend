@@ -48,6 +48,30 @@ export const GoogleAuthDTO = z.object({
 });
 export type GoogleAuthDTO = z.infer<typeof GoogleAuthDTO>;
 
+export const ForgotPasswordDTO = z.object({
+    email: z.email("Invalid email address"),
+});
+export type ForgotPasswordDTO = z.infer<typeof ForgotPasswordDTO>;
+
+const otpString = z.string().regex(/^\d{6}$/, "OTP must be 6 digits");
+
+export const VerifyResetOtpDTO = z.object({
+    email: z.email("Invalid email address"),
+    otp: otpString,
+});
+export type VerifyResetOtpDTO = z.infer<typeof VerifyResetOtpDTO>;
+
+export const ResetPasswordDTO = z.object({
+    email: z.email("Invalid email address"),
+    resetToken: z.string().regex(/^[a-f0-9]{64}$/, "Invalid or expired request"),
+    password: z.string().min(6, "Password must be at least 6 characters long"),
+    confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+});
+export type ResetPasswordDTO = z.infer<typeof ResetPasswordDTO>;
+
 export const AdminUpdateUserDTO = UserSchema.pick({
     fullname: true,
     email: true,
