@@ -3,16 +3,10 @@ import { CategoryMongoRepository } from "../repositories/category.repository";
 import { CreateSubcategoryDTO, UpdateSubcategoryDTO } from "../dtos/subcategory.dto";
 import { ISubcategory } from "../models/subcategory.model";
 import { HttpException } from "../exceptions/http-exception";
+import { slugify } from "../utils/slug.util";
 
 const subcategoryRepository = new SubcategoryMongoRepository();
 const categoryRepository = new CategoryMongoRepository();
-
-const slugify = (name: string): string =>
-    name
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
 
 export class SubcategoryService {
     async createSubcategory(subcategoryData: CreateSubcategoryDTO): Promise<ISubcategory> {
