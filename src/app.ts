@@ -1,9 +1,10 @@
 import express, { Application, NextFunction, Request, Response } from "express";
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import jwt from "jsonwebtoken";
 import { HttpException } from "./exceptions/http-exception";
 import { ApiResponseHelper } from "./utils/apihelper.util";
 import { conditionalGetMiddleware } from "./middlewares/conditionalGet.middleware";
-import { LOGIN_RATE_LIMIT_MAX_ATTEMPTS, LOGIN_RATE_LIMIT_WINDOW_MINUTES } from "./config/constant";
+import { LOGIN_RATE_LIMIT_MAX_ATTEMPTS, LOGIN_RATE_LIMIT_WINDOW_MINUTES, SECRET_KEY } from "./config/constant";
 import userRouter from "./routes/user.routes";
 import adminUserRouter from "./routes/admin.routes";
 import productRouter from "./routes/product.routes";
@@ -58,12 +59,38 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(morgan("combined"));
 app.use(conditionalGetMiddleware);
 
+// Browser requests all arrive via the frontend's server-side proxy, so every
+// user shares one source IP as far as Express is concerned. Key by the
+// logged-in user instead so one account's traffic can't eat another's
+// budget; only requests without a valid token fall back to IP.
+const getCookieToken = (cookieHeader?: string): string | undefined => {
+    if (!cookieHeader) return undefined;
+    const authCookie = cookieHeader.split(";").map((c) => c.trim()).find((c) => c.startsWith("auth_token="));
+    return authCookie ? decodeURIComponent(authCookie.split("=")[1] || "") : undefined;
+};
+
+const rateLimitKeyGenerator = (req: Request): string => {
+    const authHeader = req.headers.authorization;
+    const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : undefined;
+    const token = bearerToken || getCookieToken(req.headers.cookie);
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, SECRET_KEY) as Record<string, any>;
+            if (decoded?.id) return `user:${decoded.id}`;
+        } catch {
+            // fall through to IP-based key
+        }
+    }
+    return ipKeyGenerator(req.ip || "");
+};
+
 // Generous general rate limit — shouldn't interfere with normal dev/testing traffic.
 const generalLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
-    limit: 300,
+    limit: 600,
     standardHeaders: true,
     legacyHeaders: false,
+    keyGenerator: rateLimitKeyGenerator,
     message: { status: 429, success: false, message: "Too many requests, please try again later.", data: null }
 });
 // IP-level backstop against one IP spraying many different accounts. Kept
