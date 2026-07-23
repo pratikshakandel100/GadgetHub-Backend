@@ -2,7 +2,7 @@ import { UserService } from "../services/user.service";
 import { ApiResponseHelper } from "../utils/apihelper.util";
 import {z} from 'zod';
 import { Request, Response } from "express";
-import { CreateUserDTO, LoginUserDTO, UpdateUserDTO, AdminCreateUserDTO, AdminUpdateUserDTO, GoogleAuthDTO } from "../dtos/user.dto";
+import { CreateUserDTO, LoginUserDTO, UpdateUserDTO, AdminCreateUserDTO, AdminUpdateUserDTO, GoogleAuthDTO, ForgotPasswordDTO, VerifyResetOtpDTO, ResetPasswordDTO } from "../dtos/user.dto";
 
 const userService = new UserService();
 
@@ -266,5 +266,61 @@ async createUserByAdmin(req:Request,res:Response){
 }
     async logoutUser(req: Request, res: Response) {
         return ApiResponseHelper.success(res, null, "Logout successful");
+    }
+
+    async forgotPassword(req: Request, res: Response) {
+        try {
+            const parsedData = ForgotPasswordDTO.safeParse(req.body);
+            if (!parsedData.success) {
+                return ApiResponseHelper.error(res, z.prettifyError(parsedData.error), 400);
+            }
+            await userService.forgotPassword(parsedData.data);
+            // Always the same response, whether or not the email is registered, rate-limited, etc.
+            return ApiResponseHelper.success(
+                res,
+                null,
+                "If an account exists for this email, a verification code has been sent."
+            );
+        } catch (error: Error | any | unknown) {
+            return ApiResponseHelper.error(
+                res,
+                error.message || "Internal Server Error",
+                error.status || 500
+            );
+        }
+    }
+
+    async verifyResetOtp(req: Request, res: Response) {
+        try {
+            const parsedData = VerifyResetOtpDTO.safeParse(req.body);
+            if (!parsedData.success) {
+                return ApiResponseHelper.error(res, z.prettifyError(parsedData.error), 400);
+            }
+            const { resetToken } = await userService.verifyResetOtp(parsedData.data);
+            return ApiResponseHelper.success(res, { resetToken }, "OTP verified");
+        } catch (error: Error | any | unknown) {
+            return ApiResponseHelper.error(
+                res,
+                error.message || "Internal Server Error",
+                error.status || 500
+            );
+        }
+    }
+
+    async resetPassword(req: Request, res: Response) {
+        try {
+            const parsedData = ResetPasswordDTO.safeParse(req.body);
+            if (!parsedData.success) {
+                return ApiResponseHelper.error(res, z.prettifyError(parsedData.error), 400);
+            }
+            await userService.resetPassword(parsedData.data);
+            return ApiResponseHelper.success(res, null, "Password reset successful");
+        } catch (error: Error | any | unknown) {
+            return ApiResponseHelper.error(
+                res,
+                error.message || "Internal Server Error",
+                error.status || 500
+            );
+        }
     }
 }

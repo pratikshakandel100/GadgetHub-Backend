@@ -11,6 +11,10 @@ userRouter.post("/login", userController.loginUser);
 userRouter.post("/google", userController.googleLogin);
 userRouter.post("/logout", authorizedMiddleware, userController.logoutUser);
 
+userRouter.post("/forgot-password", userController.forgotPassword);
+userRouter.post("/verify-reset-otp", userController.verifyResetOtp);
+userRouter.post("/reset-password", userController.resetPassword);
+
 userRouter.get("/whoami",
     authorizedMiddleware,
     userController.whoami
