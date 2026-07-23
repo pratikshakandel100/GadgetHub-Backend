@@ -38,7 +38,7 @@ export class UserController{
                 .error(res, z.prettifyError(parsedData.error), 400)
             }
             const {user, token} = await userService.loginUser(parsedData.data);
-            return ApiResponseHelper.success(res, {user: sanitizeUser(user),token}, "Login Successfull");
+            return ApiResponseHelper.success(res, {user: sanitizeUser(user), token}, "Login Successfull");
         } catch(error: Error|any|unknown){
            return ApiResponseHelper.error(
             res,

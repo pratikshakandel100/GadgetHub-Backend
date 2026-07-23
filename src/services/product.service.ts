@@ -8,7 +8,14 @@ import { CreateProductDTO, UpdateProductDTO } from "../dtos/product.dto";
 import { IProduct } from "../models/product.model";
 import { HttpException } from "../exceptions/http-exception";
 import { buildVariantKey, buildSkuCodes, buildSkuSequenceKey, formatSku } from "../utils/sku.util";
+import { slugify } from "../utils/slug.util";
 import { ICategoryAttribute } from "../models/category.model";
+
+const PRODUCT_CODE_SEQUENCE_KEY = "productCode";
+const PRODUCT_CODE_PREFIX = "GH";
+
+const formatProductCode = (sequence: number): string =>
+    `${PRODUCT_CODE_PREFIX}${String(sequence).padStart(6, "0")}`;
 
 const productRepository = new ProductMongoRepository();
 const categoryRepository = new CategoryMongoRepository();
@@ -19,6 +26,8 @@ const reviewRepository = new ReviewMongoRepository();
 
 const MONGO_DUPLICATE_KEY_ERROR_CODE = 11000;
 const MAX_COMPARE_PRODUCTS = 4;
+const DEFAULT_SIMILAR_LIMIT = 6;
+const MAX_SIMILAR_LIMIT = 12;
 
 export interface ICreateProductResult {
     product: IProduct;
@@ -104,9 +113,11 @@ export class ProductService {
         const sequenceKey = buildSkuSequenceKey(categoryCode, brandCode);
         const sequence = await counterRepository.getNextSequence(sequenceKey);
         const sku = formatSku(categoryCode, brandCode, variantCode, sequence);
+        const slug = slugify(productData.name);
+        const productCode = formatProductCode(await counterRepository.getNextSequence(PRODUCT_CODE_SEQUENCE_KEY));
 
         try {
-            const created = await productRepository.create({ ...productData, sku, variantKey, seller: sellerId });
+            const created = await productRepository.create({ ...productData, sku, slug, productCode, variantKey, seller: sellerId });
             return { product: created, created: true };
         } catch (error: any) {
             // Two concurrent requests for the exact same variant can both pass
@@ -194,6 +205,9 @@ export class ProductService {
                     throw new HttpException(400, `Duplicate SKU: ${sku}`);
                 }
 
+                const slug = slugify(productData.name);
+                const productCode = formatProductCode(await counterRepository.getNextSequence(PRODUCT_CODE_SEQUENCE_KEY));
+
                 seenVariantKeys.add(variantKey);
                 toInsert.push({
                     ...productData,
@@ -201,6 +215,8 @@ export class ProductService {
                     brand: brandId,
                     subcategory: subcategoryId,
                     sku,
+                    slug,
+                    productCode,
                     variantKey,
                     seller: sellerId
                 });
@@ -246,8 +262,10 @@ export class ProductService {
         return product;
     }
 
-    async getPublishedProductById(id: string): Promise<IProduct> {
-        const product = await productRepository.getById(id);
+    async getPublishedProductById(idOrCode: string): Promise<IProduct> {
+        const product = this.isObjectId(idOrCode)
+            ? await productRepository.getById(idOrCode)
+            : await productRepository.getByCode(idOrCode);
         if (!product || product.status !== "Published") {
             throw new HttpException(404, "Product not found");
         }
@@ -271,6 +289,22 @@ export class ProductService {
                 totalReviews: rating?.totalReviews ?? 0
             };
         });
+    }
+
+    async getSimilarProducts(id: string, limit: number = DEFAULT_SIMILAR_LIMIT): Promise<IProduct[]> {
+        const product = await productRepository.getById(id);
+        if (!product || product.status !== "Published") {
+            throw new HttpException(404, "Product not found");
+        }
+
+        const clampedLimit = Math.min(Math.max(1, limit), MAX_SIMILAR_LIMIT);
+        // category/subcategory are populated refs on the fetched product, not raw ObjectIds.
+        const categoryId = (product.category as unknown as { _id: { toString(): string } })._id.toString();
+        const subcategoryId = product.subcategory
+            ? (product.subcategory as unknown as { _id: { toString(): string } })._id.toString()
+            : undefined;
+
+        return await productRepository.getSimilar(id, categoryId, subcategoryId, clampedLimit);
     }
 
     async updateProduct(id: string, productData: UpdateProductDTO): Promise<IProduct> {

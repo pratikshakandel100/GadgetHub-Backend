@@ -4,16 +4,10 @@ import { CreateCategoryDTO, UpdateCategoryDTO, BulkCreateCategoryItemDTO, BulkCr
 import { ICategory, ICategoryAttribute } from "../models/category.model";
 import { ISubcategory } from "../models/subcategory.model";
 import { HttpException } from "../exceptions/http-exception";
+import { slugify } from "../utils/slug.util";
 
 const categoryRepository = new CategoryMongoRepository();
 const subcategoryRepository = new SubcategoryMongoRepository();
-
-const slugify = (name: string): string =>
-    name
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
 
 export class CategoryService {
     async createCategory(categoryData: CreateCategoryDTO): Promise<ICategory> {

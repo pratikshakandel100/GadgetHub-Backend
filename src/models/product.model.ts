@@ -19,6 +19,8 @@ export interface IProduct extends Document {
   _id: mongoose.Types.ObjectId;
   name: string;
   sku: string;
+  slug: string;
+  productCode: string;
   category: mongoose.Types.ObjectId;
   subcategory?: mongoose.Types.ObjectId;
   brand: mongoose.Types.ObjectId;
@@ -31,6 +33,9 @@ export interface IProduct extends Document {
   stockQuantity: number;
   minimumStockAlert: number;
   availability: string;
+  soldQuantity: number;
+  lastRestockedAt?: Date;
+  lastStockUpdatedBy?: mongoose.Types.ObjectId;
   specifications: ISpecification[];
   variants: IVariant[];
   variantAttributes: IVariantAttribute[];
@@ -65,6 +70,11 @@ const ProductMongoSchema: Schema = new Schema<IProduct>(
   {
     name: { type: String, required: true },
     sku: { type: String, required: true, unique: true },
+    // Not unique on its own — two variants of the same product name (e.g.
+    // different colors) legitimately share a base slug. The product URL is
+    // `{slug}-{productCode}`, and productCode is what guarantees uniqueness.
+    slug: { type: String, required: true },
+    productCode: { type: String, required: true, unique: true },
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     subcategory: { type: Schema.Types.ObjectId, ref: "Subcategory", required: false },
     brand: { type: Schema.Types.ObjectId, ref: "Brand", required: true },
@@ -76,11 +86,14 @@ const ProductMongoSchema: Schema = new Schema<IProduct>(
     taxMargin: { type: Number, required: false },
     stockQuantity: { type: Number, required: true, default: 0 },
     minimumStockAlert: { type: Number, required: true, default: 5 },
-    availability: { 
-      type: String, 
+    availability: {
+      type: String,
       enum: ['In Stock', 'Out of Stock', 'Pre-order'],
       default: 'In Stock'
     },
+    soldQuantity: { type: Number, required: true, default: 0 },
+    lastRestockedAt: { type: Date, required: false },
+    lastStockUpdatedBy: { type: Schema.Types.ObjectId, ref: "User", required: false },
     specifications: [{
       key: { type: String, required: true },
       value: { type: String, required: true }

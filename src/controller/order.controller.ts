@@ -2,7 +2,7 @@ import { ApiResponseHelper } from "../utils/apihelper.util";
 import { z } from "zod";
 import { Request, Response } from "express";
 import { OrderService } from "../services/order.service";
-import { CreateOrderDTO, UpdateOrderStatusDTO } from "../dtos/order.dto";
+import { CreateOrderDTO, UpdateOrderStatusDTO, CancelOrderDTO, ShipOrderDTO } from "../dtos/order.dto";
 import { parsePagination, parseSort } from "../utils/query.util";
 import { buildEntityLinks, buildCollectionLinks, buildResourceUrl, HateoasLinks } from "../utils/hateoas.util";
 import { assertNotStale } from "../utils/precondition.util";
@@ -61,8 +61,11 @@ export class OrderController {
         const status = (req.query.status as string) || "";
         const search = (req.query.search as string) || "";
         const sort = parseSort(req.query, ORDER_SORT_FIELDS, "createdAt", -1);
+        const dateFrom = (req.query.dateFrom as string) || undefined;
+        const dateTo = (req.query.dateTo as string) || undefined;
+        const paymentMethod = (req.query.paymentMethod as string) || undefined;
 
-        const result = await orderService.getAllOrders(page, limit, status, search, sort);
+        const result = await orderService.getAllOrders(page, limit, status, search, sort, { dateFrom, dateTo, paymentMethod });
 
         return ApiResponseHelper.success(res, result.orders, "Orders fetched successfully", 200, {
             page: result.page,
@@ -97,6 +100,40 @@ export class OrderController {
 
         const order = await orderService.updateOrderStatus(req.params.id, statusData.data.status);
         return ApiResponseHelper.success(res, order, "Order status updated successfully", 200, undefined, {
+            links: orderLinks(req, order)
+        });
+    }
+
+    async shipOrder(req: Request<{ id: string }>, res: Response) {
+        const shipData = ShipOrderDTO.safeParse(req.body);
+        if (!shipData.success) {
+            return ApiResponseHelper.error(res, z.prettifyError(shipData.error), 400);
+        }
+
+        const existing = await orderService.getOrderById(req.params.id, "", true);
+        assertNotStale(req, existing);
+
+        const order = await orderService.shipOrder(req.params.id, shipData.data.courier, shipData.data.trackingNumber);
+        return ApiResponseHelper.success(res, order, "Order marked as shipped", 200, undefined, {
+            links: orderLinks(req, order)
+        });
+    }
+
+    async cancelOrder(req: Request<{ id: string }>, res: Response) {
+        const cancelData = CancelOrderDTO.safeParse(req.body);
+        if (!cancelData.success) {
+            return ApiResponseHelper.error(res, z.prettifyError(cancelData.error), 400);
+        }
+
+        const existing = await orderService.getOrderById(req.params.id, "", true);
+        assertNotStale(req, existing);
+
+        const reason = cancelData.data.note
+            ? `${cancelData.data.reason}: ${cancelData.data.note}`
+            : cancelData.data.reason;
+
+        const order = await orderService.cancelOrder(req.params.id, reason);
+        return ApiResponseHelper.success(res, order, "Order cancelled successfully", 200, undefined, {
             links: orderLinks(req, order)
         });
     }
