@@ -2,10 +2,12 @@ import { ApiResponseHelper } from "../utils/apihelper.util";
 import { z } from "zod";
 import { Request, Response } from "express";
 import { OrderService } from "../services/order.service";
-import { CreateOrderDTO, UpdateOrderStatusDTO, CancelOrderDTO, ShipOrderDTO } from "../dtos/order.dto";
+import { CreateOrderDTO, UpdateOrderStatusDTO, CancelOrderDTO, ShipOrderDTO, DeliverOrderDTO } from "../dtos/order.dto";
 import { parsePagination, parseSort } from "../utils/query.util";
 import { buildEntityLinks, buildCollectionLinks, buildResourceUrl, HateoasLinks } from "../utils/hateoas.util";
 import { assertNotStale } from "../utils/precondition.util";
+import { generateInvoicePdf } from "../utils/invoice.util";
+import { HttpException } from "../exceptions/http-exception";
 
 const orderService = new OrderService();
 
@@ -89,6 +91,23 @@ export class OrderController {
         });
     }
 
+    async downloadInvoice(req: Request<{ id: string }>, res: Response) {
+        const userId = req.user!._id.toString();
+        const isAdmin = req.user?.role === "admin";
+
+        const order = await orderService.getOrderById(req.params.id, userId, isAdmin);
+        if (order.status !== "Delivered") {
+            throw new HttpException(400, "Invoice is available once the order has been delivered");
+        }
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `attachment; filename="invoice-${order.orderNumber}.pdf"`);
+
+        const doc = generateInvoicePdf(order);
+        doc.pipe(res);
+        doc.end();
+    }
+
     async updateOrderStatus(req: Request<{ id: string }>, res: Response) {
         const statusData = UpdateOrderStatusDTO.safeParse(req.body);
         if (!statusData.success) {
@@ -115,6 +134,21 @@ export class OrderController {
 
         const order = await orderService.shipOrder(req.params.id, shipData.data.courier, shipData.data.trackingNumber);
         return ApiResponseHelper.success(res, order, "Order marked as shipped", 200, undefined, {
+            links: orderLinks(req, order)
+        });
+    }
+
+    async deliverOrder(req: Request<{ id: string }>, res: Response) {
+        const deliverData = DeliverOrderDTO.safeParse(req.body);
+        if (!deliverData.success) {
+            return ApiResponseHelper.error(res, z.prettifyError(deliverData.error), 400);
+        }
+
+        const existing = await orderService.getOrderById(req.params.id, "", true);
+        assertNotStale(req, existing);
+
+        const order = await orderService.deliverOrder(req.params.id, deliverData.data.deliveryPersonName, deliverData.data.deliveryPersonPhone);
+        return ApiResponseHelper.success(res, order, "Order marked as delivered", 200, undefined, {
             links: orderLinks(req, order)
         });
     }
