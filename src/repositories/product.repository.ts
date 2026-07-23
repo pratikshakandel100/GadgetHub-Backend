@@ -13,6 +13,8 @@ export interface IProductListResult {
 
 export interface ICreateProductData extends CreateProductDTO {
     sku: string;
+    slug: string;
+    productCode: string;
     variantKey: string;
     seller: string;
 }
@@ -48,6 +50,7 @@ export interface IProductRepository {
         maxPrice?: number
     ): Promise<IProductListResult>;
     getById(id: string): Promise<IProduct | null>;
+    getByCode(productCode: string): Promise<IProduct | null>;
     getPublishedByIds(ids: string[]): Promise<IProduct[]>;
     getSimilar(productId: string, categoryId: string, subcategoryId: string | undefined, limit: number): Promise<IProduct[]>;
     getCategoriesByProductIds(ids: string[]): Promise<{ id: string; category: string }[]>;
@@ -161,6 +164,10 @@ export class ProductMongoRepository implements IProductRepository {
 
     async getById(id: string): Promise<IProduct | null> {
         return await Product.findById(id).populate(POPULATE_FIELDS);
+    }
+
+    async getByCode(productCode: string): Promise<IProduct | null> {
+        return await Product.findOne({ productCode: productCode.toUpperCase() }).populate(POPULATE_FIELDS);
     }
 
     async getPublishedByIds(ids: string[]): Promise<IProduct[]> {
