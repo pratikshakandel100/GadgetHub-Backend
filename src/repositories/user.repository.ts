@@ -25,6 +25,9 @@ export interface IUserRepository {
 
     findUserById(id: string): Promise<IUser | null>;
 
+    findByEmailWithResetFields(email: string): Promise<IUser | null>;
+
+    cleanupExpiredResetFields(olderThan: Date): Promise<number>;
     findByResetTokenHash(hash: string): Promise<IUser | null>;
 
 createUserByAdmin(user: CreateUserDTO): Promise<IUser>;
@@ -135,6 +138,33 @@ export class UserMongoRepository implements IUserRepository {
     return await User.findById(id);
 }
 
+    async findByEmailWithResetFields(email: string): Promise<IUser | null> {
+        return await User.findOne({ email }).select(
+            "+resetPasswordOTPHash +resetPasswordOTPExpires +resetPasswordOTPAttempts " +
+            "+resetPasswordTokenHash +resetPasswordTokenExpires " +
+            "+resetPasswordLastRequestAt +resetPasswordRequestWindowStart +resetPasswordRequestCount"
+        );
+    }
+
+    async cleanupExpiredResetFields(olderThan: Date): Promise<number> {
+        const result = await User.updateMany(
+            {
+                $or: [
+                    { resetPasswordOTPExpires: { $lt: olderThan } },
+                    { resetPasswordTokenExpires: { $lt: olderThan } },
+                ],
+            },
+            {
+                $set: {
+                    resetPasswordOTPHash: null,
+                    resetPasswordOTPExpires: null,
+                    resetPasswordOTPAttempts: 0,
+                    resetPasswordTokenHash: null,
+                    resetPasswordTokenExpires: null,
+                },
+            }
+        );
+        return result.modifiedCount ?? 0;
     async findByResetTokenHash(hash: string): Promise<IUser | null> {
         return await User.findOne({ resetPasswordTokenHash: hash, resetPasswordExpires: { $gt: new Date() } });
     }

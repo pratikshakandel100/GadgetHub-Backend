@@ -19,6 +19,10 @@ userRouter.post("/logout", userController.logoutUser);
 userRouter.post("/forgot-password", userController.forgotPassword);
 userRouter.post("/reset-password", userController.resetPassword);
 
+userRouter.post("/forgot-password", userController.forgotPassword);
+userRouter.post("/verify-reset-otp", userController.verifyResetOtp);
+userRouter.post("/reset-password", userController.resetPassword);
+
 userRouter.get("/whoami",
     authorizedMiddleware,
     userController.whoami

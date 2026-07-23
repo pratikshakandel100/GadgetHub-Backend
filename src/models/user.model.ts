@@ -9,7 +9,18 @@ export  interface IUser extends UserType, Document {
     resetPasswordTokenHash?: string;
     resetPasswordExpires?: Date;
     createdAt: Date;
-    updatedAt: Date
+    updatedAt: Date;
+    // SHA-256 hash of the current OTP (never the raw code). Cleared the moment it's consumed.
+    resetPasswordOTPHash?: string | null;
+    resetPasswordOTPExpires?: Date | null;
+    resetPasswordOTPAttempts?: number;
+    // Short-lived, single-use token issued after a successful OTP verification; authorizes the final reset-password call.
+    resetPasswordTokenHash?: string | null;
+    resetPasswordTokenExpires?: Date | null;
+    // Per-email throttling for forgot-password requests (cooldown + hourly cap).
+    resetPasswordLastRequestAt?: Date | null;
+    resetPasswordRequestWindowStart?: Date | null;
+    resetPasswordRequestCount?: number;
 }
 
 const UserMongoSchema: Schema = new Schema<IUser>(
@@ -35,6 +46,15 @@ const UserMongoSchema: Schema = new Schema<IUser>(
     default: "user",
     required: true
 },
+        // Hidden by default (select: false) so reset-password data never leaks through normal find/login queries.
+        resetPasswordOTPHash: { type: String, required: false, select: false, default: null },
+        resetPasswordOTPExpires: { type: Date, required: false, select: false, default: null },
+        resetPasswordOTPAttempts: { type: Number, required: false, select: false, default: 0 },
+        resetPasswordTokenHash: { type: String, required: false, select: false, default: null },
+        resetPasswordTokenExpires: { type: Date, required: false, select: false, default: null },
+        resetPasswordLastRequestAt: { type: Date, required: false, select: false, default: null },
+        resetPasswordRequestWindowStart: { type: Date, required: false, select: false, default: null },
+        resetPasswordRequestCount: { type: Number, required: false, select: false, default: 0 },
         failedLoginAttempts: { type: Number, default: 0 },
         lockUntil: { type: Date, required: false },
         resetPasswordTokenHash: { type: String, required: false },
