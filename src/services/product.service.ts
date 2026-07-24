@@ -248,6 +248,16 @@ export class ProductService {
         minPrice?: number,
         maxPrice?: number
     ): Promise<IProductListResult> {
+        if (search && productSearchService.enabled) {
+            try {
+                const result = await productSearchService.adminSearch({ query: search, page, limit, category, status, minPrice, maxPrice, sort });
+                if (result) return result as unknown as IProductListResult;
+            } catch (error) {
+                // Admin browsing stays available during a Meilisearch restart or a
+                // temporary network failure; MongoDB is still the source of truth.
+                console.error("Meilisearch admin product search failed; falling back to MongoDB", error);
+            }
+        }
         return await productRepository.getAll(page, limit, search, category, status, sort, minPrice, maxPrice);
     }
 

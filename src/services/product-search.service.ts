@@ -6,6 +6,27 @@ const INDEX = "products";
 
 type ProductSearchDocument = Record<string, unknown> & { id: string };
 
+const SORTABLE_FIELDS = new Set(["sellingPrice", "originalPrice", "name", "createdAt", "soldQuantity"]);
+
+export interface IAdminProductSearchParams {
+    query: string;
+    page: number;
+    limit: number;
+    category?: string;
+    status?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    sort: Record<string, 1 | -1>;
+}
+
+export interface IProductSearchListResult {
+    products: ProductSearchDocument[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}
+
 /** Keeps the Meilisearch product index as a disposable read model of MongoDB. */
 export class ProductSearchService {
     private readonly client = MEILISEARCH_HOST ? new Meilisearch({ host: MEILISEARCH_HOST, apiKey: MEILISEARCH_API_KEY || undefined }) : null;
@@ -32,8 +53,8 @@ export class ProductSearchService {
         const index = this.client.index(INDEX);
         await index.updateSettings({
             searchableAttributes: ["name", "sku", "brand.name", "category.name", "shortDescription", "fullDescription", "tags", "specificationsText"],
-            filterableAttributes: ["status", "availability", "category.name", "brand.name", "sellingPrice"],
-            sortableAttributes: ["sellingPrice", "createdAt", "soldQuantity"],
+            filterableAttributes: ["status", "availability", "category.name", "category._id", "brand.name", "brand._id", "subcategory._id", "sellingPrice"],
+            sortableAttributes: Array.from(SORTABLE_FIELDS),
             typoTolerance: { enabled: true }
         });
     }
@@ -63,5 +84,34 @@ export class ProductSearchService {
             attributesToHighlight: ["name", "shortDescription"]
         });
         return results.hits;
+    }
+
+    /** Same index as the storefront search, but unfiltered by status so admins can find drafts too. */
+    async adminSearch(params: IAdminProductSearchParams): Promise<IProductSearchListResult | null> {
+        if (!this.client) return null;
+
+        const filter: string[] = [];
+        if (params.category) filter.push(`category._id = ${params.category}`);
+        if (params.status) filter.push(`status = ${params.status}`);
+        if (params.minPrice !== undefined) filter.push(`sellingPrice >= ${params.minPrice}`);
+        if (params.maxPrice !== undefined) filter.push(`sellingPrice <= ${params.maxPrice}`);
+
+        const [sortField, sortOrder] = Object.entries(params.sort)[0] ?? ["createdAt", -1];
+        const sort = SORTABLE_FIELDS.has(sortField) ? [`${sortField}:${sortOrder === 1 ? "asc" : "desc"}`] : undefined;
+
+        const results = await this.client.index(INDEX).search<ProductSearchDocument>(params.query, {
+            filter: filter.length > 0 ? filter : undefined,
+            sort,
+            page: params.page,
+            hitsPerPage: params.limit
+        });
+
+        return {
+            products: results.hits,
+            total: results.totalHits ?? results.hits.length,
+            page: results.page ?? params.page,
+            limit: results.hitsPerPage ?? params.limit,
+            totalPages: results.totalPages ?? 1
+        };
     }
 }
