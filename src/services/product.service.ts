@@ -10,6 +10,7 @@ import { HttpException } from "../exceptions/http-exception";
 import { buildVariantKey, buildSkuCodes, buildSkuSequenceKey, formatSku } from "../utils/sku.util";
 import { slugify } from "../utils/slug.util";
 import { ICategoryAttribute } from "../models/category.model";
+import { ProductSearchService } from "./product-search.service";
 
 const PRODUCT_CODE_SEQUENCE_KEY = "productCode";
 const PRODUCT_CODE_PREFIX = "GH";
@@ -23,6 +24,7 @@ const subcategoryRepository = new SubcategoryMongoRepository();
 const brandRepository = new BrandMongoRepository();
 const counterRepository = new CounterMongoRepository();
 const reviewRepository = new ReviewMongoRepository();
+const productSearchService = new ProductSearchService();
 
 const MONGO_DUPLICATE_KEY_ERROR_CODE = 11000;
 const MAX_COMPARE_PRODUCTS = 4;
@@ -35,6 +37,9 @@ export interface ICreateProductResult {
 }
 
 export class ProductService {
+    private syncSearch(product: IProduct) {
+        void productSearchService.upsert(product).catch((error) => console.error("Failed to update Meilisearch product index", error));
+    }
     private validateCategoryAttributes(
         attributeSchema: ICategoryAttribute[],
         attributes: Record<string, string>
@@ -106,6 +111,7 @@ export class ProductService {
             if (!restocked) {
                 throw new HttpException(500, "Failed to update stock for the matching variant");
             }
+            this.syncSearch(restocked);
             return { product: restocked, created: false };
         }
 
@@ -118,6 +124,7 @@ export class ProductService {
 
         try {
             const created = await productRepository.create({ ...productData, sku, slug, productCode, variantKey, seller: sellerId });
+            this.syncSearch(created);
             return { product: created, created: true };
         } catch (error: any) {
             // Two concurrent requests for the exact same variant can both pass
@@ -133,6 +140,7 @@ export class ProductService {
                 if (!restocked) {
                     throw new HttpException(500, "Failed to update stock for the matching variant");
                 }
+                this.syncSearch(restocked);
                 return { product: restocked, created: false };
             }
             throw error;
@@ -226,6 +234,7 @@ export class ProductService {
         }
 
         const inserted = await productRepository.bulkCreate(toInsert);
+        inserted.forEach((product) => this.syncSearch(product));
         return { insertedCount: inserted.length, inserted, failed };
     }
 
@@ -334,6 +343,7 @@ export class ProductService {
         if (!updated) {
             throw new HttpException(500, "Failed to update product");
         }
+        this.syncSearch(updated);
         return updated;
     }
 
@@ -347,6 +357,7 @@ export class ProductService {
         if (!updated) {
             throw new HttpException(500, "Failed to update product status");
         }
+        this.syncSearch(updated);
         return updated;
     }
 
@@ -375,6 +386,7 @@ export class ProductService {
         }
 
         const deletedCount = await productRepository.bulkDelete(Array.from(idsToDelete));
+        for (const id of idsToDelete) void productSearchService.remove(id).catch((error) => console.error("Failed to remove Meilisearch product", error));
         return { deletedCount, notFound };
     }
 
@@ -388,5 +400,19 @@ export class ProductService {
         if (!isDeleted) {
             throw new HttpException(500, "Failed to delete product");
         }
+        void productSearchService.remove(id).catch((error) => console.error("Failed to remove Meilisearch product", error));
     }
 }
+
+export const searchPublishedProducts = async (query: string, limit: number) => {
+    try {
+        const searchResults = await productSearchService.search(query, limit);
+        if (searchResults) return searchResults;
+    } catch (error) {
+        // Search remains available during a Meilisearch restart or a temporary
+        // network failure; MongoDB is still the source of truth.
+        console.error("Meilisearch query failed; falling back to MongoDB", error);
+    }
+    const fallback = await productRepository.getPublished(1, limit, query, "", { createdAt: -1 });
+    return fallback.products;
+};
