@@ -19,19 +19,16 @@ const RESET_REQUEST_COOLDOWN_MS = 60 * 1000;
 const RESET_REQUEST_WINDOW_MS = 60 * 60 * 1000;
 const RESET_REQUEST_HOURLY_CAP = 5;
 
-// Same message for every forgot-password call, registered or not, rate-limited or not —
-// otherwise the response itself becomes an oracle for which emails have accounts.
+
 const FORGOT_PASSWORD_MESSAGE = "If an account exists for this email, a verification code has been sent.";
-// One message for every verify/reset failure (missing, expired, wrong, locked-out) so a caller
-// can't distinguish "no such code" from "wrong code" from "too many attempts".
+
 const GENERIC_OTP_ERROR = "Invalid or expired verification code";
 const GENERIC_RESET_TOKEN_ERROR = "Invalid or expired request. Please start again.";
 
 const sha256 = (value: string): string => crypto.createHash("sha256").update(value).digest("hex");
 
-// Constant-time compare so response timing can't leak how close a guess was.
-// Always hashes a random dummy when the real hash is missing, so a "no OTP on file" branch
-// costs the same as a real mismatch instead of returning early.
+
+
 const safeCompareHash = (candidate: string, storedHash?: string | null): boolean => {
     const candidateHash = sha256(candidate);
     const target = storedHash ?? sha256(crypto.randomBytes(32).toString("hex"));
