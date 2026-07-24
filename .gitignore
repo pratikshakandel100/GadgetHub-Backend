@@ -18,3 +18,7 @@ build/
 Thumbs.db
 
 uploads/
+
+# Local Meilisearch binary + its data dir (Option B setup, no Docker)
+bin/
+meili_data/
