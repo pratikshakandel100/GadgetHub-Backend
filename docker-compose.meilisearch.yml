@@ -1,0 +1,13 @@
+services:
+  meilisearch:
+    image: getmeili/meilisearch:v1.16
+    ports:
+      - "7700:7700"
+    environment:
+      MEILI_MASTER_KEY: change-this-to-a-long-random-secret
+      MEILI_ENV: development
+    volumes:
+      - meilisearch_data:/meili_data
+
+volumes:
+  meilisearch_data:

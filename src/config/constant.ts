@@ -27,3 +27,8 @@ export const ESEWA_MERCHANT_CODE = process.env.ESEWA_MERCHANT_CODE || "EPAYTEST"
 export const ESEWA_SECRET_KEY = process.env.ESEWA_SECRET_KEY || "8gBm/:&EnhH.1/q";
 export const ESEWA_PAYMENT_URL = process.env.ESEWA_PAYMENT_URL || "https://rc-epay.esewa.com.np/api/epay/main/v2/form";
 export const ESEWA_STATUS_CHECK_URL = process.env.ESEWA_STATUS_CHECK_URL || "https://rc.esewa.com.np/api/epay/transaction/status/";
+
+// Meilisearch is optional in development. When these values are absent the
+// product search endpoint transparently falls back to MongoDB.
+export const MEILISEARCH_HOST = process.env.MEILISEARCH_HOST || "";
+export const MEILISEARCH_API_KEY = process.env.MEILISEARCH_API_KEY || "";

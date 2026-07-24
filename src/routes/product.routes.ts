@@ -40,6 +40,11 @@ productRouter.get(
 );
 
 productRouter.get(
+    "/search",
+    productController.searchPublishedProducts
+);
+
+productRouter.get(
     "/published/:id",
     productController.getPublishedProductById
 );
