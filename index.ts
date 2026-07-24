@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { PORT as SERVER_PORT } from './src/config/constant';
 import { connectToMongoDB } from './src/database/mongodb';
 import { UserMongoRepository } from './src/repositories/user.repository';
+import { ProductSearchService } from './src/services/product-search.service';
 
 dotenv.config();
 
@@ -24,6 +25,11 @@ connectToMongoDB()
     .then(()=>{
         console.log("MongoDB connection established, starting server....")
         scheduleResetFieldsCleanup();
+        const productSearch = new ProductSearchService();
+        if (productSearch.enabled) {
+            productSearch.rebuild().then(() => console.log("Meilisearch product index synchronized"))
+                .catch((error) => console.error("Failed to synchronize Meilisearch product index", error));
+        }
     })
     .catch((error) => {
         console.log("Failed to connect to MongoDB, server not started", error);

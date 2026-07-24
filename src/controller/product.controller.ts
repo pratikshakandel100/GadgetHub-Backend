@@ -1,7 +1,7 @@
 import { ApiResponseHelper } from "../utils/apihelper.util";
 import { z } from "zod";
 import { Request, Response } from "express";
-import { ProductService } from "../services/product.service";
+import { ProductService, searchPublishedProducts } from "../services/product.service";
 import { CreateProductDTO, UpdateProductDTO, UpdateProductStatusDTO, BulkCreateProductDTO, BulkDeleteProductDTO } from "../dtos/product.dto";
 import { mergeUploadedImages } from "../utils/upload.util";
 import { parsePagination, parseSort } from "../utils/query.util";
@@ -113,6 +113,15 @@ export class ProductController {
         }, {
             cacheControl: "public, max-age=30",
             links: buildCollectionLinks(req, result.page, result.limit, result.total)
+        });
+    }
+
+    async searchPublishedProducts(req: Request, res: Response) {
+        const query = String(req.query.q || "").trim();
+        const limit = Math.min(Math.max(Number(req.query.limit) || 20, 1), 100);
+        const products = await searchPublishedProducts(query, limit);
+        return ApiResponseHelper.success(res, products, "Search results fetched successfully", 200, undefined, {
+            cacheControl: "public, max-age=15"
         });
     }
 
