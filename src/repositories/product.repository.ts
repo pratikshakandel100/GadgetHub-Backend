@@ -62,6 +62,7 @@ export interface IProductRepository {
     incrementStock(id: string, quantity: number): Promise<IProduct | null>;
     decrementStock(id: string, quantity: number): Promise<IProduct | null>;
     incrementDeliveredQuantity(id: string, quantity: number): Promise<IProduct | null>;
+    incrementViewCount(id: string): Promise<void>;
     delete(id: string): Promise<boolean>;
     bulkDelete(ids: string[]): Promise<number>;
     findByNames(names: string[]): Promise<IProduct[]>;
@@ -351,5 +352,12 @@ export class ProductMongoRepository implements IProductRepository {
             { $inc: { deliveredQuantity: quantity } },
             { new: true }
         ).populate(POPULATE_FIELDS);
+    }
+
+    async incrementViewCount(id: string): Promise<void> {
+        // Fire-and-forget from the customer-facing product detail fetch —
+        // no populated document is needed back, so skip the populate/select
+        // overhead that the other increments carry.
+        await Product.updateOne({ _id: id }, { $inc: { viewCount: 1 } });
     }
 }

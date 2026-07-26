@@ -288,7 +288,26 @@ export class ProductService {
         if (!product || product.status !== "Published") {
             throw new HttpException(404, "Product not found");
         }
+        // Best-effort — a failed view-count increment shouldn't fail the page load.
+        productRepository.incrementViewCount(product._id.toString()).catch(() => {});
         return product;
+    }
+
+    // Admin-only, unbounded (no MAX_COMPARE_PRODUCTS cap, no Published-only
+    // filter) — the shopper-facing compare endpoint intentionally restricts
+    // both, but the admin analytics page needs ratings for any product.
+    async getProductRatings(ids: string[]): Promise<Record<string, { averageRating: number; totalReviews: number }>> {
+        const uniqueIds = Array.from(new Set(ids));
+        if (uniqueIds.length === 0) {
+            return {};
+        }
+        const ratingSummary = await reviewRepository.getRatingSummaryByProductIds(uniqueIds);
+        return Object.fromEntries(
+            Object.entries(ratingSummary).map(([id, rating]) => [
+                id,
+                { averageRating: Math.round(rating.averageRating * 10) / 10, totalReviews: rating.totalReviews }
+            ])
+        );
     }
 
     async getPublishedProductsByIds(ids: string[]): Promise<Record<string, unknown>[]> {
