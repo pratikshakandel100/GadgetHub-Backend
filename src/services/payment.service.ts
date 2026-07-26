@@ -2,7 +2,7 @@ import crypto from "crypto";
 import mongoose from "mongoose";
 import { OrderService } from "./order.service";
 import { OrderMongoRepository } from "../repositories/order.repository";
-import { EsewaService, IEsewaPaymentForm } from "./esewa.service";
+import { EsewaService, IEsewaPaymentForm, computeEsewaTotal } from "./esewa.service";
 import { HttpException } from "../exceptions/http-exception";
 
 const orderRepository = new OrderMongoRepository();
@@ -44,7 +44,6 @@ export class PaymentService {
         return esewaService.buildPaymentForm({
             amount: order.subtotal,
             shippingFee: order.shippingFee,
-            totalAmount: order.total,
             transactionUuid,
             orderId: order._id.toString()
         });
@@ -71,12 +70,16 @@ export class PaymentService {
 
         // The redirect payload is browser-supplied and never trusted alone —
         // confirm the outcome with eSewa's status-check API server-to-server.
+        // Re-derive the same total that was actually sent to eSewa at
+        // initiation (from subtotal + shippingFee) rather than trusting
+        // order.total verbatim — see buildPaymentForm's comment for why.
+        const expectedTotal = computeEsewaTotal(order.subtotal, order.shippingFee);
         const statusResult = await esewaService.verifyTransaction({
-            totalAmount: order.total,
+            totalAmount: expectedTotal,
             transactionUuid: order.referenceId
         });
 
-        const amountMatches = statusResult ? Number(statusResult.total_amount) === order.total : false;
+        const amountMatches = statusResult ? Math.abs(Number(statusResult.total_amount) - expectedTotal) < 0.01 : false;
         if (statusResult?.status === "COMPLETE" && amountMatches) {
             await orderService.markOrderPaid(
                 order._id.toString(),

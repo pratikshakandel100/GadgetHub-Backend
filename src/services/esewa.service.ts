@@ -39,17 +39,37 @@ const buildSignature = (fields: Record<string, string | number>, signedFieldName
     return crypto.createHmac("sha256", ESEWA_SECRET_KEY).update(message).digest("base64");
 };
 
+const round2 = (value: number): number => Math.round(value * 100) / 100;
+
+// Exported so callers can derive the exact same total_amount that
+// buildPaymentForm will send eSewa, from the same subtotal/shippingFee
+// inputs — used again at verification time so the two never disagree.
+export const computeEsewaTotal = (amount: number, shippingFee: number): number => round2(round2(amount) + round2(shippingFee));
+
 export class EsewaService {
-    buildPaymentForm(params: { amount: number; shippingFee: number; totalAmount: number; transactionUuid: string; orderId: string }): IEsewaPaymentForm {
+    // eSewa's checkout page re-validates client-side that
+    // total_amount === amount + tax_amount + product_service_charge +
+    // product_delivery_charge before it will let the customer log in/pay —
+    // if any of those don't line up to the cent (e.g. floating-point noise
+    // like 33.33 * 3 = 99.99000000000001 leaking into a raw String()), that
+    // check silently fails and the button never enables. Rounding every
+    // amount to 2dp here — and deriving total_amount as the sum of the
+    // already-rounded parts, rather than trusting a separately-computed
+    // value — guarantees the sum eSewa checks always matches exactly.
+    buildPaymentForm(params: { amount: number; shippingFee: number; transactionUuid: string; orderId: string }): IEsewaPaymentForm {
         const signedFieldNames = ["total_amount", "transaction_uuid", "product_code"];
+        const amount = round2(params.amount);
+        const deliveryCharge = round2(params.shippingFee);
+        const totalAmount = computeEsewaTotal(params.amount, params.shippingFee);
+
         const fields: Record<string, string> = {
-            amount: String(params.amount),
+            amount: amount.toFixed(2),
             tax_amount: "0",
-            total_amount: String(params.totalAmount),
+            total_amount: totalAmount.toFixed(2),
             transaction_uuid: params.transactionUuid,
             product_code: ESEWA_MERCHANT_CODE,
             product_service_charge: "0",
-            product_delivery_charge: String(params.shippingFee),
+            product_delivery_charge: deliveryCharge.toFixed(2),
             success_url: `${BACKEND_URL}/api/v1/payments/esewa/success?oid=${params.orderId}`,
             failure_url: `${BACKEND_URL}/api/v1/payments/esewa/failure?oid=${params.orderId}`,
             signed_field_names: signedFieldNames.join(",")
@@ -81,7 +101,7 @@ export class EsewaService {
     async verifyTransaction(params: { totalAmount: number; transactionUuid: string }): Promise<IEsewaStatusResult | null> {
         const query = new URLSearchParams({
             product_code: ESEWA_MERCHANT_CODE,
-            total_amount: String(params.totalAmount),
+            total_amount: round2(params.totalAmount).toFixed(2),
             transaction_uuid: params.transactionUuid
         });
 
