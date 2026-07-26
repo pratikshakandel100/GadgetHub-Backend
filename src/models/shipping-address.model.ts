@@ -25,6 +25,8 @@ export interface IShippingAddress extends Document {
     wardNumber: number;
     street: string;
     landmark?: string;
+    latitude?: number;
+    longitude?: number;
     addressType: AddressType;
     isDefault: boolean;
     createdAt: Date;
@@ -42,6 +44,8 @@ const ShippingAddressMongoSchema: Schema = new Schema<IShippingAddress>(
         wardNumber: { type: Number, required: true },
         street: { type: String, required: true },
         landmark: { type: String, required: false },
+        latitude: { type: Number, required: false, min: -90, max: 90 },
+        longitude: { type: Number, required: false, min: -180, max: 180 },
         addressType: { type: String, enum: ADDRESS_TYPES, default: "Home" },
         isDefault: { type: Boolean, default: false }
     },

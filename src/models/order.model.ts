@@ -33,6 +33,8 @@ export interface IShippingAddress {
     wardNumber: number;
     street: string;
     landmark?: string;
+    latitude?: number;
+    longitude?: number;
     addressType?: string;
 }
 
@@ -62,6 +64,10 @@ export interface IOrder extends Document {
     subtotal: number;
     shippingFee: number;
     total: number;
+    distanceFromWarehouseKm?: number | null;
+    warehouseLatitude?: number;
+    warehouseLongitude?: number;
+    estimatedDelivery?: string;
     status: OrderStatus;
     statusHistory: IOrderStatusHistoryEntry[];
     shippingMethod?: IOrderShippingMethod;
@@ -97,6 +103,8 @@ const OrderMongoSchema: Schema = new Schema<IOrder>(
             wardNumber: { type: Number, required: true },
             street: { type: String, required: true },
             landmark: { type: String, required: false },
+            latitude: { type: Number, required: false },
+            longitude: { type: Number, required: false },
             addressType: { type: String, required: false }
         },
         paymentMethod: { type: String, enum: ["cod", "online"], required: true },
@@ -109,6 +117,10 @@ const OrderMongoSchema: Schema = new Schema<IOrder>(
         subtotal: { type: Number, required: true },
         shippingFee: { type: Number, required: true, default: 0 },
         total: { type: Number, required: true },
+        distanceFromWarehouseKm: { type: Number, required: false, default: null },
+        warehouseLatitude: { type: Number, required: false },
+        warehouseLongitude: { type: Number, required: false },
+        estimatedDelivery: { type: String, required: false },
         status: { type: String, enum: ORDER_STATUSES, default: "Pending" },
         statusHistory: [
             {
