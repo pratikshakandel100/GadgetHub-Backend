@@ -285,6 +285,12 @@ export class OrderService {
             throw new HttpException(500, "Failed to update order delivery");
         }
 
+        // Drives the Best Seller badge — counted only for units that actually
+        // reached the customer, not just placed/paid (see soldQuantity above).
+        for (const item of existingOrder.items) {
+            await productRepository.incrementDeliveredQuantity(item.product.toString(), item.quantity);
+        }
+
         const recipientId = (updated.user as unknown as { _id: mongoose.Types.ObjectId })._id.toString();
         await notificationService.notifyUserOrderStatusChanged(updated, recipientId);
 

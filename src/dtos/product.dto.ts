@@ -1,7 +1,10 @@
 import { z } from "zod";
 import { ProductSchema } from "../types/product.type";
 
-export const CreateProductDTO = ProductSchema;
+export const CreateProductDTO = ProductSchema.refine(
+    (data) => data.originalPrice >= data.costPrice,
+    { message: "Original price must be greater than or equal to cost price", path: ["originalPrice"] }
+);
 
 export type CreateProductDTO = z.infer<typeof CreateProductDTO>;
 

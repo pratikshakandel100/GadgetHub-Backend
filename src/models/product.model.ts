@@ -26,6 +26,7 @@ export interface IProduct extends Document {
   brand: mongoose.Types.ObjectId;
   shortDescription: string;
   fullDescription: string;
+  costPrice: number;
   originalPrice: number;
   sellingPrice: number;
   discount: number;
@@ -34,6 +35,7 @@ export interface IProduct extends Document {
   minimumStockAlert: number;
   availability: string;
   soldQuantity: number;
+  deliveredQuantity: number;
   lastRestockedAt?: Date;
   lastStockUpdatedBy?: mongoose.Types.ObjectId;
   specifications: ISpecification[];
@@ -58,9 +60,6 @@ export interface IProduct extends Document {
   metaDescription?: string;
   tags?: string;
   featured: boolean;
-  newArrival: boolean;
-  bestSeller: boolean;
-  onSale: boolean;
   status: 'Draft' | 'Published';
   createdAt: Date;
   updatedAt: Date;
@@ -80,6 +79,7 @@ const ProductMongoSchema: Schema = new Schema<IProduct>(
     brand: { type: Schema.Types.ObjectId, ref: "Brand", required: true },
     shortDescription: { type: String, required: true },
     fullDescription: { type: String, required: true },
+    costPrice: { type: Number, required: true, min: 0 },
     originalPrice: { type: Number, required: true },
     sellingPrice: { type: Number, required: true },
     discount: { type: Number, default: 0 },
@@ -92,6 +92,7 @@ const ProductMongoSchema: Schema = new Schema<IProduct>(
       default: 'In Stock'
     },
     soldQuantity: { type: Number, required: true, default: 0 },
+    deliveredQuantity: { type: Number, required: true, default: 0 },
     lastRestockedAt: { type: Date, required: false },
     lastStockUpdatedBy: { type: Schema.Types.ObjectId, ref: "User", required: false },
     specifications: [{
@@ -125,9 +126,6 @@ const ProductMongoSchema: Schema = new Schema<IProduct>(
     metaDescription: { type: String, required: false },
     tags: { type: String, required: false },
     featured: { type: Boolean, default: false },
-    newArrival: { type: Boolean, default: false },
-    bestSeller: { type: Boolean, default: false },
-    onSale: { type: Boolean, default: false },
     status: {
       type: String,
       enum: ['Draft', 'Published'],
@@ -135,12 +133,33 @@ const ProductMongoSchema: Schema = new Schema<IProduct>(
     }
   },
   {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
 
 
 ProductMongoSchema.index({ variantKey: 1 }, { unique: true, sparse: true });
+
+// Best Seller is a fixed threshold on units actually delivered, not raw
+// demand (soldQuantity counts orders placed/paid even if later cancelled —
+// see the comment on decrementStock below), so a separate counter drives it.
+const BEST_SELLER_THRESHOLD = 10;
+const NEW_ARRIVAL_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+
+// newArrival/bestSeller/onSale are derived facts, not admin input — computed
+// on read instead of stored so they can never drift out of sync with their
+// source data (createdAt, deliveredQuantity, discount/prices).
+ProductMongoSchema.virtual('newArrival').get(function (this: IProduct) {
+  return Date.now() - this.createdAt.getTime() <= NEW_ARRIVAL_WINDOW_MS;
+});
+ProductMongoSchema.virtual('bestSeller').get(function (this: IProduct) {
+  return (this.deliveredQuantity ?? 0) >= BEST_SELLER_THRESHOLD;
+});
+ProductMongoSchema.virtual('onSale').get(function (this: IProduct) {
+  return this.discount > 0 || this.sellingPrice < this.originalPrice;
+});
 
 export default mongoose.model<IProduct>(
   "Product",

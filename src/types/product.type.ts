@@ -78,9 +78,10 @@ export const ProductSchema = z.object({
     brand: z.string().min(1, "Brand is required"),
     shortDescription: z.string().min(1, "Short description is required"),
     fullDescription: z.string().min(1, "Full description is required"),
+    costPrice: z.coerce.number().min(0, "Cost price must be zero or greater"),
     originalPrice: z.coerce.number().positive("Original price must be greater than 0"),
     sellingPrice: z.coerce.number().positive("Selling price must be greater than 0"),
-    discount: z.coerce.number().min(0).default(0),
+    discount: z.coerce.number().min(0).max(100, "Discount cannot exceed 100%").default(0),
     taxMargin: z.preprocess(
         (value) => value === "" || value === undefined ? undefined : value,
         z.coerce.number().optional()
@@ -111,9 +112,6 @@ export const ProductSchema = z.object({
     metaDescription: optionalString,
     tags: optionalString,
     featured: booleanFromString,
-    newArrival: booleanFromString,
-    bestSeller: booleanFromString,
-    onSale: booleanFromString,
     status: z.enum(["Draft", "Published"]).default("Draft")
 });
 

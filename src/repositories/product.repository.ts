@@ -61,6 +61,7 @@ export interface IProductRepository {
     updateStatus(id: string, status: "Draft" | "Published"): Promise<IProduct | null>;
     incrementStock(id: string, quantity: number): Promise<IProduct | null>;
     decrementStock(id: string, quantity: number): Promise<IProduct | null>;
+    incrementDeliveredQuantity(id: string, quantity: number): Promise<IProduct | null>;
     delete(id: string): Promise<boolean>;
     bulkDelete(ids: string[]): Promise<number>;
     findByNames(names: string[]): Promise<IProduct[]>;
@@ -209,7 +210,7 @@ export class ProductMongoRepository implements IProductRepository {
             availability: "In Stock"
         })
             .populate(POPULATE_FIELDS)
-            .sort({ bestSeller: -1, featured: -1, createdAt: -1 })
+            .sort({ deliveredQuantity: -1, featured: -1, createdAt: -1 })
             .limit(limit);
     }
 
@@ -247,7 +248,7 @@ export class ProductMongoRepository implements IProductRepository {
 
         return await Product.find(query)
             .populate(POPULATE_FIELDS)
-            .sort({ bestSeller: -1, featured: -1, createdAt: -1 })
+            .sort({ deliveredQuantity: -1, featured: -1, createdAt: -1 })
             .limit(limit);
     }
 
@@ -338,6 +339,17 @@ export class ProductMongoRepository implements IProductRepository {
                 }
             ],
             { new: true, updatePipeline: true }
+        ).populate(POPULATE_FIELDS);
+    }
+
+    async incrementDeliveredQuantity(id: string, quantity: number): Promise<IProduct | null> {
+        // Drives the Best Seller badge — counted only once an order actually
+        // reaches Delivered, unlike soldQuantity above which counts gross
+        // demand at order-placement/payment time and is never reversed.
+        return await Product.findByIdAndUpdate(
+            id,
+            { $inc: { deliveredQuantity: quantity } },
+            { new: true }
         ).populate(POPULATE_FIELDS);
     }
 }

@@ -6,7 +6,7 @@ const INDEX = "products";
 
 type ProductSearchDocument = Record<string, unknown> & { id: string };
 
-const SORTABLE_FIELDS = new Set(["sellingPrice", "originalPrice", "name", "createdAt", "soldQuantity"]);
+const SORTABLE_FIELDS = new Set(["sellingPrice", "originalPrice", "name", "createdAt", "soldQuantity", "deliveredQuantity"]);
 
 export interface IAdminProductSearchParams {
     query: string;
