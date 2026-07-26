@@ -36,6 +36,7 @@ export interface IProduct extends Document {
   availability: string;
   soldQuantity: number;
   deliveredQuantity: number;
+  viewCount: number;
   lastRestockedAt?: Date;
   lastStockUpdatedBy?: mongoose.Types.ObjectId;
   specifications: ISpecification[];
@@ -48,6 +49,7 @@ export interface IProduct extends Document {
   dimensions?: string;
   shippingCharge?: number;
   estimatedDelivery?: string;
+  freeShippingEligible: boolean;
   manufacturer?: string;
   countryOfOrigin?: string;
   whatsIncluded?: string;
@@ -93,6 +95,7 @@ const ProductMongoSchema: Schema = new Schema<IProduct>(
     },
     soldQuantity: { type: Number, required: true, default: 0 },
     deliveredQuantity: { type: Number, required: true, default: 0 },
+    viewCount: { type: Number, required: true, default: 0 },
     lastRestockedAt: { type: Date, required: false },
     lastStockUpdatedBy: { type: Schema.Types.ObjectId, ref: "User", required: false },
     specifications: [{
@@ -114,6 +117,7 @@ const ProductMongoSchema: Schema = new Schema<IProduct>(
     dimensions: { type: String, required: false },
     shippingCharge: { type: Number, required: false },
     estimatedDelivery: { type: String, required: false },
+    freeShippingEligible: { type: Boolean, default: false },
     manufacturer: { type: String, required: false },
     countryOfOrigin: { type: String, required: false },
     whatsIncluded: { type: String, required: false },
@@ -151,7 +155,11 @@ const NEW_ARRIVAL_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 // newArrival/bestSeller/onSale are derived facts, not admin input — computed
 // on read instead of stored so they can never drift out of sync with their
 // source data (createdAt, deliveredQuantity, discount/prices).
+// Guarded against undefined source fields: some populates project a narrow
+// field set (e.g. cart/wishlist item population) that omits createdAt, but
+// virtuals still run during toJSON()/toObject() regardless of what was selected.
 ProductMongoSchema.virtual('newArrival').get(function (this: IProduct) {
+  if (!this.createdAt) return false;
   return Date.now() - this.createdAt.getTime() <= NEW_ARRIVAL_WINDOW_MS;
 });
 ProductMongoSchema.virtual('bestSeller').get(function (this: IProduct) {

@@ -112,6 +112,7 @@ export const ProductSchema = z.object({
     metaDescription: optionalString,
     tags: optionalString,
     featured: booleanFromString,
+    freeShippingEligible: booleanFromString,
     status: z.enum(["Draft", "Published"]).default("Draft")
 });
 
