@@ -99,6 +99,21 @@ export class EsewaService {
     }
 
     async verifyTransaction(params: { totalAmount: number; transactionUuid: string }): Promise<IEsewaStatusResult | null> {
+        // Playwright E2E runs can't complete a real eSewa sandbox login inside
+        // an automated browser, and hitting eSewa's real status-check API from
+        // a throwaway test backend would be flaky and pointless. This branch
+        // only activates when the E2E bootstrap script (src/scripts/e2e-server.ts)
+        // explicitly sets ESEWA_TEST_MODE — never set in dev or production.
+        if (process.env.ESEWA_TEST_MODE === "true") {
+            return {
+                product_code: ESEWA_MERCHANT_CODE,
+                transaction_uuid: params.transactionUuid,
+                total_amount: round2(params.totalAmount),
+                status: "COMPLETE",
+                ref_id: `E2E-${params.transactionUuid}`
+            };
+        }
+
         const query = new URLSearchParams({
             product_code: ESEWA_MERCHANT_CODE,
             total_amount: round2(params.totalAmount).toFixed(2),

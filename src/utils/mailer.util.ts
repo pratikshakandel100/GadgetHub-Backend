@@ -8,7 +8,19 @@ const transporter = nodemailer.createTransport({
     auth: SMTP_USER ? { user: SMTP_USER, pass: SMTP_PASS } : undefined,
 });
 
+// Test-only inbox stand-in: Playwright can't read a real mailbox, and the
+// OTP is stored server-side only as a SHA-256 hash (unrecoverable after the
+// fact). When E2E_TEST_MODE is set (only by src/scripts/e2e-server.ts), the
+// plaintext OTP is captured here instead of emailed, and exposed solely
+// through routes/e2e-test.routes.ts — never reachable outside that harness.
+export const e2eOtpInbox = new Map<string, string>();
+
 export async function sendPasswordResetOtpEmail(to: string, fullname: string, otp: string): Promise<void> {
+    if (process.env.E2E_TEST_MODE === "true") {
+        e2eOtpInbox.set(to, otp);
+        return;
+    }
+
     if (!SMTP_USER || !SMTP_PASS) {
         // Never log the code itself, even in development — dev logs get committed by accident.
         console.warn("[mailer] SMTP not configured — password reset email was not sent");
