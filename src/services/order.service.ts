@@ -7,6 +7,8 @@ import { ShippingAddressMongoRepository } from "../repositories/shipping-address
 import { ShippingMethodMongoRepository } from "../repositories/shipping-method.repository";
 import { StockMovementMongoRepository } from "../repositories/stock-movement.repository";
 import { NotificationService } from "./notification.service";
+import { ShippingSettingsService } from "./shipping-settings.service";
+import { calculateShipping } from "./shipping-calculation.service";
 import { CreateOrderDTO } from "../dtos/order.dto";
 import { IOrder, IShippingAddress, OrderStatus } from "../models/order.model";
 import { IShippingAddress as ISavedShippingAddress } from "../models/shipping-address.model";
@@ -20,6 +22,7 @@ const shippingAddressRepository = new ShippingAddressMongoRepository();
 const shippingMethodRepository = new ShippingMethodMongoRepository();
 const stockMovementRepository = new StockMovementMongoRepository();
 const notificationService = new NotificationService();
+const shippingSettingsService = new ShippingSettingsService();
 
 // Copies only the physical-address fields onto the order — bookkeeping
 // fields like isDefault belong to the address book, not the snapshot —
@@ -33,6 +36,8 @@ const snapshotShippingAddress = (address: ISavedShippingAddress): IShippingAddre
     wardNumber: address.wardNumber,
     street: address.street,
     landmark: address.landmark,
+    latitude: address.latitude,
+    longitude: address.longitude,
     addressType: address.addressType
 });
 
@@ -58,6 +63,7 @@ interface IPopulatedCartProduct {
     stockQuantity: number;
     availability: string;
     status: string;
+    freeShippingEligible?: boolean;
 }
 
 interface IPopulatedCartItem {
@@ -128,6 +134,22 @@ export class OrderService {
             throw new HttpException(400, `"${shippingMethod.name}" requires a minimum order of Rs. ${shippingMethod.minOrderAmount.toLocaleString()}`);
         }
 
+        // An explicit shippingMethodId (legacy path — no longer offered by the
+        // checkout UI) always wins if passed; otherwise the distance-based
+        // Haversine calculation is authoritative.
+        const shippingSettings = shippingMethod ? null : await shippingSettingsService.getSettings();
+        const computedShipping = shippingSettings
+            ? calculateShipping(
+                {
+                    destLat: savedAddress.latitude,
+                    destLng: savedAddress.longitude,
+                    subtotal,
+                    freeShippingEligible: cartItems.every((item) => item.product.freeShippingEligible)
+                },
+                shippingSettings
+            )
+            : null;
+
         // Cash on delivery reserves stock immediately, same as before. Online
         // payments defer the decrement until PaymentService confirms the
         // eSewa transaction actually completed, so an abandoned/failed
@@ -154,7 +176,7 @@ export class OrderService {
             }
         }
 
-        const shippingFee = shippingMethod?.charge ?? 0;
+        const shippingFee = shippingMethod?.charge ?? computedShipping!.shippingFee;
         const total = subtotal + shippingFee;
         const orderNumber = await generateOrderNumber();
 
@@ -170,6 +192,10 @@ export class OrderService {
             currency: "NPR",
             subtotal,
             shippingFee,
+            distanceFromWarehouseKm: computedShipping ? computedShipping.distanceKm : null,
+            warehouseLatitude: shippingSettings?.warehouseLatitude,
+            warehouseLongitude: shippingSettings?.warehouseLongitude,
+            estimatedDelivery: computedShipping ? computedShipping.estimatedDelivery : shippingMethod?.estimatedDelivery,
             total
         });
 

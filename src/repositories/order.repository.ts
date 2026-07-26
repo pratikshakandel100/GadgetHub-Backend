@@ -30,6 +30,10 @@ export interface ICreateOrderData {
     currency: string;
     subtotal: number;
     shippingFee: number;
+    distanceFromWarehouseKm?: number | null;
+    warehouseLatitude?: number;
+    warehouseLongitude?: number;
+    estimatedDelivery?: string;
     total: number;
 }
 
