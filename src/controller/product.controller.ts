@@ -159,6 +159,14 @@ export class ProductController {
         });
     }
 
+    async getProductRatings(req: Request, res: Response) {
+        const idsParam = (req.query.ids as string) || "";
+        const ids = idsParam.split(",").map((id) => id.trim()).filter(Boolean);
+
+        const ratings = await productService.getProductRatings(ids);
+        return ApiResponseHelper.success(res, ratings, "Ratings fetched successfully");
+    }
+
     async updateProduct(req: Request<{ id: string }>, res: Response) {
         const existing = await productService.getProductById(req.params.id);
         assertNotStale(req, existing);

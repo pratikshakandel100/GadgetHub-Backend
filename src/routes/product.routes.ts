@@ -60,6 +60,13 @@ productRouter.get(
 );
 
 productRouter.get(
+    "/ratings",
+    authorizedMiddleware,
+    adminMiddleware,
+    productController.getProductRatings
+);
+
+productRouter.get(
     "/:id",
     authorizedMiddleware,
     adminMiddleware,
