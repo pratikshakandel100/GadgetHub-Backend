@@ -15,7 +15,7 @@ const MUTED = "#64748b";
 const formatDate = (date: Date) =>
     date.toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
 
-const formatCurrency = (amount: number, currency: string) => `${currency} ${amount.toLocaleString("en-IN")}`;
+export const formatCurrency = (amount: number, currency: string) => `${currency} ${amount.toLocaleString("en-IN")}`;
 
 const invoiceNumberFor = (orderNumber: string) => `INV-${orderNumber.replace(/^ORD-/, "")}`;
 

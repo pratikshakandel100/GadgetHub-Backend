@@ -7,7 +7,7 @@
     "dev": "npx tsx --watch index.ts",
     "start": "npx tsx index.ts",
     "start-day2": "node day2.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "admin": "npx tsx src/scripts/CreateAdmin.ts"
   },
   "keywords": [],
@@ -36,10 +36,13 @@
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/multer": "^2.1.0",
     "@types/node": "^25.9.2",
     "@types/nodemailer": "^8.0.1",
     "@types/pdfkit": "^0.17.6",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.12",
     "ts-node-dev": "^2.0.0",
     "typescript": "^6.0.3"
   }
