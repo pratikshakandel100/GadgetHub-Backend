@@ -9,7 +9,8 @@
     "start-day2": "node day2.js",
     "test": "jest",
     "test:integration": "jest --config jest.integration.config.js",
-    "admin": "npx tsx src/scripts/CreateAdmin.ts"
+    "admin": "npx tsx src/scripts/CreateAdmin.ts",
+    "e2e-server": "npx tsx src/scripts/e2e-server.ts"
   },
   "keywords": [],
   "author": "",

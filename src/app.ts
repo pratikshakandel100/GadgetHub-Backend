@@ -168,6 +168,12 @@ app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/ai", aiRouter);
 app.use("/api/v1/recommendations", recommendationRouter);
 
+// See src/routes/e2e-test.routes.ts — only ever mounted for Playwright runs.
+if (process.env.E2E_TEST_MODE === "true") {
+    const e2eTestRouter = require("./routes/e2e-test.routes").default;
+    app.use("/api/v1/__e2e__", e2eTestRouter);
+}
+
 // 3. Made static path resolution bulletproof using process.cwd() (project root)
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads"))); 
 
