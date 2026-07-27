@@ -47,6 +47,32 @@ export const createPublishedProduct = async (adminToken: string, overrides: Reco
     return res.body.data;
 };
 
+/** Adds one unit of `product` to `user`'s cart, saves a shipping address, and places a COD order. Returns the created order. */
+export const placeOrder = async (userToken: string, productId: string, addressOverrides: Record<string, unknown> = {}) => {
+    await request(app).post("/api/v1/cart").set("Authorization", `Bearer ${userToken}`).send({ productId, quantity: 1 }).expect(200);
+    const address = await createShippingAddress(userToken, addressOverrides);
+    const res = await request(app)
+        .post("/api/v1/orders")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({ shippingAddressId: address._id, paymentMethod: "cod" })
+        .expect(201);
+    return res.body.data;
+};
+
+/** Walks an order through every real transition (Confirmed -> Packed -> Shipped -> Delivered) via the admin API. */
+export const advanceOrderToDelivered = async (adminToken: string, orderId: string) => {
+    const headers = { Authorization: `Bearer ${adminToken}` };
+    await request(app).patch(`/api/v1/orders/${orderId}/status`).set(headers).send({ status: "Confirmed" }).expect(200);
+    await request(app).patch(`/api/v1/orders/${orderId}/status`).set(headers).send({ status: "Packed" }).expect(200);
+    await request(app).patch(`/api/v1/orders/${orderId}/ship`).set(headers).send({ courier: "NCM", trackingNumber: "TRACK1" }).expect(200);
+    const res = await request(app)
+        .patch(`/api/v1/orders/${orderId}/deliver`)
+        .set(headers)
+        .send({ deliveryPersonName: "Ram Bahadur", deliveryPersonPhone: "9800000001" })
+        .expect(200);
+    return res.body.data;
+};
+
 export const createShippingAddress = async (userToken: string, overrides: Record<string, unknown> = {}) => {
     const payload = {
         fullName: "Jane Doe",
