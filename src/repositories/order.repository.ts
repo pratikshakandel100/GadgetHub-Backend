@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Order, { IOrder, OrderStatus, PaymentStatus, IShippingAddress, IOrderShippingMethod } from "../models/order.model";
 import User from "../models/user.model";
 import { buildPaginationMeta, SortOrder } from "../utils/query.util";
+import { stripUndefined } from "../utils/object.util";
 
 export interface IOrderListResult {
     orders: IOrder[];
@@ -24,7 +25,7 @@ export interface ICreateOrderData {
     }[];
     shippingAddress: IShippingAddress;
     shippingMethod?: IOrderShippingMethod;
-    paymentMethod: "cod" | "online";
+    paymentMethod: "cod";
     paymentStatus: PaymentStatus;
     amount: number;
     currency: string;
@@ -43,25 +44,16 @@ export interface IOrderFilters {
     paymentMethod?: string;
 }
 
-export interface IUpdatePaymentData {
-    paymentStatus?: PaymentStatus;
-    transactionId?: string;
-    referenceId?: string;
-    paidAt?: Date;
-}
-
 export interface IOrderRepository {
     create(data: ICreateOrderData): Promise<IOrder>;
     getById(id: string): Promise<IOrder | null>;
-    getByReferenceId(referenceId: string): Promise<IOrder | null>;
     getByUser(userId: string, page: number, limit: number, status: string, sort: Record<string, SortOrder>): Promise<IOrderListResult>;
     getFrequentlyCoOccurring(productId: string, limit: number): Promise<{ productId: string; count: number }[]>;
     getAll(page: number, limit: number, status: string, search: string, sort: Record<string, SortOrder>, filters?: IOrderFilters): Promise<IOrderListResult>;
     updateStatus(id: string, status: OrderStatus): Promise<IOrder | null>;
-    updateShipment(id: string, courier: string, trackingNumber: string): Promise<IOrder | null>;
+    updateShipment(id: string, courier?: string, trackingNumber?: string): Promise<IOrder | null>;
     updateDelivery(id: string, deliveryPersonName: string, deliveryPersonPhone: string): Promise<IOrder | null>;
     updateCancellation(id: string, reason: string): Promise<IOrder | null>;
-    updatePayment(id: string, data: IUpdatePaymentData): Promise<IOrder | null>;
     existsByOrderNumber(orderNumber: string): Promise<boolean>;
 }
 
@@ -79,10 +71,6 @@ export class OrderMongoRepository implements IOrderRepository {
 
     async getById(id: string): Promise<IOrder | null> {
         return await Order.findById(id).populate(USER_POPULATE);
-    }
-
-    async getByReferenceId(referenceId: string): Promise<IOrder | null> {
-        return await Order.findOne({ referenceId }).populate(USER_POPULATE);
     }
 
     async getByUser(userId: string, page: number, limit: number, status: string, sort: Record<string, SortOrder>): Promise<IOrderListResult> {
@@ -173,11 +161,11 @@ export class OrderMongoRepository implements IOrderRepository {
         ).populate(USER_POPULATE);
     }
 
-    async updateShipment(id: string, courier: string, trackingNumber: string): Promise<IOrder | null> {
+    async updateShipment(id: string, courier?: string, trackingNumber?: string): Promise<IOrder | null> {
         return await Order.findByIdAndUpdate(
             id,
             {
-                $set: { status: "Shipped", courier, trackingNumber },
+                $set: { status: "Shipped", ...stripUndefined({ courier, trackingNumber }) },
                 $push: { statusHistory: { status: "Shipped", changedAt: new Date() } }
             },
             { new: true, runValidators: true }
@@ -202,14 +190,6 @@ export class OrderMongoRepository implements IOrderRepository {
                 $set: { status: "Cancelled", cancelReason: reason },
                 $push: { statusHistory: { status: "Cancelled", changedAt: new Date() } }
             },
-            { new: true, runValidators: true }
-        ).populate(USER_POPULATE);
-    }
-
-    async updatePayment(id: string, data: IUpdatePaymentData): Promise<IOrder | null> {
-        return await Order.findByIdAndUpdate(
-            id,
-            { $set: data },
             { new: true, runValidators: true }
         ).populate(USER_POPULATE);
     }

@@ -54,10 +54,9 @@ export interface IOrder extends Document {
     user: mongoose.Types.ObjectId;
     items: IOrderItem[];
     shippingAddress: IShippingAddress;
-    paymentMethod: "cod" | "online";
+    paymentMethod: "cod";
     paymentStatus: PaymentStatus;
     transactionId?: string;
-    referenceId?: string;
     paidAt?: Date;
     amount: number;
     currency: string;
@@ -107,10 +106,9 @@ const OrderMongoSchema: Schema = new Schema<IOrder>(
             longitude: { type: Number, required: false },
             addressType: { type: String, required: false }
         },
-        paymentMethod: { type: String, enum: ["cod", "online"], required: true },
+        paymentMethod: { type: String, enum: ["cod"], required: true },
         paymentStatus: { type: String, enum: PAYMENT_STATUSES, default: "Pending" },
         transactionId: { type: String, required: false },
-        referenceId: { type: String, required: false, unique: true, sparse: true },
         paidAt: { type: Date, required: false },
         amount: { type: Number, required: true },
         currency: { type: String, required: true, default: "NPR" },

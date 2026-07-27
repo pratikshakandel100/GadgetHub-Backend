@@ -17,9 +17,6 @@ async function main() {
     process.env.PORT = process.env.E2E_BACKEND_PORT || "8081";
     process.env.BACKEND_URL = `http://127.0.0.1:${process.env.PORT}`;
     process.env.FRONTEND_URL = process.env.E2E_FRONTEND_URL || "http://127.0.0.1:3001";
-    // Isolated escape hatch used only by EsewaService when this exact flag is
-    // set (never in production/dev) — see the check in esewa.service.ts.
-    process.env.ESEWA_TEST_MODE = "true";
     process.env.E2E_TEST_MODE = "true";
     // Dozens of tests each register/login at least once within one run — well past
     // the real 20-per-15-min login/register limiter, which would otherwise start

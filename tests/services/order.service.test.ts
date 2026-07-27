@@ -158,15 +158,6 @@ describe("OrderService.createOrder", () => {
 
         expect(mockProductRepository.decrementStock).toHaveBeenCalledWith("p1", 2);
     });
-
-    it("does NOT decrement stock at creation for an online-payment order (deferred until payment is verified)", async () => {
-        mockCartRepository.findByUser.mockResolvedValue({ items: [makeCartItem("p1", 1000, 2)] });
-
-        const order = await new OrderService().createOrder(USER_ID, { shippingAddressId: "addr1", paymentMethod: "online" } as any);
-
-        expect(mockProductRepository.decrementStock).not.toHaveBeenCalled();
-        expect(order.paymentStatus).toBe("Pending");
-    });
 });
 
 describe("OrderService status transitions", () => {
@@ -224,19 +215,5 @@ describe("OrderService.cancelOrder restocking", () => {
         await new OrderService().cancelOrder("o1", "Customer Request");
 
         expect(mockProductRepository.incrementStock).toHaveBeenCalledWith("p1", 2);
-    });
-
-    it("does NOT restock a still-Pending online-payment order (nothing was ever deducted)", async () => {
-        mockOrderRepository.getById.mockResolvedValue({
-            _id: "o1",
-            status: "Confirmed",
-            paymentMethod: "online",
-            paymentStatus: "Pending",
-            items: [{ product: { toString: () => "p1" }, quantity: 2 }],
-        });
-
-        await new OrderService().cancelOrder("o1", "Customer Request");
-
-        expect(mockProductRepository.incrementStock).not.toHaveBeenCalled();
     });
 });

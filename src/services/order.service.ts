@@ -150,30 +150,25 @@ export class OrderService {
             )
             : null;
 
-        // Cash on delivery reserves stock immediately, same as before. Online
-        // payments defer the decrement until PaymentService confirms the
-        // eSewa transaction actually completed, so an abandoned/failed
-        // payment never removes stock for a purchase that didn't happen.
+        // Stock is reserved immediately at order creation.
         const codReservations: { product: string; quantity: number; previousStock: number; newStock: number }[] = [];
-        if (orderData.paymentMethod === "cod") {
-            const reserved: { product: string; quantity: number }[] = [];
-            try {
-                for (const item of items) {
-                    const updated = await productRepository.decrementStock(item.product, item.quantity);
-                    if (!updated) {
-                        throw new HttpException(400, `Insufficient stock for "${item.name}"`);
-                    }
-                    reserved.push({ product: item.product, quantity: item.quantity });
-                    const previousStock = updated.stockQuantity + item.quantity;
-                    codReservations.push({ product: item.product, quantity: item.quantity, previousStock, newStock: updated.stockQuantity });
-                    await notificationService.notifyAdminsLowStockIfCrossed(previousStock, updated);
+        const reserved: { product: string; quantity: number }[] = [];
+        try {
+            for (const item of items) {
+                const updated = await productRepository.decrementStock(item.product, item.quantity);
+                if (!updated) {
+                    throw new HttpException(400, `Insufficient stock for "${item.name}"`);
                 }
-            } catch (err) {
-                for (const item of reserved) {
-                    await productRepository.incrementStock(item.product, item.quantity);
-                }
-                throw err;
+                reserved.push({ product: item.product, quantity: item.quantity });
+                const previousStock = updated.stockQuantity + item.quantity;
+                codReservations.push({ product: item.product, quantity: item.quantity, previousStock, newStock: updated.stockQuantity });
+                await notificationService.notifyAdminsLowStockIfCrossed(previousStock, updated);
             }
+        } catch (err) {
+            for (const item of reserved) {
+                await productRepository.incrementStock(item.product, item.quantity);
+            }
+            throw err;
         }
 
         const shippingFee = shippingMethod?.charge ?? computedShipping!.shippingFee;
@@ -277,7 +272,7 @@ export class OrderService {
         return updated;
     }
 
-    async shipOrder(id: string, courier: string, trackingNumber: string): Promise<IOrder> {
+    async shipOrder(id: string, courier?: string, trackingNumber?: string): Promise<IOrder> {
         const existingOrder = await orderRepository.getById(id);
         if (!existingOrder) {
             throw new HttpException(404, "Order not found");
@@ -325,10 +320,8 @@ export class OrderService {
 
     // Covers both "Reject" (from Pending, in the admin UI) and "Cancel Order"
     // (from Confirmed/Packed/Shipped) — same underlying transition, always
-    // with a reason. Only restocks if stock was actually reserved for this
-    // order: COD orders reserve at creation; online orders only reserve once
-    // payment is confirmed (see markOrderPaid), so a still-Pending-payment
-    // online order cancelled before paying never touched stock to begin with.
+    // with a reason. Stock is always reserved at order creation, so cancelling
+    // always restocks.
     async cancelOrder(id: string, reason: string): Promise<IOrder> {
         const existingOrder = await orderRepository.getById(id);
         if (!existingOrder) {
@@ -338,20 +331,18 @@ export class OrderService {
             throw new HttpException(400, `Order is already ${existingOrder.status} and cannot be cancelled`);
         }
 
-        if (existingOrder.paymentMethod === "cod" || existingOrder.paymentStatus === "Paid") {
-            for (const item of existingOrder.items) {
-                const updated = await productRepository.incrementStock(item.product.toString(), item.quantity);
-                if (updated) {
-                    await stockMovementRepository.create({
-                        product: item.product.toString(),
-                        type: "order",
-                        quantityDelta: item.quantity,
-                        previousStock: updated.stockQuantity - item.quantity,
-                        newStock: updated.stockQuantity,
-                        order: existingOrder._id.toString(),
-                        orderNumber: existingOrder.orderNumber
-                    });
-                }
+        for (const item of existingOrder.items) {
+            const updated = await productRepository.incrementStock(item.product.toString(), item.quantity);
+            if (updated) {
+                await stockMovementRepository.create({
+                    product: item.product.toString(),
+                    type: "order",
+                    quantityDelta: item.quantity,
+                    previousStock: updated.stockQuantity - item.quantity,
+                    newStock: updated.stockQuantity,
+                    order: existingOrder._id.toString(),
+                    orderNumber: existingOrder.orderNumber
+                });
             }
         }
 
@@ -366,58 +357,4 @@ export class OrderService {
         return updated;
     }
 
-    async getOrderByReferenceId(referenceId: string): Promise<IOrder | null> {
-        return await orderRepository.getByReferenceId(referenceId);
-    }
-
-    async markOrderPaid(orderId: string, transactionId: string): Promise<IOrder> {
-        const order = await orderRepository.getById(orderId);
-        if (!order) {
-            throw new HttpException(404, "Order not found");
-        }
-        if (order.paymentStatus === "Paid") {
-            return order;
-        }
-
-        // Stock is reserved here, on confirmed payment, rather than at order
-        // creation — see createOrder. Money is already captured by eSewa at
-        // this point, so a failed decrement (rare — stock ran out in the
-        // meantime) is logged rather than rolling the payment back.
-        for (const item of order.items) {
-            const updated = await productRepository.decrementStock(item.product.toString(), item.quantity);
-            if (!updated) {
-                console.error(`Insufficient stock to reserve product ${item.product} for paid order ${order.orderNumber}`);
-                continue;
-            }
-            const previousStock = updated.stockQuantity + item.quantity;
-            await stockMovementRepository.create({
-                product: item.product.toString(),
-                type: "order",
-                quantityDelta: -item.quantity,
-                previousStock,
-                newStock: updated.stockQuantity,
-                order: order._id.toString(),
-                orderNumber: order.orderNumber
-            });
-            await notificationService.notifyAdminsLowStockIfCrossed(previousStock, updated);
-        }
-
-        const updated = await orderRepository.updatePayment(orderId, {
-            paymentStatus: "Paid",
-            transactionId,
-            paidAt: new Date()
-        });
-        if (!updated) {
-            throw new HttpException(500, "Failed to update order payment status");
-        }
-        return updated;
-    }
-
-    async markOrderPaymentFailed(orderId: string): Promise<IOrder | null> {
-        const order = await orderRepository.getById(orderId);
-        if (!order || order.paymentStatus === "Paid") {
-            return order;
-        }
-        return await orderRepository.updatePayment(orderId, { paymentStatus: "Failed" });
-    }
 }

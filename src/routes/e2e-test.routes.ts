@@ -11,23 +11,8 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.model";
 import { SECRET_KEY } from "../config/constant";
 import { e2eOtpInbox } from "../utils/mailer.util";
-import { OrderService } from "../services/order.service";
 
 const e2eTestRouter = Router();
-const orderService = new OrderService();
-
-// Resolves an order id from the eSewa transaction_uuid Playwright reads off
-// the intercepted (never actually sent) redirect to eSewa's hosted page —
-// see e2e/tests/checkout.spec.ts for why this indirection is needed instead
-// of just knowing the order id up front.
-e2eTestRouter.get("/order-by-reference", async (req, res) => {
-    const referenceId = req.query.referenceId as string;
-    const order = await orderService.getOrderByReferenceId(referenceId);
-    if (!order) {
-        return res.status(404).json({ success: false, message: "No order found for this reference", data: null });
-    }
-    res.json({ success: true, data: { orderId: order._id.toString() } });
-});
 
 e2eTestRouter.get("/last-otp", (req, res) => {
     const email = req.query.email as string;

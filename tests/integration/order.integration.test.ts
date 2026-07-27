@@ -2,7 +2,6 @@ import request from "supertest";
 import app from "../../src/app";
 import Product from "../../src/models/product.model";
 import Notification from "../../src/models/notification.model";
-import { EsewaService, computeEsewaTotal } from "../../src/services/esewa.service";
 import { connectTestDb, clearTestDb, closeTestDb } from "./setup/testDb";
 import { registerAndLogin, createAdminAndLogin, TestUser } from "./setup/authHelpers";
 import { createPublishedProduct, createShippingAddress } from "./setup/dataHelpers";
@@ -19,7 +18,7 @@ afterAll(async () => {
 });
 
 /** Adds one unit of `product` to `user`'s cart, saves a shipping address, and checks out. */
-const checkout = async (user: TestUser, productId: string, paymentMethod: "cod" | "online") => {
+const checkout = async (user: TestUser, productId: string, paymentMethod: "cod") => {
     await request(app).post("/api/v1/cart").set("Authorization", `Bearer ${user.token}`).send({ productId, quantity: 1 }).expect(200);
     const address = await createShippingAddress(user.token);
     const res = await request(app)
@@ -45,42 +44,6 @@ describe("COD checkout flow", () => {
 
         const adminNotification = await Notification.findOne({ audience: "admin", type: "order_placed", orderNumber: orderRes.body.data.orderNumber });
         expect(adminNotification).not.toBeNull();
-    });
-});
-
-describe("eSewa checkout flow (mocked payment gateway)", () => {
-    it("marks the order Paid and deducts stock once the (mocked) payment is confirmed successful", async () => {
-        const admin = await createAdminAndLogin();
-        const product = await createPublishedProduct(admin.token, { stockQuantity: 10 });
-        const user = await registerAndLogin();
-
-        const orderRes = await checkout(user, product._id, "online");
-        expect(orderRes.status).toBe(201);
-        const orderId = orderRes.body.data._id;
-
-        // Stock is deferred for online orders until payment is verified.
-        expect((await Product.findById(product._id))!.stockQuantity).toBe(10);
-
-        await request(app).post("/api/v1/payments/esewa/initiate").set("Authorization", `Bearer ${user.token}`).send({ orderId }).expect(200);
-
-        const expectedTotal = computeEsewaTotal(orderRes.body.data.subtotal, orderRes.body.data.shippingFee);
-        jest.spyOn(EsewaService.prototype, "verifyTransaction").mockResolvedValue({
-            product_code: "EPAYTEST",
-            transaction_uuid: "mock-uuid",
-            total_amount: expectedTotal,
-            status: "COMPLETE",
-            ref_id: "MOCK-REF-1",
-        });
-
-        // No `data` param is sent, so PaymentService looks the order up by `oid`
-        // directly and relies solely on the mocked status-check for trust.
-        const successRes = await request(app).get("/api/v1/payments/esewa/success").query({ oid: orderId });
-        expect(successRes.status).toBe(302);
-        expect(successRes.headers.location).toContain("status=success");
-
-        const paidOrderRes = await request(app).get(`/api/v1/orders/${orderId}`).set("Authorization", `Bearer ${user.token}`);
-        expect(paidOrderRes.body.data.paymentStatus).toBe("Paid");
-        expect((await Product.findById(product._id))!.stockQuantity).toBe(9);
     });
 });
 

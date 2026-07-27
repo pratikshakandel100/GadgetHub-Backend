@@ -103,7 +103,7 @@ export function generateInvoicePdf(order: IOrder): PDFKit.PDFDocument {
     rule();
 
     // Payment
-    row("Payment Method", order.paymentMethod === "cod" ? "Cash on Delivery" : "eSewa");
+    row("Payment Method", "Cash on Delivery");
     row("Payment Status", order.paymentStatus);
     if (order.transactionId) {
         row("Transaction ID", order.transactionId);

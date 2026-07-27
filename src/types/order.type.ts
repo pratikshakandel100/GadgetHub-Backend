@@ -4,7 +4,7 @@ import { ORDER_STATUSES } from "../models/order.model";
 export const CreateOrderSchema = z.object({
     shippingAddressId: z.string().min(1, "Please select a shipping address"),
     shippingMethodId: z.string().min(1).optional(),
-    paymentMethod: z.enum(["cod", "online"])
+    paymentMethod: z.literal("cod")
 });
 
 export type CreateOrderType = z.infer<typeof CreateOrderSchema>;
@@ -28,8 +28,8 @@ export const CancelOrderSchema = z.object({
 export type CancelOrderType = z.infer<typeof CancelOrderSchema>;
 
 export const ShipOrderSchema = z.object({
-    courier: z.string().min(1, "Courier name is required"),
-    trackingNumber: z.string().min(1, "Tracking number is required")
+    courier: z.string().optional(),
+    trackingNumber: z.string().optional()
 });
 
 export type ShipOrderType = z.infer<typeof ShipOrderSchema>;
