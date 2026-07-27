@@ -1,4 +1,4 @@
-import { buildSkuCodes, formatSku, pickPrimaryVariantValue, buildVariantKey } from "../../src/utils/sku.util";
+import { buildSkuCodes, formatSku, pickPrimaryVariantValue, buildVariantKey } from "../../../src/utils/sku.util";
 
 describe("buildSkuCodes", () => {
     it("derives uppercase category/brand/variant codes from real names", () => {

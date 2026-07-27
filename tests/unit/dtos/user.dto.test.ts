@@ -1,4 +1,4 @@
-import { CreateUserDTO } from "../../src/dtos/user.dto";
+import { CreateUserDTO } from "../../../src/dtos/user.dto";
 
 describe("CreateUserDTO email validation", () => {
     const validPayload = { fullname: "Jane Doe", email: "jane@example.com", password: "secret123" };

@@ -1,4 +1,4 @@
-import { stripUndefined } from "../../src/utils/object.util";
+import { stripUndefined } from "../../../src/utils/object.util";
 
 describe("stripUndefined", () => {
     it("removes only the keys whose value is undefined", () => {

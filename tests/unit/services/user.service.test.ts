@@ -1,4 +1,4 @@
-jest.mock("../../src/repositories/user.repository", () => {
+jest.mock("../../../src/repositories/user.repository", () => {
     const mockUserRepository = {
         findByEmail: jest.fn(),
         createUser: jest.fn(),
@@ -10,9 +10,9 @@ jest.mock("../../src/repositories/user.repository", () => {
 });
 
 import jwt from "jsonwebtoken";
-import { UserService } from "../../src/services/user.service";
-import * as UserRepoModule from "../../src/repositories/user.repository";
-import { SECRET_KEY } from "../../src/config/constant";
+import { UserService } from "../../../src/services/user.service";
+import * as UserRepoModule from "../../../src/repositories/user.repository";
+import { SECRET_KEY } from "../../../src/config/constant";
 
 const mockUserRepository = (UserRepoModule as any).__mockUserRepository;
 

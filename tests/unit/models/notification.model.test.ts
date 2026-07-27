@@ -1,4 +1,4 @@
-import Notification from "../../src/models/notification.model";
+import Notification from "../../../src/models/notification.model";
 
 describe("Notification model", () => {
     it("defaults a newly-instantiated notification to unread", () => {

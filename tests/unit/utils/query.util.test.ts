@@ -1,4 +1,4 @@
-import { parsePagination } from "../../src/utils/query.util";
+import { parsePagination } from "../../../src/utils/query.util";
 
 describe("parsePagination", () => {
     it("applies default page=1 and the given default limit when no query params are present", () => {

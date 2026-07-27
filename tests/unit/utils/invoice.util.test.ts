@@ -1,4 +1,4 @@
-import { formatCurrency } from "../../src/utils/invoice.util";
+import { formatCurrency } from "../../../src/utils/invoice.util";
 
 describe("formatCurrency", () => {
     it("formats an amount with the currency code and thousands separators, including zero", () => {

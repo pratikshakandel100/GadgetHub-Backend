@@ -1,6 +1,6 @@
-import { calculateShipping } from "../../src/services/shipping-calculation.service";
-import { haversineDistanceKm } from "../../src/utils/haversine.util";
-import type { IShippingSettings } from "../../src/models/shipping-settings.model";
+import { calculateShipping } from "../../../src/services/shipping-calculation.service";
+import { haversineDistanceKm } from "../../../src/utils/haversine.util";
+import type { IShippingSettings } from "../../../src/models/shipping-settings.model";
 
 const baseSettings: IShippingSettings = {
     _id: "shipping-settings",

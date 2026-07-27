@@ -1,4 +1,4 @@
-jest.mock("../../src/repositories/shipping-address.repository", () => {
+jest.mock("../../../src/repositories/shipping-address.repository", () => {
     const mockShippingAddressRepository = { getById: jest.fn() };
     return {
         ShippingAddressMongoRepository: jest.fn().mockImplementation(() => mockShippingAddressRepository),
@@ -6,7 +6,7 @@ jest.mock("../../src/repositories/shipping-address.repository", () => {
     };
 });
 
-jest.mock("../../src/repositories/cart.repository", () => {
+jest.mock("../../../src/repositories/cart.repository", () => {
     const mockCartRepository = { findByUser: jest.fn(), clear: jest.fn() };
     return {
         CartMongoRepository: jest.fn().mockImplementation(() => mockCartRepository),
@@ -14,7 +14,7 @@ jest.mock("../../src/repositories/cart.repository", () => {
     };
 });
 
-jest.mock("../../src/repositories/product.repository", () => {
+jest.mock("../../../src/repositories/product.repository", () => {
     const mockProductRepository = { decrementStock: jest.fn(), incrementStock: jest.fn() };
     return {
         ProductMongoRepository: jest.fn().mockImplementation(() => mockProductRepository),
@@ -22,7 +22,7 @@ jest.mock("../../src/repositories/product.repository", () => {
     };
 });
 
-jest.mock("../../src/repositories/order.repository", () => {
+jest.mock("../../../src/repositories/order.repository", () => {
     const mockOrderRepository = {
         create: jest.fn(),
         getById: jest.fn(),
@@ -36,7 +36,7 @@ jest.mock("../../src/repositories/order.repository", () => {
     };
 });
 
-jest.mock("../../src/repositories/stock-movement.repository", () => {
+jest.mock("../../../src/repositories/stock-movement.repository", () => {
     const mockStockMovementRepository = { create: jest.fn() };
     return {
         StockMovementMongoRepository: jest.fn().mockImplementation(() => mockStockMovementRepository),
@@ -44,7 +44,7 @@ jest.mock("../../src/repositories/stock-movement.repository", () => {
     };
 });
 
-jest.mock("../../src/services/notification.service", () => {
+jest.mock("../../../src/services/notification.service", () => {
     const mockNotificationService = {
         notifyAdminsOrderPlaced: jest.fn(),
         notifyAdminsLowStockIfCrossed: jest.fn(),
@@ -56,7 +56,7 @@ jest.mock("../../src/services/notification.service", () => {
     };
 });
 
-jest.mock("../../src/services/shipping-settings.service", () => {
+jest.mock("../../../src/services/shipping-settings.service", () => {
     const mockShippingSettingsService = { getSettings: jest.fn() };
     return {
         ShippingSettingsService: jest.fn().mockImplementation(() => mockShippingSettingsService),
@@ -64,12 +64,12 @@ jest.mock("../../src/services/shipping-settings.service", () => {
     };
 });
 
-import { OrderService } from "../../src/services/order.service";
-import * as ShippingAddressRepoModule from "../../src/repositories/shipping-address.repository";
-import * as CartRepoModule from "../../src/repositories/cart.repository";
-import * as ProductRepoModule from "../../src/repositories/product.repository";
-import * as OrderRepoModule from "../../src/repositories/order.repository";
-import * as ShippingSettingsModule from "../../src/services/shipping-settings.service";
+import { OrderService } from "../../../src/services/order.service";
+import * as ShippingAddressRepoModule from "../../../src/repositories/shipping-address.repository";
+import * as CartRepoModule from "../../../src/repositories/cart.repository";
+import * as ProductRepoModule from "../../../src/repositories/product.repository";
+import * as OrderRepoModule from "../../../src/repositories/order.repository";
+import * as ShippingSettingsModule from "../../../src/services/shipping-settings.service";
 
 const mockShippingAddressRepository = (ShippingAddressRepoModule as any).__mockShippingAddressRepository;
 const mockCartRepository = (CartRepoModule as any).__mockCartRepository;

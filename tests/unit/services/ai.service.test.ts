@@ -2,9 +2,9 @@
 // ESM-only "meilisearch" package that Jest's CommonJS transform can't parse. AiChatService
 // only needs ProductService for its type shape here (we're testing pure parsing helpers
 // that never touch it), so it's mocked out to keep this file's import graph CJS-safe.
-jest.mock("../../src/services/product.service", () => ({ ProductService: jest.fn() }));
+jest.mock("../../../src/services/product.service", () => ({ ProductService: jest.fn() }));
 
-import { AiChatService } from "../../src/services/ai.service";
+import { AiChatService } from "../../../src/services/ai.service";
 
 // extractBudget/extractKeywords are private parsing steps the chat assistant
 // uses to narrow the product catalog before building its prompt — accessed

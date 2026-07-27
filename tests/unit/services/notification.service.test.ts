@@ -1,4 +1,4 @@
-jest.mock("../../src/repositories/notification.repository", () => {
+jest.mock("../../../src/repositories/notification.repository", () => {
     const mockNotificationRepository = {
         create: jest.fn(),
         getById: jest.fn(),
@@ -10,8 +10,8 @@ jest.mock("../../src/repositories/notification.repository", () => {
     };
 });
 
-import { NotificationService } from "../../src/services/notification.service";
-import * as NotificationRepoModule from "../../src/repositories/notification.repository";
+import { NotificationService } from "../../../src/services/notification.service";
+import * as NotificationRepoModule from "../../../src/repositories/notification.repository";
 
 const mockNotificationRepository = (NotificationRepoModule as any).__mockNotificationRepository;
 

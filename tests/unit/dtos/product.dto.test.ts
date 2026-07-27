@@ -1,4 +1,4 @@
-import { ProductSchema } from "../../src/types/product.type";
+import { ProductSchema } from "../../../src/types/product.type";
 
 const basePayload = {
     name: "Test Product",
