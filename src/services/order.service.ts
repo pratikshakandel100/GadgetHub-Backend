@@ -44,11 +44,11 @@ const snapshotShippingAddress = (address: ISavedShippingAddress): IShippingAddre
 const TERMINAL_STATUSES: OrderStatus[] = ["Delivered", "Cancelled"];
 
 // Sequential order flow: Pending -> Confirmed (approve) -> Packed -> Shipped
-// (ship action, needs courier/tracking) -> Delivered (deliver action, needs
-// delivery person name/phone). Cancellation is a separate branch, always
-// requires a reason, available from any non-terminal step. Shipped and
-// Delivered are deliberately absent from this map — they always go through
-// their own dedicated methods below, never this generic transition.
+// (ship action, needs delivery person name/phone) -> Delivered (deliver
+// action, takes no input — a plain confirmation). Cancellation is a separate
+// branch, always requires a reason, available from any non-terminal step.
+// Shipped and Delivered are deliberately absent from this map — they always
+// go through their own dedicated methods below, never this generic transition.
 const NEXT_STATUS: Partial<Record<OrderStatus, OrderStatus>> = {
     Pending: "Confirmed",
     Confirmed: "Packed"
@@ -105,7 +105,14 @@ export class OrderService {
 
         const items = [];
         let subtotal = 0;
-        const cartItems = cart.items as unknown as IPopulatedCartItem[];
+        const allCartItems = cart.items as unknown as IPopulatedCartItem[];
+        // productIds lets the customer order only a subset of their cart; omitted means the whole cart.
+        const cartItems = orderData.productIds
+            ? allCartItems.filter((item) => orderData.productIds!.includes(item.product?._id?.toString()))
+            : allCartItems;
+        if (cartItems.length === 0) {
+            throw new HttpException(400, "None of the selected items were found in your cart");
+        }
 
         for (const cartItem of cartItems) {
             const product = cartItem.product;
@@ -150,27 +157,9 @@ export class OrderService {
             )
             : null;
 
-        // Stock is reserved immediately at order creation.
-        const codReservations: { product: string; quantity: number; previousStock: number; newStock: number }[] = [];
-        const reserved: { product: string; quantity: number }[] = [];
-        try {
-            for (const item of items) {
-                const updated = await productRepository.decrementStock(item.product, item.quantity);
-                if (!updated) {
-                    throw new HttpException(400, `Insufficient stock for "${item.name}"`);
-                }
-                reserved.push({ product: item.product, quantity: item.quantity });
-                const previousStock = updated.stockQuantity + item.quantity;
-                codReservations.push({ product: item.product, quantity: item.quantity, previousStock, newStock: updated.stockQuantity });
-                await notificationService.notifyAdminsLowStockIfCrossed(previousStock, updated);
-            }
-        } catch (err) {
-            for (const item of reserved) {
-                await productRepository.incrementStock(item.product, item.quantity);
-            }
-            throw err;
-        }
-
+        // Stock is NOT reserved at order creation — only once an admin
+        // confirms the order (Pending -> Confirmed, see updateOrderStatus).
+        // This is a placed request, not yet a commitment against inventory.
         const shippingFee = shippingMethod?.charge ?? computedShipping!.shippingFee;
         const total = subtotal + shippingFee;
         const orderNumber = await generateOrderNumber();
@@ -194,18 +183,13 @@ export class OrderService {
             total
         });
 
-        await cartRepository.clear(userId);
-
-        for (const reservation of codReservations) {
-            await stockMovementRepository.create({
-                product: reservation.product,
-                type: "order",
-                quantityDelta: -reservation.quantity,
-                previousStock: reservation.previousStock,
-                newStock: reservation.newStock,
-                order: order._id.toString(),
-                orderNumber: order.orderNumber
-            });
+        // Partial checkout only removes the ordered items, leaving the rest of the cart intact.
+        if (orderData.productIds) {
+            for (const item of items) {
+                await cartRepository.removeItem(userId, item.product);
+            }
+        } else {
+            await cartRepository.clear(userId);
         }
 
         await notificationService.notifyAdminsOrderPlaced(order);
@@ -233,16 +217,16 @@ export class OrderService {
         return await orderRepository.getAll(page, limit, status, search, sort, filters);
     }
 
-    // Handles Approve (Pending -> Confirmed), Pack (Confirmed -> Packed), and
-    // Deliver (Shipped -> Delivered) — the three transitions that need no
-    // extra data. Shipped and Cancelled always go through their own methods
-    // below, since those require courier/tracking or a reason respectively.
+    // Handles Approve (Pending -> Confirmed) and Pack (Confirmed -> Packed) —
+    // the two transitions that need no extra data. Shipped, Delivered and
+    // Cancelled always go through their own dedicated methods below, since
+    // those require a delivery person name/phone, nothing, or a reason respectively.
     async updateOrderStatus(id: string, status: OrderStatus): Promise<IOrder> {
         if (status === "Shipped") {
-            throw new HttpException(400, "Use the ship action to mark an order Shipped — courier and tracking number are required");
+            throw new HttpException(400, "Use the ship action to mark an order Shipped — the delivery person's name and phone are required");
         }
         if (status === "Delivered") {
-            throw new HttpException(400, "Use the deliver action to mark an order Delivered — the delivery person's name and phone are required");
+            throw new HttpException(400, "Use the deliver action to mark an order Delivered");
         }
         if (status === "Cancelled") {
             throw new HttpException(400, "Use the cancel action to cancel an order — a reason is required");
@@ -261,6 +245,45 @@ export class OrderService {
             throw new HttpException(400, `Order must move from "${existingOrder.status}" to "${expectedNext}" next`);
         }
 
+        // Stock is reserved here, at the moment an admin confirms the order —
+        // not at placement — so a cart-checkout that never gets confirmed
+        // can't hold inventory hostage. Two customers can now both "place"
+        // an order for the last unit; only whichever gets confirmed first wins.
+        if (status === "Confirmed") {
+            const reservations: { product: string; quantity: number; previousStock: number; newStock: number }[] = [];
+            const reserved: { product: string; quantity: number }[] = [];
+            try {
+                for (const item of existingOrder.items) {
+                    const productId = item.product.toString();
+                    const updatedProduct = await productRepository.decrementStock(productId, item.quantity);
+                    if (!updatedProduct) {
+                        throw new HttpException(400, `Insufficient stock for "${item.name}"`);
+                    }
+                    reserved.push({ product: productId, quantity: item.quantity });
+                    const previousStock = updatedProduct.stockQuantity + item.quantity;
+                    reservations.push({ product: productId, quantity: item.quantity, previousStock, newStock: updatedProduct.stockQuantity });
+                    await notificationService.notifyAdminsLowStockIfCrossed(previousStock, updatedProduct);
+                }
+            } catch (err) {
+                for (const item of reserved) {
+                    await productRepository.incrementStock(item.product, item.quantity);
+                }
+                throw err;
+            }
+
+            for (const reservation of reservations) {
+                await stockMovementRepository.create({
+                    product: reservation.product,
+                    type: "order",
+                    quantityDelta: -reservation.quantity,
+                    previousStock: reservation.previousStock,
+                    newStock: reservation.newStock,
+                    order: existingOrder._id.toString(),
+                    orderNumber: existingOrder.orderNumber
+                });
+            }
+        }
+
         const updated = await orderRepository.updateStatus(id, status);
         if (!updated) {
             throw new HttpException(500, "Failed to update order status");
@@ -272,7 +295,7 @@ export class OrderService {
         return updated;
     }
 
-    async shipOrder(id: string, courier?: string, trackingNumber?: string): Promise<IOrder> {
+    async shipOrder(id: string, deliveryPersonName: string, deliveryPersonPhone: string): Promise<IOrder> {
         const existingOrder = await orderRepository.getById(id);
         if (!existingOrder) {
             throw new HttpException(404, "Order not found");
@@ -281,7 +304,7 @@ export class OrderService {
             throw new HttpException(400, `Only Packed orders can be shipped (current status: ${existingOrder.status})`);
         }
 
-        const updated = await orderRepository.updateShipment(id, courier, trackingNumber);
+        const updated = await orderRepository.updateShipment(id, deliveryPersonName, deliveryPersonPhone);
         if (!updated) {
             throw new HttpException(500, "Failed to update order shipment");
         }
@@ -292,7 +315,10 @@ export class OrderService {
         return updated;
     }
 
-    async deliverOrder(id: string, deliveryPersonName: string, deliveryPersonPhone: string): Promise<IOrder> {
+    // Deliver takes no input — it's a plain confirmation the order reached
+    // the customer. The delivery person's name/phone were already captured
+    // back at the Ship step.
+    async deliverOrder(id: string): Promise<IOrder> {
         const existingOrder = await orderRepository.getById(id);
         if (!existingOrder) {
             throw new HttpException(404, "Order not found");
@@ -301,7 +327,7 @@ export class OrderService {
             throw new HttpException(400, `Only Shipped orders can be marked Delivered (current status: ${existingOrder.status})`);
         }
 
-        const updated = await orderRepository.updateDelivery(id, deliveryPersonName, deliveryPersonPhone);
+        const updated = await orderRepository.updateDelivery(id);
         if (!updated) {
             throw new HttpException(500, "Failed to update order delivery");
         }
@@ -331,18 +357,23 @@ export class OrderService {
             throw new HttpException(400, `Order is already ${existingOrder.status} and cannot be cancelled`);
         }
 
-        for (const item of existingOrder.items) {
-            const updated = await productRepository.incrementStock(item.product.toString(), item.quantity);
-            if (updated) {
-                await stockMovementRepository.create({
-                    product: item.product.toString(),
-                    type: "order",
-                    quantityDelta: item.quantity,
-                    previousStock: updated.stockQuantity - item.quantity,
-                    newStock: updated.stockQuantity,
-                    order: existingOrder._id.toString(),
-                    orderNumber: existingOrder.orderNumber
-                });
+        // Stock is only reserved once an order reaches Confirmed (see
+        // updateOrderStatus) — cancelling while still Pending never touched
+        // inventory, so there's nothing to give back.
+        if (existingOrder.status !== "Pending") {
+            for (const item of existingOrder.items) {
+                const updated = await productRepository.incrementStock(item.product.toString(), item.quantity);
+                if (updated) {
+                    await stockMovementRepository.create({
+                        product: item.product.toString(),
+                        type: "order",
+                        quantityDelta: item.quantity,
+                        previousStock: updated.stockQuantity - item.quantity,
+                        newStock: updated.stockQuantity,
+                        order: existingOrder._id.toString(),
+                        orderNumber: existingOrder.orderNumber
+                    });
+                }
             }
         }
 

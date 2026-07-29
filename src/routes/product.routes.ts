@@ -54,6 +54,11 @@ productRouter.get(
     productController.getSimilarProducts
 );
 
+productRouter.post(
+    "/published/:id/view",
+    productController.recordProductView
+);
+
 productRouter.get(
     "/compare",
     productController.getPublishedProductsByIds

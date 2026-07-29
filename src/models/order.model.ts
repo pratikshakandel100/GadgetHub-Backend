@@ -70,8 +70,8 @@ export interface IOrder extends Document {
     status: OrderStatus;
     statusHistory: IOrderStatusHistoryEntry[];
     shippingMethod?: IOrderShippingMethod;
-    courier?: string;
-    trackingNumber?: string;
+    // Captured at the Ship step (Packed -> Shipped) — Deliver takes no input,
+    // it's a plain confirmation the order reached the customer.
     deliveryPersonName?: string;
     deliveryPersonPhone?: string;
     cancelReason?: string;
@@ -134,8 +134,6 @@ const OrderMongoSchema: Schema = new Schema<IOrder>(
             required: false,
             _id: false
         },
-        courier: { type: String, required: false },
-        trackingNumber: { type: String, required: false },
         deliveryPersonName: { type: String, required: false },
         deliveryPersonPhone: { type: String, required: false },
         cancelReason: { type: String, required: false }

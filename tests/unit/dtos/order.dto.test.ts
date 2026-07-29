@@ -49,19 +49,16 @@ describe("CancelOrderSchema", () => {
 });
 
 describe("ShipOrderSchema", () => {
-    it("accepts an empty payload since courier/tracking are optional", () => {
-        expect(ShipOrderSchema.safeParse({}).success).toBe(true);
-    });
-
-    it("accepts courier and tracking number when provided", () => {
-        expect(ShipOrderSchema.safeParse({ courier: "NCM", trackingNumber: "TRACK1" }).success).toBe(true);
+    it("requires both delivery person name and phone", () => {
+        expect(ShipOrderSchema.safeParse({ deliveryPersonName: "Ram", deliveryPersonPhone: "9800000000" }).success).toBe(true);
+        expect(ShipOrderSchema.safeParse({ deliveryPersonName: "Ram" }).success).toBe(false);
+        expect(ShipOrderSchema.safeParse({ deliveryPersonPhone: "9800000000" }).success).toBe(false);
+        expect(ShipOrderSchema.safeParse({}).success).toBe(false);
     });
 });
 
 describe("DeliverOrderSchema", () => {
-    it("requires both delivery person name and phone", () => {
-        expect(DeliverOrderSchema.safeParse({ deliveryPersonName: "Ram", deliveryPersonPhone: "9800000000" }).success).toBe(true);
-        expect(DeliverOrderSchema.safeParse({ deliveryPersonName: "Ram" }).success).toBe(false);
-        expect(DeliverOrderSchema.safeParse({ deliveryPersonPhone: "9800000000" }).success).toBe(false);
+    it("takes no input — delivering is a plain confirmation", () => {
+        expect(DeliverOrderSchema.safeParse({}).success).toBe(true);
     });
 });

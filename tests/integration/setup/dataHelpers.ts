@@ -64,11 +64,11 @@ export const advanceOrderToDelivered = async (adminToken: string, orderId: strin
     const headers = { Authorization: `Bearer ${adminToken}` };
     await request(app).patch(`/api/v1/orders/${orderId}/status`).set(headers).send({ status: "Confirmed" }).expect(200);
     await request(app).patch(`/api/v1/orders/${orderId}/status`).set(headers).send({ status: "Packed" }).expect(200);
-    await request(app).patch(`/api/v1/orders/${orderId}/ship`).set(headers).send({ courier: "NCM", trackingNumber: "TRACK1" }).expect(200);
+    await request(app).patch(`/api/v1/orders/${orderId}/ship`).set(headers).send({ deliveryPersonName: "Ram Bahadur", deliveryPersonPhone: "9800000001" }).expect(200);
     const res = await request(app)
         .patch(`/api/v1/orders/${orderId}/deliver`)
         .set(headers)
-        .send({ deliveryPersonName: "Ram Bahadur", deliveryPersonPhone: "9800000001" })
+        .send({})
         .expect(200);
     return res.body.data;
 };

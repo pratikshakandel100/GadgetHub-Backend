@@ -4,7 +4,9 @@ import { ORDER_STATUSES } from "../models/order.model";
 export const CreateOrderSchema = z.object({
     shippingAddressId: z.string().min(1, "Please select a shipping address"),
     shippingMethodId: z.string().min(1).optional(),
-    paymentMethod: z.literal("cod")
+    paymentMethod: z.literal("cod"),
+    // Which cart items to order. Omitted means "the whole cart" (back-compat with older clients).
+    productIds: z.array(z.string().min(1)).min(1, "Select at least one item to order").optional()
 });
 
 export type CreateOrderType = z.infer<typeof CreateOrderSchema>;
@@ -28,15 +30,13 @@ export const CancelOrderSchema = z.object({
 export type CancelOrderType = z.infer<typeof CancelOrderSchema>;
 
 export const ShipOrderSchema = z.object({
-    courier: z.string().optional(),
-    trackingNumber: z.string().optional()
+    deliveryPersonName: z.string().min(1, "Delivery person's name is required"),
+    deliveryPersonPhone: z.string().min(1, "Delivery person's phone number is required")
 });
 
 export type ShipOrderType = z.infer<typeof ShipOrderSchema>;
 
-export const DeliverOrderSchema = z.object({
-    deliveryPersonName: z.string().min(1, "Delivery person's name is required"),
-    deliveryPersonPhone: z.string().min(1, "Delivery person's phone number is required")
-});
+// Delivering takes no input — it's a plain confirmation that the order reached the customer.
+export const DeliverOrderSchema = z.object({});
 
 export type DeliverOrderType = z.infer<typeof DeliverOrderSchema>;

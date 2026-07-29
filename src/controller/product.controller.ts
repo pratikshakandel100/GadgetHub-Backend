@@ -141,6 +141,11 @@ export class ProductController {
         });
     }
 
+    async recordProductView(req: Request<{ id: string }>, res: Response) {
+        await productService.recordProductView(req.params.id);
+        return ApiResponseHelper.success(res, null, "View recorded");
+    }
+
     async getSimilarProducts(req: Request<{ id: string }>, res: Response) {
         const limit = req.query.limit ? Number(req.query.limit) : undefined;
         const products = await productService.getSimilarProducts(req.params.id, limit);

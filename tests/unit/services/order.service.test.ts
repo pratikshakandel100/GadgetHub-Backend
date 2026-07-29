@@ -151,12 +151,12 @@ describe("OrderService.createOrder", () => {
         expect(order.shippingFee).toBe(SHIPPING_SETTINGS.baseShippingCharge);
     });
 
-    it("reserves (decrements) stock immediately for a Cash on Delivery order", async () => {
+    it("does NOT reserve (decrement) stock at order creation — only once an admin confirms the order", async () => {
         mockCartRepository.findByUser.mockResolvedValue({ items: [makeCartItem("p1", 1000, 2)] });
 
         await new OrderService().createOrder(USER_ID, { shippingAddressId: "addr1", paymentMethod: "cod" } as any);
 
-        expect(mockProductRepository.decrementStock).toHaveBeenCalledWith("p1", 2);
+        expect(mockProductRepository.decrementStock).not.toHaveBeenCalled();
     });
 });
 
@@ -170,11 +170,31 @@ describe("OrderService status transitions", () => {
     });
 
     it("allows the valid next transition (Pending -> Confirmed)", async () => {
-        mockOrderRepository.getById.mockResolvedValue({ _id: "o1", status: "Pending", user: { _id: { toString: () => USER_ID } } });
+        mockOrderRepository.getById.mockResolvedValue({
+            _id: "o1",
+            status: "Pending",
+            user: { _id: { toString: () => USER_ID } },
+            items: [],
+        });
 
         const updated = await new OrderService().updateOrderStatus("o1", "Confirmed");
 
         expect(updated.status).toBe("Confirmed");
+    });
+
+    it("reserves (decrements) stock only when confirming a Pending order", async () => {
+        mockOrderRepository.getById.mockResolvedValue({
+            _id: "o1",
+            orderNumber: "ORD-1",
+            status: "Pending",
+            user: { _id: { toString: () => USER_ID } },
+            items: [{ product: { toString: () => "p1" }, name: "Product p1", quantity: 2 }],
+        });
+        mockProductRepository.decrementStock.mockResolvedValue({ stockQuantity: 98 });
+
+        await new OrderService().updateOrderStatus("o1", "Confirmed");
+
+        expect(mockProductRepository.decrementStock).toHaveBeenCalledWith("p1", 2);
     });
 
     it("rejects an invalid transition that skips a step (Pending -> Packed)", async () => {
@@ -203,7 +223,7 @@ describe("OrderService.cancelOrder restocking", () => {
         mockProductRepository.incrementStock.mockResolvedValue({ stockQuantity: 100 });
     });
 
-    it("restocks inventory when cancelling a COD order", async () => {
+    it("restocks inventory when cancelling an already-Confirmed COD order", async () => {
         mockOrderRepository.getById.mockResolvedValue({
             _id: "o1",
             status: "Confirmed",
@@ -215,5 +235,19 @@ describe("OrderService.cancelOrder restocking", () => {
         await new OrderService().cancelOrder("o1", "Customer Request");
 
         expect(mockProductRepository.incrementStock).toHaveBeenCalledWith("p1", 2);
+    });
+
+    it("does NOT restock when cancelling a still-Pending order — stock was never reserved", async () => {
+        mockOrderRepository.getById.mockResolvedValue({
+            _id: "o1",
+            status: "Pending",
+            paymentMethod: "cod",
+            paymentStatus: "Pending",
+            items: [{ product: { toString: () => "p1" }, quantity: 2 }],
+        });
+
+        await new OrderService().cancelOrder("o1", "Customer Request");
+
+        expect(mockProductRepository.incrementStock).not.toHaveBeenCalled();
     });
 });

@@ -56,7 +56,7 @@ export class DashboardMongoRepository implements IDashboardRepository {
             Order.countDocuments({ createdAt: { $gte: startOfDay } }),
             User.countDocuments({ role: "user", createdAt: { $gte: startOfDay } }),
             Order.aggregate([
-                { $match: { createdAt: { $gte: startOfDay }, status: { $ne: "Cancelled" } } },
+                { $match: { createdAt: { $gte: startOfDay }, paymentStatus: "Paid" } },
                 { $group: { _id: null, revenue: { $sum: "$total" } } }
             ])
         ]);
@@ -91,15 +91,15 @@ export class DashboardMongoRepository implements IDashboardRepository {
             Order.countDocuments(),
             Order.countDocuments({ createdAt: { $gte: startOfMonth } }),
             Order.aggregate([
-                { $match: { status: { $ne: "Cancelled" } } },
+                { $match: { paymentStatus: "Paid" } },
                 { $group: { _id: null, revenue: { $sum: "$total" } } }
             ]),
             Order.aggregate([
-                { $match: { createdAt: { $gte: startOfMonth }, status: { $ne: "Cancelled" } } },
+                { $match: { createdAt: { $gte: startOfMonth }, paymentStatus: "Paid" } },
                 { $group: { _id: null, revenue: { $sum: "$total" } } }
             ]),
             Order.aggregate([
-                { $match: { createdAt: { $gte: startOfLastMonth, $lt: startOfMonth }, status: { $ne: "Cancelled" } } },
+                { $match: { createdAt: { $gte: startOfLastMonth, $lt: startOfMonth }, paymentStatus: "Paid" } },
                 { $group: { _id: null, revenue: { $sum: "$total" } } }
             ]),
             Order.countDocuments({ status: "Pending" }),

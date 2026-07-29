@@ -181,13 +181,16 @@ describe("ProductService.getPublishedProductById", () => {
         );
     });
 
-    it("returns a published product and fires a best-effort view-count increment", async () => {
+    it("returns a published product without incrementing its view count", async () => {
+        // View counting is deliberately NOT done here — this fetch also runs
+        // during Next.js Link prefetching, which would inflate the count for
+        // pages a user never actually opened. See ProductService.recordProductView.
         mockProductRepository.getById.mockResolvedValue({ _id: { toString: () => "p1" }, status: "Published" });
 
         const product = await new ProductService().getPublishedProductById("507f1f77bcf86cd799439011");
 
         expect(product.status).toBe("Published");
-        expect(mockProductRepository.incrementViewCount).toHaveBeenCalledWith("p1");
+        expect(mockProductRepository.incrementViewCount).not.toHaveBeenCalled();
     });
 
     it("looks up by product code when the id isn't a valid ObjectId", async () => {
@@ -197,6 +200,14 @@ describe("ProductService.getPublishedProductById", () => {
 
         expect(mockProductRepository.getByCode).toHaveBeenCalledWith("GH000001");
         expect(mockProductRepository.getById).not.toHaveBeenCalled();
+    });
+});
+
+describe("ProductService.recordProductView", () => {
+    it("increments the view count for the given product id", async () => {
+        await new ProductService().recordProductView("p1");
+
+        expect(mockProductRepository.incrementViewCount).toHaveBeenCalledWith("p1");
     });
 });
 

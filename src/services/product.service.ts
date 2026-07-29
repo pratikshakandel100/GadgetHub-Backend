@@ -288,9 +288,15 @@ export class ProductService {
         if (!product || product.status !== "Published") {
             throw new HttpException(404, "Product not found");
         }
-        // Best-effort — a failed view-count increment shouldn't fail the page load.
-        productRepository.incrementViewCount(product._id.toString()).catch(() => {});
         return product;
+    }
+
+    // Called explicitly from the client once the product page actually mounts
+    // in the browser — NOT from getPublishedProductById, because that fetch
+    // also runs during Next.js Link prefetching, which would inflate the
+    // count for pages a user never actually opened.
+    async recordProductView(id: string): Promise<void> {
+        await productRepository.incrementViewCount(id);
     }
 
     // Admin-only, unbounded (no MAX_COMPARE_PRODUCTS cap, no Published-only

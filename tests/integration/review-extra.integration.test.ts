@@ -41,11 +41,11 @@ describe("Admin review moderation flow", () => {
         const headers = { Authorization: `Bearer ${admin.token}` };
         await request(app).patch(`/api/v1/orders/${order._id}/status`).set(headers).send({ status: "Confirmed" }).expect(200);
         await request(app).patch(`/api/v1/orders/${order._id}/status`).set(headers).send({ status: "Packed" }).expect(200);
-        await request(app).patch(`/api/v1/orders/${order._id}/ship`).set(headers).send({ courier: "NCM", trackingNumber: "T1" }).expect(200);
+        await request(app).patch(`/api/v1/orders/${order._id}/ship`).set(headers).send({ deliveryPersonName: "Ram", deliveryPersonPhone: "9800000001" }).expect(200);
         await request(app)
             .patch(`/api/v1/orders/${order._id}/deliver`)
             .set(headers)
-            .send({ deliveryPersonName: "Ram", deliveryPersonPhone: "9800000001" })
+            .send({})
             .expect(200);
 
         const reviewRes = await request(app)

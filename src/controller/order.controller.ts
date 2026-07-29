@@ -132,7 +132,7 @@ export class OrderController {
         const existing = await orderService.getOrderById(req.params.id, "", true);
         assertNotStale(req, existing);
 
-        const order = await orderService.shipOrder(req.params.id, shipData.data.courier, shipData.data.trackingNumber);
+        const order = await orderService.shipOrder(req.params.id, shipData.data.deliveryPersonName, shipData.data.deliveryPersonPhone);
         return ApiResponseHelper.success(res, order, "Order marked as shipped", 200, undefined, {
             links: orderLinks(req, order)
         });
@@ -147,7 +147,7 @@ export class OrderController {
         const existing = await orderService.getOrderById(req.params.id, "", true);
         assertNotStale(req, existing);
 
-        const order = await orderService.deliverOrder(req.params.id, deliverData.data.deliveryPersonName, deliverData.data.deliveryPersonPhone);
+        const order = await orderService.deliverOrder(req.params.id);
         return ApiResponseHelper.success(res, order, "Order marked as delivered", 200, undefined, {
             links: orderLinks(req, order)
         });

@@ -29,7 +29,7 @@ const checkout = async (user: TestUser, productId: string, paymentMethod: "cod")
 };
 
 describe("COD checkout flow", () => {
-    it("creates the order, deducts stock immediately, and raises an admin notification", async () => {
+    it("creates the order without touching stock, and raises an admin notification", async () => {
         const admin = await createAdminAndLogin();
         const product = await createPublishedProduct(admin.token, { stockQuantity: 10 });
         const user = await registerAndLogin();
@@ -39,8 +39,9 @@ describe("COD checkout flow", () => {
         expect(orderRes.status).toBe(201);
         expect(orderRes.body.data.paymentStatus).toBe("Pending");
 
+        // Stock is only reserved once an admin confirms the order, not at placement.
         const updatedProduct = await Product.findById(product._id);
-        expect(updatedProduct!.stockQuantity).toBe(9);
+        expect(updatedProduct!.stockQuantity).toBe(10);
 
         const adminNotification = await Notification.findOne({ audience: "admin", type: "order_placed", orderNumber: orderRes.body.data.orderNumber });
         expect(adminNotification).not.toBeNull();
@@ -48,14 +49,14 @@ describe("COD checkout flow", () => {
 });
 
 describe("Order cancellation flow", () => {
-    it("restores stock, saves the cancel reason, and notifies the customer", async () => {
+    it("cancelling a still-Pending order leaves stock untouched, saves the cancel reason, and notifies the customer", async () => {
         const admin = await createAdminAndLogin();
         const product = await createPublishedProduct(admin.token, { stockQuantity: 10 });
         const user = await registerAndLogin();
 
         const orderRes = await checkout(user, product._id, "cod");
         const orderId = orderRes.body.data._id;
-        expect((await Product.findById(product._id))!.stockQuantity).toBe(9);
+        expect((await Product.findById(product._id))!.stockQuantity).toBe(10);
 
         const cancelRes = await request(app)
             .patch(`/api/v1/orders/${orderId}/cancel`)
@@ -70,6 +71,27 @@ describe("Order cancellation flow", () => {
         const customerNotification = await Notification.findOne({ audience: "user", type: "order_status_changed", orderNumber: orderRes.body.data.orderNumber });
         expect(customerNotification).not.toBeNull();
     });
+
+    it("restores stock when cancelling an order that was already Confirmed (and therefore had stock reserved)", async () => {
+        const admin = await createAdminAndLogin();
+        const product = await createPublishedProduct(admin.token, { stockQuantity: 10 });
+        const user = await registerAndLogin();
+
+        const orderRes = await checkout(user, product._id, "cod");
+        const orderId = orderRes.body.data._id;
+        const authHeader = `Bearer ${admin.token}`;
+
+        await request(app).patch(`/api/v1/orders/${orderId}/status`).set("Authorization", authHeader).send({ status: "Confirmed" });
+        expect((await Product.findById(product._id))!.stockQuantity).toBe(9);
+
+        const cancelRes = await request(app)
+            .patch(`/api/v1/orders/${orderId}/cancel`)
+            .set("Authorization", authHeader)
+            .send({ reason: "Customer Request" });
+
+        expect(cancelRes.status).toBe(200);
+        expect((await Product.findById(product._id))!.stockQuantity).toBe(10);
+    });
 });
 
 describe("Order status transition flow", () => {
@@ -82,9 +104,14 @@ describe("Order status transition flow", () => {
         const orderId = orderRes.body.data._id;
         const authHeader = `Bearer ${admin.token}`;
 
+        expect((await Product.findById(product._id))!.stockQuantity).toBe(5);
+
         const confirmRes = await request(app).patch(`/api/v1/orders/${orderId}/status`).set("Authorization", authHeader).send({ status: "Confirmed" });
         expect(confirmRes.status).toBe(200);
         expect(confirmRes.body.data.status).toBe("Confirmed");
+
+        // Stock is reserved right here, at confirmation — not at the earlier placement step.
+        expect((await Product.findById(product._id))!.stockQuantity).toBe(4);
 
         const packRes = await request(app).patch(`/api/v1/orders/${orderId}/status`).set("Authorization", authHeader).send({ status: "Packed" });
         expect(packRes.status).toBe(200);
@@ -93,14 +120,14 @@ describe("Order status transition flow", () => {
         const shipRes = await request(app)
             .patch(`/api/v1/orders/${orderId}/ship`)
             .set("Authorization", authHeader)
-            .send({ courier: "NCM Courier", trackingNumber: "TRACK123" });
+            .send({ deliveryPersonName: "Ram Bahadur", deliveryPersonPhone: "9800000001" });
         expect(shipRes.status).toBe(200);
         expect(shipRes.body.data.status).toBe("Shipped");
 
         const deliverRes = await request(app)
             .patch(`/api/v1/orders/${orderId}/deliver`)
             .set("Authorization", authHeader)
-            .send({ deliveryPersonName: "Ram Bahadur", deliveryPersonPhone: "9800000001" });
+            .send({});
         expect(deliverRes.status).toBe(200);
         expect(deliverRes.body.data.status).toBe("Delivered");
     });

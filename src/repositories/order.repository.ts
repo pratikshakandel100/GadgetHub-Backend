@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import Order, { IOrder, OrderStatus, PaymentStatus, IShippingAddress, IOrderShippingMethod } from "../models/order.model";
 import User from "../models/user.model";
 import { buildPaginationMeta, SortOrder } from "../utils/query.util";
-import { stripUndefined } from "../utils/object.util";
 
 export interface IOrderListResult {
     orders: IOrder[];
@@ -51,8 +50,8 @@ export interface IOrderRepository {
     getFrequentlyCoOccurring(productId: string, limit: number): Promise<{ productId: string; count: number }[]>;
     getAll(page: number, limit: number, status: string, search: string, sort: Record<string, SortOrder>, filters?: IOrderFilters): Promise<IOrderListResult>;
     updateStatus(id: string, status: OrderStatus): Promise<IOrder | null>;
-    updateShipment(id: string, courier?: string, trackingNumber?: string): Promise<IOrder | null>;
-    updateDelivery(id: string, deliveryPersonName: string, deliveryPersonPhone: string): Promise<IOrder | null>;
+    updateShipment(id: string, deliveryPersonName: string, deliveryPersonPhone: string): Promise<IOrder | null>;
+    updateDelivery(id: string): Promise<IOrder | null>;
     updateCancellation(id: string, reason: string): Promise<IOrder | null>;
     existsByOrderNumber(orderNumber: string): Promise<boolean>;
 }
@@ -161,22 +160,24 @@ export class OrderMongoRepository implements IOrderRepository {
         ).populate(USER_POPULATE);
     }
 
-    async updateShipment(id: string, courier?: string, trackingNumber?: string): Promise<IOrder | null> {
+    async updateShipment(id: string, deliveryPersonName: string, deliveryPersonPhone: string): Promise<IOrder | null> {
         return await Order.findByIdAndUpdate(
             id,
             {
-                $set: { status: "Shipped", ...stripUndefined({ courier, trackingNumber }) },
+                $set: { status: "Shipped", deliveryPersonName, deliveryPersonPhone },
                 $push: { statusHistory: { status: "Shipped", changedAt: new Date() } }
             },
             { new: true, runValidators: true }
         ).populate(USER_POPULATE);
     }
 
-    async updateDelivery(id: string, deliveryPersonName: string, deliveryPersonPhone: string): Promise<IOrder | null> {
+    async updateDelivery(id: string): Promise<IOrder | null> {
         return await Order.findByIdAndUpdate(
             id,
             {
-                $set: { status: "Delivered", deliveryPersonName, deliveryPersonPhone },
+                // COD is the only payment method — cash changes hands at the
+                // door, so delivery is the moment the payment actually clears.
+                $set: { status: "Delivered", paymentStatus: "Paid", paidAt: new Date() },
                 $push: { statusHistory: { status: "Delivered", changedAt: new Date() } }
             },
             { new: true, runValidators: true }
