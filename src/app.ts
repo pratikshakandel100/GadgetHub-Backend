@@ -182,10 +182,13 @@ app.use((req: Request, res: Response) => {
 
 // Global error handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error("Error:", err);
     if (err instanceof HttpException) {
         return ApiResponseHelper.error(res, err.message, err.status);
     }
+    // Only unexpected (5xx) failures are logged — HttpException above covers
+    // expected client errors (validation, invalid transitions, etc.) and
+    // logging those as errors just buries real bugs in noise.
+    console.error("Error:", err);
     return ApiResponseHelper.error(res, err?.message || "Internal Server Error", 500);
 });
 

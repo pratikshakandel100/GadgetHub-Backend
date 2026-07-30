@@ -24,6 +24,8 @@ describe("sendPasswordResetOtpEmail", () => {
     });
 
     it("does not throw when SMTP isn't configured and E2E_TEST_MODE is off (falls back to a console warning)", async () => {
+        const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+
         process.env.E2E_TEST_MODE = "false";
         jest.doMock("../../../src/config/constant", () => ({
             SMTP_HOST: "smtp.gmail.com",
@@ -36,5 +38,8 @@ describe("sendPasswordResetOtpEmail", () => {
 
         await expect(sendPasswordResetOtpEmail("user@example.com", "Test User", "654321")).resolves.toBeUndefined();
         expect(mockSendMail).not.toHaveBeenCalled();
+        expect(warnSpy).toHaveBeenCalledWith("[mailer] SMTP not configured — password reset email was not sent");
+
+        warnSpy.mockRestore();
     });
 });

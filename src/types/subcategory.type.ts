@@ -7,6 +7,7 @@ const optionalString = z.preprocess(
 
 export const SubcategorySchema = z.object({
     name: z.string().min(1, "Subcategory name is required"),
+    nameNe: optionalString,
     slug: optionalString,
     category: z.string().min(1, "Category is required"),
     status: z.enum(["Active", "Inactive"]).default("Active")

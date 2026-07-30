@@ -1,0 +1,4 @@
+
+> gadgethub_backend@1.0.0 test
+> jest bin coverage docker-compose.meilisearch.yml dumps index.ts jest.config.js jest.integration.config.js meili_data meilisearch.log node_modules package.json package-lock.json src tests tsconfig.jest.json tsconfig.json unit-test-log.txt uploads
+

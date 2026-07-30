@@ -1,0 +1,904 @@
+
+> gadgethub_backend@1.0.0 test:integration
+> jest --config jest.integration.config.js
+
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:13 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:13 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:13 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:13 +0000] "POST /api/v1/products HTTP/1.1" 201 1481 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:13 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:13 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:13 +0000] "POST /api/v1/cart HTTP/1.1" 200 683 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:13 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:13 +0000] "POST /api/v1/orders HTTP/1.1" 201 1298 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:13 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:13 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:13 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:13 +0000] "POST /api/v1/products HTTP/1.1" 201 1481 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:13 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/cart HTTP/1.1" 200 683 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/orders HTTP/1.1" 201 1298 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "PATCH /api/v1/orders/6a6811a2f87257731fbf2698/cancel HTTP/1.1" 200 1432 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/products HTTP/1.1" 201 1480 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/cart HTTP/1.1" 200 682 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/orders HTTP/1.1" 201 1298 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "PATCH /api/v1/orders/6a6811a2f87257731fbf26b0/status HTTP/1.1" 200 1403 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "PATCH /api/v1/orders/6a6811a2f87257731fbf26b0/status HTTP/1.1" 200 1492 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "PATCH /api/v1/orders/6a6811a2f87257731fbf26b0/ship HTTP/1.1" 200 1628 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "PATCH /api/v1/orders/6a6811a2f87257731fbf26b0/deliver HTTP/1.1" 200 1797 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/categories HTTP/1.1" 201 424 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:14 +0000] "POST /api/v1/products HTTP/1.1" 201 1479 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:15 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:15 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:15 +0000] "POST /api/v1/cart HTTP/1.1" 200 682 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:15 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:15 +0000] "POST /api/v1/orders HTTP/1.1" 201 1298 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:15 +0000] "PATCH /api/v1/orders/6a6811a3f87257731fbf26f4/status HTTP/1.1" 400 97 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:15 +0000] "GET /api/v1/orders/6a6811a3f87257731fbf26f4 HTTP/1.1" 200 1299 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:17 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:17 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:17 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:17 +0000] "POST /api/v1/products HTTP/1.1" 201 1482 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:17 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:17 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:17 +0000] "POST /api/v1/products HTTP/1.1" 201 1482 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:17 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:17 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:17 +0000] "POST /api/v1/cart HTTP/1.1" 200 684 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:17 +0000] "POST /api/v1/cart HTTP/1.1" 200 1123 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:17 +0000] "PUT /api/v1/shipping-settings HTTP/1.1" 200 464 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:17 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:17 +0000] "POST /api/v1/orders HTTP/1.1" 201 1464 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:20 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:20 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:20 +0000] "POST /api/v1/brands HTTP/1.1" 200 284 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:20 +0000] "POST /api/v1/products HTTP/1.1" 201 1491 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:20 +0000] "POST /api/v1/products HTTP/1.1" 200 1559 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/products HTTP/1.1" 201 1477 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "PATCH /api/v1/products/6a6811a916d1ed6b0ea2cd50/status HTTP/1.1" 200 1488 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 549 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/categories HTTP/1.1" 201 388 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/categories HTTP/1.1" 201 388 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/products HTTP/1.1" 201 1414 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/products HTTP/1.1" 201 1414 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "GET /api/v1/products/published?category=6a6811a916d1ed6b0ea2cd52 HTTP/1.1" 200 1582 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "POST /api/v1/products HTTP/1.1" 201 1455 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:21 +0000] "GET /api/v1/products/published/6a6811a916d1ed6b0ea2cd5d HTTP/1.1" 200 1455 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:23 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:23 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:23 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:23 +0000] "POST /api/v1/products HTTP/1.1" 201 1481 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "POST /api/v1/wishlist HTTP/1.1" 200 606 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "DELETE /api/v1/wishlist/6a6811ab0053ea6977c8c351 HTTP/1.1" 200 260 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "POST /api/v1/products HTTP/1.1" 201 1481 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "POST /api/v1/cart HTTP/1.1" 200 683 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "POST /api/v1/products HTTP/1.1" 201 1481 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:24 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:25 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:25 +0000] "POST /api/v1/cart HTTP/1.1" 200 683 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:25 +0000] "DELETE /api/v1/cart/6a6811ac0053ea6977c8c35d HTTP/1.1" 200 250 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:25 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:25 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:25 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:25 +0000] "POST /api/v1/products HTTP/1.1" 201 1481 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:25 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:25 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:25 +0000] "POST /api/v1/products HTTP/1.1" 201 1478 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:25 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:25 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:25 +0000] "POST /api/v1/cart HTTP/1.1" 200 683 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:25 +0000] "POST /api/v1/cart HTTP/1.1" 200 1119 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:25 +0000] "GET /api/v1/cart HTTP/1.1" 200 1113 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:28 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:28 +0000] "POST /api/v1/categories HTTP/1.1" 201 382 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:28 +0000] "POST /api/v1/brands HTTP/1.1" 200 242 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:28 +0000] "POST /api/v1/products HTTP/1.1" 201 1330 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:28 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:28 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:28 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:28 +0000] "POST /api/v1/products HTTP/1.1" 201 1421 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:28 +0000] "PUT /api/v1/products/6a6811b0cf806544d7d1f008 HTTP/1.1" 200 1417 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:28 +0000] "GET /api/v1/products/6a6811b0cf806544d7d1f008 HTTP/1.1" 200 1417 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 549 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "POST /api/v1/products HTTP/1.1" 201 1481 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "DELETE /api/v1/products/6a6811b1cf806544d7d1f00c HTTP/1.1" 200 80 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "POST /api/v1/products HTTP/1.1" 201 1475 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "POST /api/v1/products HTTP/1.1" 201 1469 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "POST /api/v1/products HTTP/1.1" 201 1457 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:29 +0000] "GET /api/v1/products/search?q=Keyboard HTTP/1.1" 200 1177 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:31 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 549 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:31 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:31 +0000] "POST /api/v1/brands HTTP/1.1" 200 284 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:31 +0000] "POST /api/v1/products HTTP/1.1" 201 1479 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:31 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:31 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:31 +0000] "POST /api/v1/cart HTTP/1.1" 200 682 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:31 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:31 +0000] "POST /api/v1/orders HTTP/1.1" 201 1298 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:31 +0000] "PATCH /api/v1/orders/6a6811b3dee7c3545aa469b2/status HTTP/1.1" 200 1403 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:31 +0000] "GET /api/v1/notifications HTTP/1.1" 200 508 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:31 +0000] "PATCH /api/v1/notifications/6a6811b3dee7c3545aa469bf/read HTTP/1.1" 200 444 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:32 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:32 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:32 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:32 +0000] "POST /api/v1/products HTTP/1.1" 201 1474 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:32 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:32 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:32 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:32 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:32 +0000] "POST /api/v1/cart HTTP/1.1" 200 678 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:32 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:32 +0000] "POST /api/v1/orders HTTP/1.1" 201 1296 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:32 +0000] "PATCH /api/v1/orders/6a6811b4dee7c3545aa469ca/status HTTP/1.1" 200 1401 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:32 +0000] "GET /api/v1/notifications HTTP/1.1" 200 508 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:32 +0000] "PATCH /api/v1/notifications/6a6811b4dee7c3545aa469d7/read HTTP/1.1" 404 65 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:34 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:34 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:34 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:34 +0000] "POST /api/v1/products HTTP/1.1" 201 1481 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:34 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 533 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:34 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 543 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/wishlist HTTP/1.1" 200 606 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "GET /api/v1/wishlist HTTP/1.1" 200 597 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/products HTTP/1.1" 201 1481 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/wishlist HTTP/1.1" 200 606 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "DELETE /api/v1/wishlist/6a6811b7b07fecb30829aa91 HTTP/1.1" 200 260 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/cart HTTP/1.1" 200 683 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "GET /api/v1/wishlist HTTP/1.1" 200 247 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "GET /api/v1/cart HTTP/1.1" 200 677 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/products HTTP/1.1" 201 1482 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:35 +0000] "POST /api/v1/cart HTTP/1.1" 200 684 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:36 +0000] "PUT /api/v1/cart/6a6811b7b07fecb30829aa99 HTTP/1.1" 200 683 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:38 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:38 +0000] "POST /api/v1/categories HTTP/1.1" 201 390 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:39 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:39 +0000] "POST /api/v1/categories HTTP/1.1" 201 384 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:39 +0000] "PUT /api/v1/categories/6a6811bb41120456d8460673 HTTP/1.1" 200 428 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:39 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:39 +0000] "POST /api/v1/categories HTTP/1.1" 201 386 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:39 +0000] "DELETE /api/v1/categories/6a6811bb41120456d8460675 HTTP/1.1" 200 81 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:39 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:39 +0000] "POST /api/v1/brands HTTP/1.1" 200 248 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:39 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 549 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:39 +0000] "POST /api/v1/brands HTTP/1.1" 200 252 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:39 +0000] "PUT /api/v1/brands/6a6811bb41120456d8460679 HTTP/1.1" 200 252 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:39 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:39 +0000] "POST /api/v1/brands HTTP/1.1" 200 252 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:39 +0000] "DELETE /api/v1/brands/6a6811bb41120456d846067b HTTP/1.1" 200 78 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:41 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:41 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:42 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:42 +0000] "PUT /api/v1/admin/users/6a6811bd6d61d0539e119031 HTTP/1.1" 200 287 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:42 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 546 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:42 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:42 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:42 +0000] "GET /api/v1/admin/users/6a6811be6d61d0539e119033 HTTP/1.1" 200 280 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:42 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:42 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:42 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:42 +0000] "DELETE /api/v1/admin/users/6a6811be6d61d0539e119035 HTTP/1.1" 200 86 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:42 +0000] "GET /api/v1/admin/users HTTP/1.1" 200 331 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/products HTTP/1.1" 201 1480 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/cart HTTP/1.1" 200 682 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/orders HTTP/1.1" 201 1298 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "PATCH /api/v1/orders/6a6811c1f21b021cb42c39ca/status HTTP/1.1" 200 1403 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "PATCH /api/v1/orders/6a6811c1f21b021cb42c39ca/status HTTP/1.1" 200 1492 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "PATCH /api/v1/orders/6a6811c1f21b021cb42c39ca/ship HTTP/1.1" 200 1618 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "PATCH /api/v1/orders/6a6811c1f21b021cb42c39ca/deliver HTTP/1.1" 200 1787 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/reviews HTTP/1.1" 201 603 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/products HTTP/1.1" 201 1480 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:45 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "POST /api/v1/cart HTTP/1.1" 200 682 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "POST /api/v1/orders HTTP/1.1" 201 1298 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "PATCH /api/v1/orders/6a6811c2f21b021cb42c3a16/status HTTP/1.1" 200 1403 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "PATCH /api/v1/orders/6a6811c2f21b021cb42c3a16/status HTTP/1.1" 200 1492 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "PATCH /api/v1/orders/6a6811c2f21b021cb42c3a16/ship HTTP/1.1" 200 1618 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "PATCH /api/v1/orders/6a6811c2f21b021cb42c3a16/deliver HTTP/1.1" 200 1787 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "POST /api/v1/reviews HTTP/1.1" 201 592 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "POST /api/v1/cart HTTP/1.1" 200 682 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "POST /api/v1/orders HTTP/1.1" 201 1298 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "PATCH /api/v1/orders/6a6811c2f21b021cb42c3a5c/status HTTP/1.1" 200 1403 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "PATCH /api/v1/orders/6a6811c2f21b021cb42c3a5c/status HTTP/1.1" 200 1492 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "PATCH /api/v1/orders/6a6811c2f21b021cb42c3a5c/ship HTTP/1.1" 200 1618 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "PATCH /api/v1/orders/6a6811c2f21b021cb42c3a5c/deliver HTTP/1.1" 200 1787 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "POST /api/v1/reviews HTTP/1.1" 201 592 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:46 +0000] "GET /api/v1/reviews/product/6a6811c1f21b021cb42c3a0f HTTP/1.1" 200 900 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:48 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 514 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:48 +0000] "POST /api/v1/auth/register HTTP/1.1" 400 63 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:48 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:48 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:48 +0000] "GET /api/v1/auth/whoami HTTP/1.1" 200 288 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:48 +0000] "GET /api/v1/auth/whoami HTTP/1.1" 401 75 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:48 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:48 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:49 +0000] "PUT /api/v1/auth/update HTTP/1.1" 200 280 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:49 +0000] "POST /api/v1/auth/login HTTP/1.1" 400 66 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:49 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:49 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:49 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:49 +0000] "PUT /api/v1/auth/update HTTP/1.1" 400 72 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:51 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 549 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:51 +0000] "POST /api/v1/shipping-methods HTTP/1.1" 201 300 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:51 +0000] "POST /api/v1/shipping-methods HTTP/1.1" 201 303 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:51 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:51 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:51 +0000] "GET /api/v1/shipping-methods/active HTTP/1.1" 200 303 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:52 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:52 +0000] "POST /api/v1/shipping-methods HTTP/1.1" 201 310 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:52 +0000] "PUT /api/v1/shipping-methods/6a6811c845425d05b2a7a8a7 HTTP/1.1" 200 310 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:52 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:52 +0000] "POST /api/v1/shipping-methods HTTP/1.1" 201 310 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:52 +0000] "DELETE /api/v1/shipping-methods/6a6811c845425d05b2a7a8a9 HTTP/1.1" 200 88 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:52 +0000] "GET /api/v1/shipping-methods HTTP/1.1" 200 89 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "POST /api/v1/products HTTP/1.1" 201 1480 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "POST /api/v1/cart HTTP/1.1" 200 682 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "POST /api/v1/orders HTTP/1.1" 201 1298 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "PATCH /api/v1/orders/6a6811ca41ab234563c285db/status HTTP/1.1" 200 1403 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "PATCH /api/v1/orders/6a6811ca41ab234563c285db/status HTTP/1.1" 200 1492 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "PATCH /api/v1/orders/6a6811ca41ab234563c285db/ship HTTP/1.1" 200 1618 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "PATCH /api/v1/orders/6a6811ca41ab234563c285db/deliver HTTP/1.1" 200 1787 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "GET /api/v1/orders/6a6811ca41ab234563c285db/invoice HTTP/1.1" 200 - "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:54 +0000] "POST /api/v1/products HTTP/1.1" 201 1480 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:55 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:55 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:55 +0000] "POST /api/v1/cart HTTP/1.1" 200 682 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:55 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:55 +0000] "POST /api/v1/orders HTTP/1.1" 201 1298 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:55 +0000] "GET /api/v1/orders/6a6811cb41ab234563c28625/invoice HTTP/1.1" 400 97 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/categories HTTP/1.1" 201 424 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/products HTTP/1.1" 201 1479 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/cart HTTP/1.1" 200 682 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/orders HTTP/1.1" 201 1298 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/reviews HTTP/1.1" 400 93 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/categories HTTP/1.1" 201 424 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/products HTTP/1.1" 201 1479 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 533 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 543 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/cart HTTP/1.1" 200 682 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:57 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:58 +0000] "POST /api/v1/orders HTTP/1.1" 201 1297 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:58 +0000] "PATCH /api/v1/orders/6a6811cd036a23d95c634df7/status HTTP/1.1" 200 1402 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:58 +0000] "PATCH /api/v1/orders/6a6811cd036a23d95c634df7/status HTTP/1.1" 200 1491 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:58 +0000] "PATCH /api/v1/orders/6a6811cd036a23d95c634df7/ship HTTP/1.1" 200 1613 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:58 +0000] "PATCH /api/v1/orders/6a6811cd036a23d95c634df7/deliver HTTP/1.1" 200 1774 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:58 +0000] "POST /api/v1/reviews HTTP/1.1" 201 598 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:58 +0000] "PATCH /api/v1/reviews/6a6811ce036a23d95c634e38/status HTTP/1.1" 200 601 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:58 +0000] "GET /api/v1/reviews/admin/all HTTP/1.1" 200 523 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:58 +0000] "DELETE /api/v1/reviews/6a6811ce036a23d95c634e38 HTTP/1.1" 200 81 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:19:58 +0000] "GET /api/v1/reviews/admin/all HTTP/1.1" 200 134 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/products HTTP/1.1" 201 1480 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/cart HTTP/1.1" 200 682 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/orders HTTP/1.1" 201 1298 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "GET /api/v1/notifications HTTP/1.1" 200 461 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/products HTTP/1.1" 201 1480 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/cart HTTP/1.1" 200 682 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:00 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:01 +0000] "POST /api/v1/orders HTTP/1.1" 201 1298 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:01 +0000] "GET /api/v1/notifications/unread-count HTTP/1.1" 200 94 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:01 +0000] "PATCH /api/v1/orders/6a6811d04ed7816b00043c79/status HTTP/1.1" 200 1403 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:01 +0000] "GET /api/v1/notifications/unread-count HTTP/1.1" 200 94 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:01 +0000] "GET /api/v1/notifications HTTP/1.1" 200 508 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:03 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 512 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:04 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 514 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:04 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 497 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:04 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 515 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:04 +0000] "POST /api/v1/auth/login HTTP/1.1" 400 66 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:04 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 520 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:04 +0000] "POST /api/v1/auth/forgot-password HTTP/1.1" 200 125 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:04 +0000] "POST /api/v1/auth/verify-reset-otp HTTP/1.1" 200 143 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:04 +0000] "POST /api/v1/auth/reset-password HTTP/1.1" 200 79 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:04 +0000] "POST /api/v1/auth/login HTTP/1.1" 400 66 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:04 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 511 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:06 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:06 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:06 +0000] "POST /api/v1/brands HTTP/1.1" 200 284 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "POST /api/v1/products HTTP/1.1" 201 1479 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "GET /api/v1/notifications/unread-count HTTP/1.1" 200 94 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "POST /api/v1/cart HTTP/1.1" 200 682 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "POST /api/v1/orders HTTP/1.1" 201 1298 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "GET /api/v1/notifications/unread-count HTTP/1.1" 200 94 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "POST /api/v1/products HTTP/1.1" 201 1477 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "POST /api/v1/cart HTTP/1.1" 200 680 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "POST /api/v1/orders HTTP/1.1" 201 1297 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "PATCH /api/v1/notifications/read-all HTTP/1.1" 200 84 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:07 +0000] "GET /api/v1/notifications/unread-count HTTP/1.1" 200 94 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:09 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:09 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:09 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:09 +0000] "POST /api/v1/products HTTP/1.1" 201 1482 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:09 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:10 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:10 +0000] "POST /api/v1/cart HTTP/1.1" 200 684 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:10 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:10 +0000] "POST /api/v1/orders HTTP/1.1" 201 1302 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:10 +0000] "GET /api/v1/admin/dashboard HTTP/1.1" 200 1728 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:10 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:10 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:10 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:10 +0000] "POST /api/v1/products HTTP/1.1" 201 1480 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:10 +0000] "GET /api/v1/admin/dashboard HTTP/1.1" 200 698 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:10 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 533 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:10 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 543 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:10 +0000] "GET /api/v1/admin/dashboard HTTP/1.1" 403 68 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:12 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:12 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:12 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:12 +0000] "POST /api/v1/products HTTP/1.1" 201 1481 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:12 +0000] "PATCH /api/v1/inventory/6a6811dc00c5dfe0a054db16/adjust HTTP/1.1" 200 1301 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:12 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:12 +0000] "POST /api/v1/categories HTTP/1.1" 201 422 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:13 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:13 +0000] "POST /api/v1/products HTTP/1.1" 201 1478 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:13 +0000] "PATCH /api/v1/inventory/6a6811dd00c5dfe0a054db1b/adjust HTTP/1.1" 400 92 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:13 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:13 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:13 +0000] "POST /api/v1/brands HTTP/1.1" 200 282 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:13 +0000] "POST /api/v1/products HTTP/1.1" 201 1479 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:13 +0000] "PATCH /api/v1/inventory/6a6811dd00c5dfe0a054db1f/adjust HTTP/1.1" 400 151 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:13 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:13 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:13 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:13 +0000] "POST /api/v1/products HTTP/1.1" 201 1481 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:13 +0000] "PATCH /api/v1/inventory/6a6811dd00c5dfe0a054db23/restock HTTP/1.1" 200 1350 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:13 +0000] "GET /api/v1/inventory/6a6811dd00c5dfe0a054db23/history HTTP/1.1" 200 448 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:15 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:15 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:15 +0000] "POST /api/v1/brands HTTP/1.1" 200 284 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:15 +0000] "POST /api/v1/products HTTP/1.1" 201 1479 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:15 +0000] "PATCH /api/v1/inventory/6a6811dfc9084cba342a1dd0/restock HTTP/1.1" 200 1349 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:15 +0000] "GET /api/v1/inventory HTTP/1.1" 200 1405 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:15 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:15 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:15 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:15 +0000] "POST /api/v1/products HTTP/1.1" 201 1480 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:15 +0000] "PATCH /api/v1/inventory/6a6811dfc9084cba342a1dd5/restock HTTP/1.1" 400 106 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:16 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:16 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:16 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:16 +0000] "POST /api/v1/products HTTP/1.1" 201 1480 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:16 +0000] "GET /api/v1/inventory/summary HTTP/1.1" 200 147 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/products HTTP/1.1" 201 1457 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/products HTTP/1.1" 201 1454 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/cart HTTP/1.1" 200 667 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/cart HTTP/1.1" 200 1087 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 451 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/orders HTTP/1.1" 201 1442 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "GET /api/v1/recommendations/frequently-bought/6a6811e2fbfdc02f7295c11f HTTP/1.1" 200 1177 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "POST /api/v1/products HTTP/1.1" 201 1481 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:18 +0000] "GET /api/v1/recommendations/frequently-bought/6a6811e2fbfdc02f7295c136 HTTP/1.1" 200 108 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:20 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:20 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:20 +0000] "GET /api/v1/recommendations/recommended HTTP/1.1" 200 93 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:21 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:21 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:21 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:21 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:21 +0000] "POST /api/v1/products HTTP/1.1" 201 1469 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:21 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:21 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:21 +0000] "POST /api/v1/products HTTP/1.1" 201 1454 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:21 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:21 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:21 +0000] "POST /api/v1/wishlist HTTP/1.1" 200 598 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:21 +0000] "GET /api/v1/recommendations/recommended HTTP/1.1" 200 1162 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "POST /api/v1/subcategories HTTP/1.1" 201 403 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "POST /api/v1/subcategories HTTP/1.1" 400 91 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "POST /api/v1/subcategories HTTP/1.1" 201 413 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "POST /api/v1/subcategories HTTP/1.1" 201 422 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "POST /api/v1/categories HTTP/1.1" 201 424 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "POST /api/v1/subcategories HTTP/1.1" 201 431 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "POST /api/v1/brands HTTP/1.1" 200 284 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "POST /api/v1/products HTTP/1.1" 201 1558 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:23 +0000] "DELETE /api/v1/subcategories/6a6811e788c6df9bb0026265 HTTP/1.1" 400 91 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:25 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:25 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:25 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:25 +0000] "POST /api/v1/products HTTP/1.1" 201 1480 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:25 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:25 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:25 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 462 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:25 +0000] "POST /api/v1/cart HTTP/1.1" 200 682 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:25 +0000] "POST /api/v1/orders HTTP/1.1" 201 1309 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:25 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:25 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:25 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:25 +0000] "POST /api/v1/products HTTP/1.1" 201 1482 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:25 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:26 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:26 +0000] "PUT /api/v1/shipping-settings HTTP/1.1" 200 464 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:26 +0000] "POST /api/v1/shipping-addresses HTTP/1.1" 201 486 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:26 +0000] "POST /api/v1/cart HTTP/1.1" 200 684 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:26 +0000] "POST /api/v1/shipping-settings/quote HTTP/1.1" 200 159 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:26 +0000] "POST /api/v1/orders HTTP/1.1" 201 1348 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:28 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 549 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:28 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:28 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:28 +0000] "POST /api/v1/products HTTP/1.1" 201 1451 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:28 +0000] "POST /api/v1/ai/chat HTTP/1.1" 200 1268 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:28 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:28 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:28 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:28 +0000] "POST /api/v1/products HTTP/1.1" 201 1447 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:28 +0000] "POST /api/v1/ai/chat HTTP/1.1" 200 291 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:30 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:30 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:30 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:30 +0000] "POST /api/v1/products HTTP/1.1" 201 1463 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:30 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:30 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:30 +0000] "POST /api/v1/products HTTP/1.1" 201 1463 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:30 +0000] "POST /api/v1/ai/compare HTTP/1.1" 200 150 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:30 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:30 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:30 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:30 +0000] "POST /api/v1/products HTTP/1.1" 201 1481 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:30 +0000] "POST /api/v1/ai/compare HTTP/1.1" 400 105 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:32 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 549 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:32 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:32 +0000] "POST /api/v1/subcategories HTTP/1.1" 201 419 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:32 +0000] "GET /api/v1/subcategories/published?category=6a6811f01294cf94e2a475ef HTTP/1.1" 200 357 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:32 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:32 +0000] "POST /api/v1/subcategories HTTP/1.1" 404 61 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:35 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:35 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:35 +0000] "POST /api/v1/categories/6a6811f3e8c45ff0fc27b57c/attributes HTTP/1.1" 200 546 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:35 +0000] "GET /api/v1/categories/6a6811f3e8c45ff0fc27b57c/attributes HTTP/1.1" 200 201 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:35 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:35 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:35 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:35 +0000] "POST /api/v1/categories/6a6811f3e8c45ff0fc27b581/attributes HTTP/1.1" 200 546 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:35 +0000] "POST /api/v1/products HTTP/1.1" 400 78 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:35 +0000] "POST /api/v1/products HTTP/1.1" 201 1399 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:37 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:37 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:37 +0000] "PUT /api/v1/auth/update HTTP/1.1" 200 310 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:37 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:37 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:37 +0000] "PUT /api/v1/auth/update HTTP/1.1" 200 283 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:37 +0000] "GET /api/v1/auth/whoami HTTP/1.1" 200 291 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:37 +0000] "PUT /api/v1/auth/update HTTP/1.1" 401 75 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:39 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:39 +0000] "POST /api/v1/admin/users HTTP/1.1" 200 539 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:39 +0000] "GET /api/v1/admin/users HTTP/1.1" 200 542 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:39 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:39 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:39 +0000] "GET /api/v1/admin/users HTTP/1.1" 403 68 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:41 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:41 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:41 +0000] "POST /api/v1/categories HTTP/1.1" 201 426 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:41 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:12272) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:41 +0000] "POST /api/v1/products HTTP/1.1" 201 1481 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:41 +0000] "DELETE /api/v1/brands/6a6811f9de765be982712193 HTTP/1.1" 400 85 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:41 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:41 +0000] "POST /api/v1/brands HTTP/1.1" 200 286 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:41 +0000] "DELETE /api/v1/brands/6a6811f9de765be982712198 HTTP/1.1" 200 78 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:42 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:42 +0000] "POST /api/v1/brands HTTP/1.1" 200 242 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:42 +0000] "POST /api/v1/brands HTTP/1.1" 200 238 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:42 +0000] "PUT /api/v1/brands/6a6811fade765be98271219b HTTP/1.1" 400 68 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:44 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:44 +0000] "POST /api/v1/shipping-methods HTTP/1.1" 201 297 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:44 +0000] "GET /api/v1/shipping-methods HTTP/1.1" 200 300 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:44 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 551 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:44 +0000] "POST /api/v1/shipping-methods HTTP/1.1" 201 298 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:44 +0000] "POST /api/v1/shipping-methods HTTP/1.1" 400 90 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:44 +0000] "POST /api/v1/auth/register HTTP/1.1" 200 534 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:44 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 545 "-" "-"
+::ffff:127.0.0.1 - - [28/Jul/2026:02:20:44 +0000] "POST /api/v1/shipping-methods HTTP/1.1" 403 68 "-" "-"
+
+Test Suites: 32 passed, 32 total
+Tests:       91 passed, 91 total
+Snapshots:   0 total
+Time:        97.956 s
+Ran all test suites.

@@ -7,6 +7,7 @@ const optionalString = z.preprocess(
 
 export const CategorySchema = z.object({
     name: z.string().min(1, "Category name is required"),
+    nameNe: optionalString,
     slug: optionalString,
     description: optionalString,
     image: optionalString,

@@ -56,7 +56,7 @@ export class SubcategoryMongoRepository implements ISubcategoryRepository {
         const filter: any = search ? { name: { $regex: search, $options: "i" } } : {};
         if (category) filter.category = category;
 
-        let query = Subcategory.find(filter).populate("category", "name").sort(sort);
+        let query = Subcategory.find(filter).populate("category", "name nameNe").sort(sort);
         if (page !== undefined && limit !== undefined) {
             query = query.skip((page - 1) * limit).limit(limit);
         }
@@ -80,11 +80,11 @@ export class SubcategoryMongoRepository implements ISubcategoryRepository {
         const filter: any = { status: "Active" };
         if (search) filter.name = { $regex: search, $options: "i" };
         if (category) filter.category = category;
-        return await Subcategory.find(filter).populate("category", "name").sort({ name: 1 });
+        return await Subcategory.find(filter).populate("category", "name nameNe").sort({ name: 1 });
     }
 
     async getById(id: string): Promise<ISubcategory | null> {
-        return await Subcategory.findById(id).populate("category", "name");
+        return await Subcategory.findById(id).populate("category", "name nameNe");
     }
 
     async findByNameInCategory(name: string, category: string): Promise<ISubcategory | null> {
@@ -100,7 +100,7 @@ export class SubcategoryMongoRepository implements ISubcategoryRepository {
             id,
             { $set: stripUndefined(subcategory) },
             { new: true, runValidators: true }
-        ).populate("category", "name");
+        ).populate("category", "name nameNe");
     }
 
     async delete(id: string): Promise<boolean> {

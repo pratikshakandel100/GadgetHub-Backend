@@ -72,7 +72,7 @@ export class ProductSearchService {
     async rebuild() {
         if (!this.client) return;
         await this.configure();
-        const products = await Product.find().populate([{ path: "category", select: "name" }, { path: "subcategory", select: "name" }, { path: "brand", select: "name" }]);
+        const products = await Product.find().populate([{ path: "category", select: "name nameNe" }, { path: "subcategory", select: "name nameNe" }, { path: "brand", select: "name" }]);
         await this.client.index(INDEX).addDocuments(products.map((product) => this.document(product)), { primaryKey: "id" });
     }
 

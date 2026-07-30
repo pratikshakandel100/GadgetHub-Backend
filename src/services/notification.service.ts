@@ -12,7 +12,7 @@ export class NotificationService {
             audience: "admin",
             type: "order_placed",
             title: "New order placed",
-            message: `${order.shippingAddress.fullName} placed order ${order.orderNumber} for $${order.total.toLocaleString()}`,
+            message: `${order.shippingAddress.fullName} placed order ${order.orderNumber} for Rs. ${order.total.toLocaleString()}`,
             order: order._id.toString(),
             orderNumber: order.orderNumber
         });

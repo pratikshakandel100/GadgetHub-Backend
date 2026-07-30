@@ -14,6 +14,7 @@ export interface ICategoryAttribute {
 export interface ICategory extends Document {
     _id: mongoose.Types.ObjectId;
     name: string;
+    nameNe?: string;
     slug: string;
     description?: string;
     image?: string;
@@ -26,6 +27,7 @@ export interface ICategory extends Document {
 const CategoryMongoSchema: Schema = new Schema<ICategory>(
     {
         name: { type: String, required: true, unique: true },
+        nameNe: { type: String, required: false },
         slug: { type: String, required: true, unique: true },
         description: { type: String, required: false },
         image: { type: String, required: false },

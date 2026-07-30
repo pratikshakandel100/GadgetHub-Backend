@@ -3,6 +3,7 @@ import { SubcategorySchema } from "../types/subcategory.type";
 
 export const CreateSubcategoryDTO = SubcategorySchema.pick({
     name: true,
+    nameNe: true,
     category: true,
     status: true
 });
@@ -11,6 +12,7 @@ export type CreateSubcategoryDTO = z.infer<typeof CreateSubcategoryDTO>;
 
 export const UpdateSubcategoryDTO = SubcategorySchema.pick({
     name: true,
+    nameNe: true,
     category: true,
     status: true
 }).partial();

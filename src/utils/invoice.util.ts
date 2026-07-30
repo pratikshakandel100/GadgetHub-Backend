@@ -54,16 +54,20 @@ export function generateInvoicePdf(order: IOrder): PDFKit.PDFDocument {
     rule();
 
     // Customer
+    // Orders placed before the shippingAddress schema redesign may lack some (or all) of these fields.
+    const address = order.shippingAddress as Partial<IOrder["shippingAddress"]> | undefined;
     row("Customer", user?.fullname || "-");
     row("Email", user?.email || "-");
-    row("Phone", order.shippingAddress.phoneNumber);
+    row("Phone", address?.phoneNumber || "-");
     doc.fontSize(10).fillColor(MUTED).text("Shipping Address", left, doc.y);
     doc.fontSize(10).fillColor(SLATE).text(
-        [
-            order.shippingAddress.street,
-            `Ward ${order.shippingAddress.wardNumber}, ${order.shippingAddress.municipality}`,
-            `${order.shippingAddress.district}, ${order.shippingAddress.province}`,
-        ].join(", "),
+        address
+            ? [
+                  address.street,
+                  address.wardNumber != null ? `Ward ${address.wardNumber}, ${address.municipality}` : address.municipality,
+                  [address.district, address.province].filter(Boolean).join(", "),
+              ].filter(Boolean).join(", ")
+            : "Address unavailable",
         { align: "right" }
     );
     rule();

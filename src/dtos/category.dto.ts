@@ -3,6 +3,7 @@ import { CategorySchema, UpdateCategoryAttributeSchemaPayload } from "../types/c
 
 export const CreateCategoryDTO = CategorySchema.pick({
     name: true,
+    nameNe: true,
     description: true,
     image: true,
     status: true
@@ -12,6 +13,7 @@ export type CreateCategoryDTO = z.infer<typeof CreateCategoryDTO>;
 
 export const UpdateCategoryDTO = CategorySchema.pick({
     name: true,
+    nameNe: true,
     description: true,
     image: true,
     status: true
@@ -25,6 +27,7 @@ export type UpdateCategoryAttributesDTO = z.infer<typeof UpdateCategoryAttribute
 
 export const BulkCreateSubcategoryItemDTO = z.object({
     name: z.string().min(1, "Subcategory name is required"),
+    nameNe: z.string().optional(),
     status: z.enum(["Active", "Inactive"]).default("Active")
 });
 
